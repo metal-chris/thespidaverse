@@ -152,13 +152,14 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
             
             // Find the category ancestor to inherit its color
             let categoryNode = node;
-            while (categoryNode.parent && categoryNode.depth > 1) {
+            while (categoryNode && categoryNode.depth > 1) {
               categoryNode = categoryNode.parent;
             }
             
             // If we found a category (depth 1), use its color
-            if (categoryNode.depth === 1) {
-              const categoryName = categoryNode.content;
+            if (categoryNode && categoryNode.depth === 1) {
+              // Extract category name from content (remove markdown formatting)
+              const categoryName = categoryNode.content.replace(/<[^>]*>/g, '').trim();
               return CATEGORY_COLORS[categoryName] || "#6B7280";
             }
             
@@ -172,7 +173,7 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
           spacingHorizontal: 80,
           autoFit: true,
           fitRatio: 0.95,
-          initialExpandLevel: 1, // Start with only root expanded
+          initialExpandLevel: 0, // Start with only root visible
         });
       }
 
