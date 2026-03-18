@@ -398,8 +398,12 @@ export function WebGraphTVA({ nodes, edges }: WebGraphTVAProps) {
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, r + 12, 0, 2 * Math.PI);
         const grad = ctx.createRadialGradient(pos.x, pos.y, r, pos.x, pos.y, r + 16);
-        grad.addColorStop(0, glowColor + (isFocused ? "CC" : "80"));
-        grad.addColorStop(1, glowColor + "00");
+        // Convert rgb() to rgba() with alpha
+        const glowAlpha = isFocused ? 0.8 : 0.5;
+        const glowWithAlpha = glowColor.replace('rgb(', 'rgba(').replace(')', `, ${glowAlpha})`);
+        const glowTransparent = glowColor.replace('rgb(', 'rgba(').replace(')', ', 0)');
+        grad.addColorStop(0, glowWithAlpha);
+        grad.addColorStop(1, glowTransparent);
         ctx.fillStyle = grad;
         ctx.fill();
 
@@ -411,7 +415,11 @@ export function WebGraphTVA({ nodes, edges }: WebGraphTVAProps) {
       // Draw node
       ctx.beginPath();
       ctx.arc(pos.x, pos.y, r, 0, 2 * Math.PI);
-      ctx.fillStyle = isDimmed ? color + "30" : color;
+      if (isDimmed) {
+        ctx.fillStyle = color.replace('rgb(', 'rgba(').replace(')', ', 0.2)');
+      } else {
+        ctx.fillStyle = color;
+      }
       ctx.fill();
       ctx.shadowBlur = 0;
 
@@ -419,7 +427,7 @@ export function WebGraphTVA({ nodes, edges }: WebGraphTVAProps) {
       if (node.type === "category" && !isDimmed) {
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, r + 4, 0, 2 * Math.PI);
-        ctx.strokeStyle = glowColor + "AA";
+        ctx.strokeStyle = glowColor.replace('rgb(', 'rgba(').replace(')', ', 0.67)');
         ctx.lineWidth = 2;
         ctx.stroke();
       }
