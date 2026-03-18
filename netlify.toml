@@ -1,6 +1,5 @@
 [build]
   command = "npm run build"
-  publish = ".next"
 
 [build.environment]
   # Exclude NEXT_PUBLIC_ env vars from secret scanning (they're meant to be public in Next.js)
