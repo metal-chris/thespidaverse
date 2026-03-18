@@ -144,38 +144,42 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
       const transformer = new Transformer();
       const { root } = transformer.transform(markdown);
 
-      if (!markmapRef.current) {
-        markmapRef.current = Markmap.create(svgRef.current, {
-          color: (node: any) => {
-            // Root node - neutral gray
-            if (node.depth === 0) return "#6B7280";
-            
-            // Find the category ancestor to inherit its color
-            let categoryNode = node;
-            while (categoryNode && categoryNode.depth > 1) {
-              categoryNode = categoryNode.parent;
-            }
-            
-            // If we found a category (depth 1), use its color
-            if (categoryNode && categoryNode.depth === 1) {
-              // Extract category name from content (remove markdown formatting)
-              const categoryName = categoryNode.content.replace(/<[^>]*>/g, '').trim();
-              return CATEGORY_COLORS[categoryName] || "#6B7280";
-            }
-            
-            // Fallback
-            return "#6B7280";
-          },
-          duration: 300,
-          maxWidth: 300,
-          paddingX: 8,
-          spacingVertical: 8,
-          spacingHorizontal: 80,
-          autoFit: true,
-          fitRatio: 0.95,
-          initialExpandLevel: 0, // Start with only root visible
-        });
+      // Destroy existing instance if it exists
+      if (markmapRef.current) {
+        markmapRef.current.destroy();
       }
+
+      // Create fresh instance with proper options
+      markmapRef.current = Markmap.create(svgRef.current, {
+        color: (node: any) => {
+          // Root node - neutral gray
+          if (node.depth === 0) return "#6B7280";
+          
+          // Find the category ancestor to inherit its color
+          let categoryNode = node;
+          while (categoryNode && categoryNode.depth > 1) {
+            categoryNode = categoryNode.parent;
+          }
+          
+          // If we found a category (depth 1), use its color
+          if (categoryNode && categoryNode.depth === 1) {
+            // Extract category name from content (remove markdown/HTML formatting)
+            const categoryName = categoryNode.content.replace(/<[^>]*>/g, '').trim();
+            return CATEGORY_COLORS[categoryName] || "#6B7280";
+          }
+          
+          // Fallback
+          return "#6B7280";
+        },
+        duration: 300,
+        maxWidth: 300,
+        paddingX: 8,
+        spacingVertical: 8,
+        spacingHorizontal: 80,
+        autoFit: true,
+        fitRatio: 0.95,
+        initialExpandLevel: -1, // -1 = fully collapsed
+      });
 
       markmapRef.current.setData(root);
       markmapRef.current.fit();
