@@ -21,13 +21,13 @@
 }
 
 /* ========================================
-   Peter Parker Mode (Classic Blue)
+   Peter Parker Mode (Classic Red & Blue)
    ======================================== */
 [data-theme="peter"] {
   --color-background: #F0F4F8;
   --color-foreground: #1A2332;
-  --color-accent: #1E50DC;
-  --color-accent-hover: #1640B8;
+  --color-accent: #DC143C;
+  --color-accent-hover: #B8102E;
   --color-muted: #E6EBF0;
   --color-muted-foreground: #5A6B7D;
   --color-border: #D0D8E0;
