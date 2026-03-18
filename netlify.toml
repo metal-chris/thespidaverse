@@ -4,8 +4,8 @@
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF ."
 
 [build.environment]
-  # Disable secret scanning for NEXT_PUBLIC_ vars (they're meant to be public)
-  NETLIFY_SKIP_SECRET_SCAN = "true"
+  # Exclude NEXT_PUBLIC_ env vars from secret scanning (they're meant to be public in Next.js)
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SITE_URL,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
