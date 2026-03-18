@@ -123,10 +123,11 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const markmapRef = useRef<Markmap | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [themeColors, setThemeColors] = useState(() => getThemeColors());
+  const [themeColors, setThemeColors] = useState<ReturnType<typeof getThemeColors> | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    setThemeColors(getThemeColors());
 
     const observer = new MutationObserver(() => {
       setThemeColors(getThemeColors());
@@ -231,7 +232,7 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
 
   // Update colors when theme changes
   useEffect(() => {
-    if (!svgRef.current) return;
+    if (!svgRef.current || !themeColors) return;
 
     const svg = svgRef.current;
     svg.style.backgroundColor = themeColors.bg;
@@ -264,7 +265,6 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
         <svg
           ref={svgRef}
           className="w-full h-full"
-          style={{ backgroundColor: themeColors.bg }}
         />
       </div>
     </div>
