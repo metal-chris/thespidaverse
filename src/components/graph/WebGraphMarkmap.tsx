@@ -89,6 +89,19 @@ function buildMarkmapMarkdown(nodes: GraphNode[], edges: GraphEdge[]): string {
 
       markdown += "\n";
     });
+
+    // Find articles directly connected to category (no tag)
+    const directArticles = articles.filter(
+      (article) =>
+        adjacency.get(category.id)?.has(article.id) &&
+        !categoryTags.some((tag) => adjacency.get(tag.id)?.has(article.id))
+    );
+
+    if (directArticles.length > 0) {
+      directArticles.forEach((article) => {
+        markdown += `### [${article.label}](/articles/${article.slug})\n\n`;
+      });
+    }
   });
 
   return markdown;
@@ -137,16 +150,19 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
             // Root node - neutral gray
             if (node.depth === 0) return "#6B7280";
             
-            // Category nodes - match landing page colors
-            if (node.depth === 1) {
-              const categoryName = node.content;
+            // Find the category ancestor to inherit its color
+            let categoryNode = node;
+            while (categoryNode.parent && categoryNode.depth > 1) {
+              categoryNode = categoryNode.parent;
+            }
+            
+            // If we found a category (depth 1), use its color
+            if (categoryNode.depth === 1) {
+              const categoryName = categoryNode.content;
               return CATEGORY_COLORS[categoryName] || "#6B7280";
             }
             
-            // Tag nodes - muted gray
-            if (node.depth === 2) return "#9CA3AF";
-            
-            // Article nodes - accent color
+            // Fallback
             return "#6B7280";
           },
           duration: 300,
