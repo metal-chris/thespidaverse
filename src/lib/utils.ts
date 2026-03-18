@@ -21,3 +21,10 @@ export function formatMediaType(type: string): string {
   };
   return labels[type] || type;
 }
+
+export function capitalizeTag(tag: string): string {
+  return tag
+    .split(/[-\s]/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('-');
+}

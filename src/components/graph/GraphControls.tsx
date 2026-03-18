@@ -3,11 +3,11 @@
 import { cn } from "@/lib/utils";
 
 const filterLabels: Record<string, string> = {
-  article: "Article",
-  media: "Media",
-  collection: "Collection",
-  category: "Category",
-  tag: "Tag",
+  article: "ARTICLE",
+  media: "MEDIA",
+  collection: "COLLECTION",
+  category: "CATEGORY",
+  tag: "TAG",
 };
 
 interface GraphControlsProps {
@@ -55,7 +55,7 @@ export function GraphControls({
               : "bg-card/90 backdrop-blur-sm border-border text-muted-foreground hover:text-foreground"
           )}
         >
-          All
+          ALL
         </button>
         {categories.map((cat) => (
           <button

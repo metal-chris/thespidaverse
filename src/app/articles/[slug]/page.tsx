@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { getProvider } from "@/lib/providers";
 import { urlFor } from "@/lib/sanity/image";
 import { Container } from "@/components/ui/Container";
-import { cn, formatDate, formatMediaType } from "@/lib/utils";
+import { capitalizeTag, cn, formatDate, formatMediaType } from "@/lib/utils";
 import { blogPostingJsonLd, breadcrumbJsonLd, reviewJsonLd } from "@/lib/seo/jsonLd";
 import { ArticleBody } from "./ArticleBody";
 import type { MediaType } from "@/types";
@@ -171,7 +171,7 @@ export default async function ArticlePage({ params }: Props) {
 
       {/* ── Hero Image (full-bleed with overlay text) ── */}
       {heroUrl ? (
-        <div className="relative w-full aspect-[21/9] md:aspect-[2.5/1] overflow-hidden">
+        <div className="relative w-full h-[70vh] overflow-hidden">
           <Image
             src={heroUrl}
             alt={article.heroImage?.alt || article.title}
@@ -184,8 +184,8 @@ export default async function ArticlePage({ params }: Props) {
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
 
           {/* Breadcrumb on image */}
-          <Container className="absolute bottom-0 left-0 right-0 pb-6 md:pb-8">
-            <nav className="text-xs text-white/60 mb-3" aria-label="Breadcrumb">
+          <Container className="absolute bottom-0 left-0 right-0 pb-3 md:pb-4">
+            <nav className="text-xs text-white/60 mb-0" aria-label="Breadcrumb">
               <Link href="/" className="hover:text-white/90 transition-colors">
                 Home
               </Link>
@@ -230,7 +230,7 @@ export default async function ArticlePage({ params }: Props) {
       )}
 
       {/* ── Article Content ── */}
-      <Container as="article" className="py-8 max-w-4xl">
+      <Container as="article" className="pt-4 pb-8 max-w-4xl">
         {/* Article Header */}
         <header className="mb-8">
           {/* Pills row: category + media type + format */}
@@ -309,7 +309,7 @@ export default async function ArticlePage({ params }: Props) {
                   href={`/tags/${tag.slug.current}`}
                   className="text-xs bg-muted text-muted-foreground px-2.5 py-1 rounded-full hover:text-foreground hover:bg-muted/80 transition-colors border border-transparent hover:border-border"
                 >
-                  #{tag.title}
+                  #{capitalizeTag(tag.title)}
                 </Link>
               ))}
             </div>

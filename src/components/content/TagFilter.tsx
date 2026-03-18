@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { cn } from "@/lib/utils";
+import { cn, capitalizeTag } from "@/lib/utils";
 import type { Article, Tag } from "@/types";
 
 interface TagFilterProps {
@@ -58,7 +58,7 @@ export function TagFilter({ articles, allTags, children }: TagFilterProps) {
               )}
               aria-pressed={isActive}
             >
-              {tag.title}
+              {capitalizeTag(tag.title)}
             </button>
           );
         })}
@@ -110,7 +110,7 @@ export function TagCloud({ tags, className }: TagCloudProps) {
             style={{ fontSize: `${fontSize}rem` }}
             title={`${count} article${count !== 1 ? "s" : ""}`}
           >
-            {tag.title}
+            {capitalizeTag(tag.title)}
           </a>
         );
       })}

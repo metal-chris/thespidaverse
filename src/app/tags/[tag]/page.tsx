@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getProvider } from "@/lib/providers";
 import { Container } from "@/components/ui/Container";
 import { ArticleGrid } from "@/components/home/ArticleGrid";
+import { capitalizeTag } from "@/lib/utils";
 
 export const revalidate = 60;
 
@@ -19,8 +20,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!tagData) return { title: "Tag Not Found" };
 
   return {
-    title: `#${tagData.title}`,
-    description: `Articles tagged with ${tagData.title}`,
+    title: `#${capitalizeTag(tagData.title)}`,
+    description: `Articles tagged with ${capitalizeTag(tagData.title)}`,
   };
 }
 
@@ -40,7 +41,7 @@ export default async function TagPage({ params }: Props) {
   return (
     <Container as="section" className="py-8">
       <header className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold">#{tagData.title}</h1>
+        <h1 className="text-3xl md:text-4xl font-bold">#{capitalizeTag(tagData.title)}</h1>
       </header>
       <ArticleGrid articles={articles} />
     </Container>
