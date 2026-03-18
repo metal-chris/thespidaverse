@@ -1,0 +1,224 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+
+interface GraphNode {
+  id: string;
+  label: string;
+  type: "article" | "media" | "collection" | "tag" | "category";
+  category?: string;
+  slug?: string;
+  posterUrl?: string;
+  connections?: number;
+}
+
+interface GraphEdge {
+  source: string;
+  target: string;
+  weight?: number;
+}
+
+interface WebGraphMarkmapProps {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+}
+
+function getThemeColors() {
+  const isDark = document.documentElement.getAttribute("data-theme") === "venom";
+  return {
+    isDark,
+    bg: isDark ? "#0A0A0A" : "#FAFAFA",
+    text: isDark ? "#E5E5E5" : "#1A1A1A",
+    linkColor: isDark ? "#666" : "#999",
+  };
+}
+
+function buildMarkmapMarkdown(nodes: GraphNode[], edges: GraphEdge[]): string {
+  // Group nodes by category
+  const categories = nodes.filter((n) => n.type === "category");
+  const articles = nodes.filter((n) => n.type === "article");
+  const tags = nodes.filter((n) => n.type === "tag");
+  const media = nodes.filter((n) => n.type === "media");
+  const collections = nodes.filter((n) => n.type === "collection");
+
+  // Build adjacency map
+  const adjacency = new Map<string, Set<string>>();
+  edges.forEach((edge) => {
+    if (!adjacency.has(edge.source as string)) {
+      adjacency.set(edge.source as string, new Set());
+    }
+    if (!adjacency.has(edge.target as string)) {
+      adjacency.set(edge.target as string, new Set());
+    }
+    adjacency.get(edge.source as string)!.add(edge.target as string);
+    adjacency.get(edge.target as string)!.add(edge.source as string);
+  });
+
+  let markdown = "# The Web\n\n";
+
+  categories.forEach((category) => {
+    markdown += `## ${category.label}\n\n`;
+
+    // Find tags connected to this category
+    const categoryTags = tags.filter((tag) =>
+      adjacency.get(category.id)?.has(tag.id)
+    );
+
+    categoryTags.forEach((tag) => {
+      markdown += `### ${tag.label}\n\n`;
+
+      // Find articles connected to this tag
+      const tagArticles = articles.filter((article) =>
+        adjacency.get(tag.id)?.has(article.id)
+      );
+
+      tagArticles.forEach((article) => {
+        markdown += `- [${article.label}](/articles/${article.slug})\n`;
+      });
+
+      markdown += "\n";
+    });
+
+    // Find articles directly connected to category (no tag)
+    const directArticles = articles.filter(
+      (article) =>
+        adjacency.get(category.id)?.has(article.id) &&
+        !categoryTags.some((tag) => adjacency.get(tag.id)?.has(article.id))
+    );
+
+    if (directArticles.length > 0) {
+      markdown += `### Other\n\n`;
+      directArticles.forEach((article) => {
+        markdown += `- [${article.label}](/articles/${article.slug})\n`;
+      });
+      markdown += "\n";
+    }
+  });
+
+  return markdown;
+}
+
+export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
+  const router = useRouter();
+  const svgRef = useRef<SVGSVGElement>(null);
+  const markmapRef = useRef<Markmap | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const [themeColors, setThemeColors] = useState(() => getThemeColors());
+
+  useEffect(() => {
+    setMounted(true);
+
+    const observer = new MutationObserver(() => {
+      setThemeColors(getThemeColors());
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || !svgRef.current) return;
+
+    let cleanup: (() => void) | undefined;
+
+    // Dynamic import to avoid SSR issues
+    Promise.all([
+      import("markmap-lib").then((mod) => mod.Transformer),
+      import("markmap-view").then((mod) => mod.Markmap),
+    ]).then(([Transformer, Markmap]) => {
+      if (!svgRef.current) return;
+
+      const markdown = buildMarkmapMarkdown(nodes, edges);
+      const transformer = new Transformer();
+      const { root } = transformer.transform(markdown);
+
+      if (!markmapRef.current) {
+        markmapRef.current = Markmap.create(svgRef.current, {
+          color: (node: any) => {
+            // Color by depth
+            if (node.depth === 1) return "#F59E0B"; // Category - orange
+            if (node.depth === 2) return "#6B7280"; // Tag - gray
+            return "#E82334"; // Article - red
+          },
+          duration: 300,
+          maxWidth: 300,
+          paddingX: 8,
+          spacingVertical: 8,
+          spacingHorizontal: 80,
+          autoFit: true,
+          fitRatio: 0.95,
+        });
+      }
+
+      markmapRef.current.setData(root);
+      markmapRef.current.fit();
+
+      // Handle clicks
+      const svg = svgRef.current;
+      const handleClick = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const link = target.closest("a");
+        if (link) {
+          e.preventDefault();
+          const href = link.getAttribute("href");
+          if (href && href.startsWith("/")) {
+            router.push(href);
+          }
+        }
+      };
+
+      svg.addEventListener("click", handleClick);
+      cleanup = () => svg.removeEventListener("click", handleClick);
+    });
+
+    return () => cleanup?.();
+  }, [mounted, nodes, edges, router]);
+
+  // Update colors when theme changes
+  useEffect(() => {
+    if (!svgRef.current) return;
+
+    const svg = svgRef.current;
+    svg.style.backgroundColor = themeColors.bg;
+
+    // Update text colors
+    const textElements = svg.querySelectorAll("text");
+    textElements.forEach((text) => {
+      text.style.fill = themeColors.text;
+    });
+
+    // Update link colors
+    const pathElements = svg.querySelectorAll("path");
+    pathElements.forEach((path) => {
+      path.style.stroke = themeColors.linkColor;
+    });
+  }, [themeColors]);
+
+  return (
+    <div className="w-full h-full bg-background">
+      <div className="text-center pt-4 pb-3">
+        <h1 className="text-xl md:text-2xl font-bold text-foreground/90 tracking-tight">
+          <span className="text-accent">///</span> The Web
+          <span className="text-xs ml-2 text-muted-foreground font-normal">
+            (Markmap View)
+          </span>
+        </h1>
+        <p className="text-[11px] md:text-xs text-muted-foreground mt-0.5">
+          Click nodes to expand/collapse. Click article names to visit.
+        </p>
+      </div>
+
+      <div className="w-full" style={{ height: "calc(100vh - 140px)" }}>
+        <svg
+          ref={svgRef}
+          className="w-full h-full"
+          style={{ backgroundColor: themeColors.bg }}
+        />
+      </div>
+    </div>
+  );
+}

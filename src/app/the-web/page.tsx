@@ -1,6 +1,6 @@
 import { getProvider } from "@/lib/providers";
 import type { GraphArticle } from "@/lib/providers";
-import { WebGraphRadial } from "@/components/graph/WebGraphRadial";
+import { WebGraphToggle } from "@/components/graph/WebGraphToggle";
 import { GraphEmptyState } from "@/components/graph/GraphEmptyState";
 import type { Metadata } from "next";
 
@@ -82,5 +82,5 @@ export default async function TheWebPage() {
 
   const { nodes, edges } = buildGraph(articles);
 
-  return <WebGraphRadial nodes={nodes as never[]} edges={edges} />;
+  return <WebGraphToggle nodes={nodes as never[]} edges={edges} />;
 }
