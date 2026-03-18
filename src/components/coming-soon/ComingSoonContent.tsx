@@ -113,8 +113,9 @@ export function ComingSoonContent({ palette, onTogglePalette }: ComingSoonConten
 
             {/* Headline */}
             <h1
-              className="text-center text-4xl sm:text-5xl font-extrabold leading-[1.1] mb-3 tracking-tight"
+              className="text-center text-4xl sm:text-5xl font-extrabold leading-[1.1] mb-3 tracking-tight cs-glitch-strong"
               style={{ color: "#F5F5F5" }}
+              data-text="The Spidaverse"
             >
               The Spidaverse
             </h1>
