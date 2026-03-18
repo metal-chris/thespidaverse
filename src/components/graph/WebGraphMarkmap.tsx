@@ -25,6 +25,17 @@ interface WebGraphMarkmapProps {
 }
 
 function getThemeColors() {
+  // Guard against SSR
+  if (typeof document === "undefined") {
+    return {
+      isDark: false,
+      isPeter: false,
+      bg: "#FAFAFA",
+      text: "#1A1A1A",
+      linkColor: "#999",
+    };
+  }
+
   const themeAttr = document.documentElement.getAttribute("data-theme");
   const isDark = themeAttr === "venom";
   const isPeter = themeAttr === "peter";
@@ -149,26 +160,40 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
         markmapRef.current.destroy();
       }
 
+      // Manually set state on nodes to collapse them
+      const collapseAllExceptRoot = (node: any) => {
+        if (node.depth > 0) {
+          node.state = { ...node.state, fold: 1 }; // 1 = collapsed
+        }
+        if (node.children) {
+          node.children.forEach(collapseAllExceptRoot);
+        }
+      };
+      collapseAllExceptRoot(root);
+
       // Create fresh instance with proper options
       markmapRef.current = Markmap.create(svgRef.current, {
         color: (node: any) => {
           // Root node - neutral gray
           if (node.depth === 0) return "#6B7280";
           
-          // Find the category ancestor to inherit its color
-          let categoryNode = node;
-          while (categoryNode && categoryNode.depth > 1) {
-            categoryNode = categoryNode.parent;
-          }
-          
-          // If we found a category (depth 1), use its color
-          if (categoryNode && categoryNode.depth === 1) {
-            // Extract category name from content (remove markdown/HTML formatting)
-            const categoryName = categoryNode.content.replace(/<[^>]*>/g, '').trim();
+          // Categories get their specific colors
+          if (node.depth === 1) {
+            const categoryName = node.content.replace(/<[^>]*>/g, '').trim();
             return CATEGORY_COLORS[categoryName] || "#6B7280";
           }
           
-          // Fallback
+          // Find parent category for tags and articles
+          let parent = node.parent;
+          while (parent && parent.depth > 1) {
+            parent = parent.parent;
+          }
+          
+          if (parent && parent.depth === 1) {
+            const categoryName = parent.content.replace(/<[^>]*>/g, '').trim();
+            return CATEGORY_COLORS[categoryName] || "#6B7280";
+          }
+          
           return "#6B7280";
         },
         duration: 300,
@@ -178,7 +203,6 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
         spacingHorizontal: 80,
         autoFit: true,
         fitRatio: 0.95,
-        initialExpandLevel: -1, // -1 = fully collapsed
       });
 
       markmapRef.current.setData(root);
