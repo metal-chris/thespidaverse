@@ -24,15 +24,15 @@
    Peter Parker Mode (Classic Red & Blue)
    ======================================== */
 [data-theme="peter"] {
-  --color-background: #F0F4F8;
-  --color-foreground: #1A2332;
-  --color-accent: #DC143C;
-  --color-accent-hover: #B8102E;
-  --color-muted: #E6EBF0;
-  --color-muted-foreground: #5A6B7D;
-  --color-border: #D0D8E0;
-  --color-card: #FFFFFF;
-  --color-card-foreground: #1A2332;
+  --color-background: #DC1E28;
+  --color-foreground: #FFFFFF;
+  --color-accent: #1E50DC;
+  --color-accent-hover: #3C78FF;
+  --color-muted: #B81820;
+  --color-muted-foreground: #E8B4B8;
+  --color-border: #A01418;
+  --color-card: #C01C24;
+  --color-card-foreground: #FFFFFF;
 }
 
 /* ========================================
