@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+  <!-- Spider body -->
+  <ellipse cx="16" cy="14" rx="3.5" ry="4.5" fill="#E82334"/>
+  <ellipse cx="16" cy="20" rx="2.5" ry="3" fill="#E82334"/>
+  <!-- Eyes -->
+  <circle cx="14.5" cy="12.5" r="1" fill="#0A0A0A"/>
+  <circle cx="17.5" cy="12.5" r="1" fill="#0A0A0A"/>
+  <!-- Legs — left side -->
+  <path d="M13 12 Q8 8 4 5" stroke="#E82334" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+  <path d="M13 14 Q7 12 2 11" stroke="#E82334" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+  <path d="M13 16 Q7 18 2 21" stroke="#E82334" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+  <path d="M14 19 Q9 23 5 27" stroke="#E82334" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+  <!-- Legs — right side -->
+  <path d="M19 12 Q24 8 28 5" stroke="#E82334" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+  <path d="M19 14 Q25 12 30 11" stroke="#E82334" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+  <path d="M19 16 Q25 18 30 21" stroke="#E82334" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+  <path d="M18 19 Q23 23 27 27" stroke="#E82334" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+</svg>

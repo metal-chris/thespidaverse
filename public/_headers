@@ -1,0 +1,21 @@
+# Netlify cache headers
+
+# Static assets — immutable
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Fonts — immutable
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Pagefind — cache 1 hour
+/pagefind/*
+  Cache-Control: public, max-age=3600, s-maxage=3600
+
+# Images — cache 1 day
+/images/*
+  Cache-Control: public, max-age=86400, s-maxage=86400
+
+# Favicon — cache 1 week
+/favicon.*
+  Cache-Control: public, max-age=604800

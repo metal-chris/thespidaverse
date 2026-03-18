@@ -1,0 +1,3 @@
+# Netlify redirects
+/media-web  /the-web  301
+/diary      /journal  301

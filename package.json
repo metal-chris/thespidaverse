@@ -1,0 +1,39 @@
+{
+  "name": "thespidaverse",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && npx pagefind --site .next --output-path public/pagefind",
+    "postbuild": "echo 'Pagefind index generated'",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@portabletext/react": "^6.0.3",
+    "@sanity/image-url": "^2.0.3",
+    "@sanity/vision": "^5.13.0",
+    "@supabase/supabase-js": "^2.99.2",
+    "@upstash/redis": "^1.36.3",
+    "next": "^16.1.6",
+    "next-sanity": "^12.1.0",
+    "pagefind": "^1.4.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-force-graph-2d": "^1.29.1",
+    "sanity": "^5.13.0",
+    "simplex-noise": "^4.0.3",
+    "styled-components": "^6.3.11"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^10.3.0",
+    "@types/node": "^25.3.3",
+    "@types/react": "^19.2.14",
+    "autoprefixer": "^10.4.27",
+    "eslint": "^9.39.3",
+    "eslint-config-next": "^16.1.6",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3"
+  }
+}
