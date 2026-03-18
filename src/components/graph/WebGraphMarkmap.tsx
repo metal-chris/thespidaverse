@@ -25,22 +25,32 @@ interface WebGraphMarkmapProps {
 }
 
 function getThemeColors() {
-  const isDark = document.documentElement.getAttribute("data-theme") === "venom";
+  const themeAttr = document.documentElement.getAttribute("data-theme");
+  const isDark = themeAttr === "venom";
+  const isPeter = themeAttr === "peter";
+  
   return {
     isDark,
-    bg: isDark ? "#0A0A0A" : "#FAFAFA",
-    text: isDark ? "#E5E5E5" : "#1A1A1A",
-    linkColor: isDark ? "#666" : "#999",
+    isPeter,
+    bg: isDark ? "#0A0A0A" : isPeter ? "#4A0A0A" : "#FAFAFA",
+    text: isDark ? "#E5E5E5" : isPeter ? "#F5F5F5" : "#1A1A1A",
+    linkColor: isDark ? "#666" : isPeter ? "#8B3A3A" : "#999",
   };
 }
+
+// Category colors matching landing page
+const CATEGORY_COLORS: Record<string, string> = {
+  "Movies & TV": "#E82334",        // Red
+  "Video Games": "#1E50DC",        // Blue
+  "Anime & Manga": "#9333EA",      // Purple
+  "Music": "#10B981",              // Green
+};
 
 function buildMarkmapMarkdown(nodes: GraphNode[], edges: GraphEdge[]): string {
   // Group nodes by category
   const categories = nodes.filter((n) => n.type === "category");
   const articles = nodes.filter((n) => n.type === "article");
   const tags = nodes.filter((n) => n.type === "tag");
-  const media = nodes.filter((n) => n.type === "media");
-  const collections = nodes.filter((n) => n.type === "collection");
 
   // Build adjacency map
   const adjacency = new Map<string, Set<string>>();
@@ -79,21 +89,6 @@ function buildMarkmapMarkdown(nodes: GraphNode[], edges: GraphEdge[]): string {
 
       markdown += "\n";
     });
-
-    // Find articles directly connected to category (no tag)
-    const directArticles = articles.filter(
-      (article) =>
-        adjacency.get(category.id)?.has(article.id) &&
-        !categoryTags.some((tag) => adjacency.get(tag.id)?.has(article.id))
-    );
-
-    if (directArticles.length > 0) {
-      markdown += `### Other\n\n`;
-      directArticles.forEach((article) => {
-        markdown += `- [${article.label}](/articles/${article.slug})\n`;
-      });
-      markdown += "\n";
-    }
   });
 
   return markdown;
@@ -139,10 +134,20 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
       if (!markmapRef.current) {
         markmapRef.current = Markmap.create(svgRef.current, {
           color: (node: any) => {
-            // Color by depth
-            if (node.depth === 1) return "#F59E0B"; // Category - orange
-            if (node.depth === 2) return "#6B7280"; // Tag - gray
-            return "#E82334"; // Article - red
+            // Root node - neutral gray
+            if (node.depth === 0) return "#6B7280";
+            
+            // Category nodes - match landing page colors
+            if (node.depth === 1) {
+              const categoryName = node.content;
+              return CATEGORY_COLORS[categoryName] || "#6B7280";
+            }
+            
+            // Tag nodes - muted gray
+            if (node.depth === 2) return "#9CA3AF";
+            
+            // Article nodes - accent color
+            return "#6B7280";
           },
           duration: 300,
           maxWidth: 300,
@@ -151,6 +156,7 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
           spacingHorizontal: 80,
           autoFit: true,
           fitRatio: 0.95,
+          initialExpandLevel: 1, // Start with only root expanded
         });
       }
 
