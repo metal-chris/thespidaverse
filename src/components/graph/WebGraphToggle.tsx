@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { WebGraphRadial } from "./WebGraphRadial";
 import { WebGraphMarkmap } from "./WebGraphMarkmap";
+import { WebGraphTVA } from "./WebGraphTVA";
 
 interface GraphNode {
   id: string;
@@ -26,7 +27,7 @@ interface WebGraphToggleProps {
 }
 
 export function WebGraphToggle({ nodes, edges }: WebGraphToggleProps) {
-  const [view, setView] = useState<"radial" | "markmap">("radial");
+  const [view, setView] = useState<"radial" | "markmap" | "tva">("tva");
 
   return (
     <div className="relative w-full h-full">
@@ -52,13 +53,25 @@ export function WebGraphToggle({ nodes, edges }: WebGraphToggleProps) {
         >
           Markmap
         </button>
+        <button
+          onClick={() => setView("tva")}
+          className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
+            view === "tva"
+              ? "bg-accent text-accent-foreground"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Timeline
+        </button>
       </div>
 
       {/* Render selected view */}
       {view === "radial" ? (
         <WebGraphRadial nodes={nodes} edges={edges} />
-      ) : (
+      ) : view === "markmap" ? (
         <WebGraphMarkmap nodes={nodes} edges={edges} />
+      ) : (
+        <WebGraphTVA nodes={nodes} edges={edges} />
       )}
     </div>
   );
