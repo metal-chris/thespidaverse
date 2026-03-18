@@ -15,6 +15,20 @@
 # UPSTASH_REDIS_REST_URL
 # UPSTASH_REDIS_REST_TOKEN
 
+# Redirect spida.world to thespidaverse.com
+[[redirects]]
+  from = "https://spida.world/*"
+  to = "https://thespidaverse.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.spida.world/*"
+  to = "https://thespidaverse.com/:splat"
+  status = 301
+  force = true
+
+# Next.js handler (must be last)
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/___netlify-handler"
