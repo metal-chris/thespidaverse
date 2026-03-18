@@ -486,11 +486,10 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
           onBackgroundClick={handleBackgroundClick}
           onEngineStop={handleEngineStop}
           enableNodeDrag={false}
-          cooldownTicks={150}
-          d3AlphaDecay={0.03}
-          d3VelocityDecay={0.4}
-          d3AlphaMin={0.001}
-          warmupTicks={50}
+          cooldownTicks={0}
+          d3AlphaDecay={0.02}
+          d3VelocityDecay={0.3}
+          warmupTicks={300}
         />
 
         {/* Focus mode banner */}
