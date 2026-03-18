@@ -314,9 +314,9 @@ export class MockProvider implements DataProvider {
         slug: a.slug,
         mediaType: a.mediaType,
         category: a.category
-          ? { _id: a.category._id, title: a.category.title }
+          ? { _id: a.category._id, title: a.category.title, slug: a.category.slug }
           : undefined,
-        tags: a.tags?.map((t) => ({ _id: t._id, title: t.title })),
+        tags: a.tags?.map((t) => ({ _id: t._id, title: t.title, slug: t.slug })),
       }));
     } catch {
       return [];

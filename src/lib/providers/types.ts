@@ -89,8 +89,8 @@ export interface GraphArticle {
   title: string;
   slug: { current: string };
   mediaType?: string;
-  category?: { _id: string; title: string };
-  tags?: { _id: string; title: string }[];
+  category?: { _id: string; title: string; slug: { current: string } };
+  tags?: { _id: string; title: string; slug: { current: string } }[];
   relatedMedia?: {
     _id: string;
     title: string;

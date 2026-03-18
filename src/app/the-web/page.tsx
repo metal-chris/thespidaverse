@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 function buildGraph(articles: GraphArticle[]) {
-  const nodeMap = new Map<string, { id: string; label: string; type: string; category?: string; slug?: string; posterUrl?: string }>();
+  const nodeMap = new Map<string, { id: string; label: string; type: string; category?: string; slug?: string; posterUrl?: string; connections?: number }>();
   const edges: { source: string; target: string; weight: number }[] = [];
 
   for (const article of articles) {
@@ -23,12 +23,13 @@ function buildGraph(articles: GraphArticle[]) {
       type: "article",
       category: article.category?.title,
       slug: article.slug.current,
+      connections: 0,
     });
 
     if (article.tags) {
       for (const tag of article.tags) {
         if (!nodeMap.has(tag._id)) {
-          nodeMap.set(tag._id, { id: tag._id, label: tag.title, type: "tag" });
+          nodeMap.set(tag._id, { id: tag._id, label: tag.title, type: "tag", slug: tag.slug?.current });
         }
         edges.push({ source: article._id, target: tag._id, weight: 1 });
       }
@@ -51,10 +52,18 @@ function buildGraph(articles: GraphArticle[]) {
     if (article.category) {
       const catId = `cat-${article.category._id}`;
       if (!nodeMap.has(catId)) {
-        nodeMap.set(catId, { id: catId, label: article.category.title, type: "category" });
+        nodeMap.set(catId, { id: catId, label: article.category.title, type: "category", slug: article.category.slug?.current });
       }
       edges.push({ source: article._id, target: catId, weight: 1.5 });
     }
+  }
+
+  // Count connections per node for sizing
+  for (const edge of edges) {
+    const src = nodeMap.get(edge.source);
+    const tgt = nodeMap.get(edge.target);
+    if (src) src.connections = (src.connections || 0) + 1;
+    if (tgt) tgt.connections = (tgt.connections || 0) + 1;
   }
 
   return {
@@ -73,11 +82,5 @@ export default async function TheWebPage() {
 
   const { nodes, edges } = buildGraph(articles);
 
-  const cappedNodes = nodes.slice(0, 200);
-  const nodeIds = new Set(cappedNodes.map((n) => n.id));
-  const cappedEdges = edges.filter(
-    (e) => nodeIds.has(e.source) && nodeIds.has(e.target)
-  );
-
-  return <WebGraph nodes={cappedNodes as never[]} edges={cappedEdges} />;
+  return <WebGraph nodes={nodes as never[]} edges={edges} />;
 }

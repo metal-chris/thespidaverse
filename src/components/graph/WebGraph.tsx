@@ -21,6 +21,7 @@ interface GraphNode {
   category?: string;
   slug?: string;
   posterUrl?: string;
+  connections?: number;
   x?: number;
   y?: number;
 }
@@ -60,9 +61,9 @@ function getThemeColors() {
     bg: isDark ? "#0A0A0A" : "#FAFAFA",
     labelColor: isDark ? "#ffffffcc" : "#1A1A1Acc",
     labelDimmed: isDark ? "#ffffff20" : "#1A1A1A20",
-    linkBase: isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)",
-    linkDimmed: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)",
-    linkHighlight: "rgba(232,35,52,0.7)",
+    linkBase: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+    linkDimmed: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)",
+    linkHighlight: "rgba(232,35,52,0.6)",
     searchHighlight: isDark ? "#fff" : "#1A1A1A",
     hoverStroke: isDark ? "#fff" : "#1A1A1A",
     webStroke: "#E82334",
@@ -77,8 +78,10 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [hoveredNode, setHoveredNode] = useState<GraphNode | null>(null);
+  const [focusedNode, setFocusedNode] = useState<GraphNode | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const [mounted, setMounted] = useState(false);
+  const [settled, setSettled] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const [overlayHeight, setOverlayHeight] = useState(120);
   const [themeColors, setThemeColors] = useState(() => ({
@@ -86,9 +89,9 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
     bg: "#0A0A0A",
     labelColor: "#ffffffcc",
     labelDimmed: "#ffffff20",
-    linkBase: "rgba(255,255,255,0.15)",
-    linkDimmed: "rgba(255,255,255,0.04)",
-    linkHighlight: "rgba(232,35,52,0.7)",
+    linkBase: "rgba(255,255,255,0.08)",
+    linkDimmed: "rgba(255,255,255,0.02)",
+    linkHighlight: "rgba(232,35,52,0.6)",
     searchHighlight: "#fff",
     hoverStroke: "#fff",
     webStroke: "#E82334",
@@ -100,14 +103,12 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
       setOverlayHeight(headerH);
       setDimensions({
         width: window.innerWidth,
-        // Subtract nav (64) + header area from canvas height
         height: window.innerHeight - 64 - headerH,
       });
     }
     function updateTheme() {
       setThemeColors(getThemeColors());
     }
-    // Measure after first paint so overlayRef is populated
     requestAnimationFrame(() => {
       measure();
       setMounted(true);
@@ -115,7 +116,6 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
     updateTheme();
     window.addEventListener("resize", measure);
 
-    // Watch for theme changes via MutationObserver on data-theme attribute
     const observer = new MutationObserver(() => updateTheme());
     observer.observe(document.documentElement, {
       attributes: true,
@@ -128,6 +128,14 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
     };
   }, []);
 
+  // Freeze all nodes once physics settles
+  const handleEngineStop = useCallback(() => {
+    if (!settled) {
+      setSettled(true);
+      graphRef.current?.zoomToFit(400, 60);
+    }
+  }, [settled]);
+
   const categories = useMemo(() => {
     const cats = new Set<string>();
     nodes.forEach((n) => {
@@ -135,6 +143,23 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
     });
     return Array.from(cats);
   }, [nodes]);
+
+  // Active node = hovered or focused
+  const activeNode = hoveredNode || focusedNode;
+
+  // Connection neighbors for highlight effect
+  const neighborSet = useMemo(() => {
+    if (!activeNode) return new Set<string>();
+    const set = new Set<string>();
+    set.add(activeNode.id);
+    edges.forEach((e) => {
+      const src = typeof e.source === "string" ? e.source : (e.source as GraphNode).id;
+      const tgt = typeof e.target === "string" ? e.target : (e.target as GraphNode).id;
+      if (src === activeNode.id) set.add(tgt);
+      if (tgt === activeNode.id) set.add(src);
+    });
+    return set;
+  }, [activeNode, edges]);
 
   const filteredNodes = useMemo(() => {
     let filtered = nodes;
@@ -163,18 +188,35 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
 
   const handleNodeClick = useCallback(
     (node: GraphNode) => {
-      if (node.type === "article" && node.slug) {
-        router.push(`/articles/${node.slug}`);
-      } else if (node.type === "tag") {
-        router.push(`/tags/${node.label.toLowerCase().replace(/\s+/g, "-")}`);
-      } else if (node.type === "collection" && node.slug) {
-        router.push(`/collections/${node.slug}`);
-      } else if (node.type === "category") {
-        router.push(`/category/${node.label.toLowerCase().replace(/\s+/g, "-")}`);
+      // If already focused on this node, navigate
+      if (focusedNode?.id === node.id) {
+        if (node.type === "article" && node.slug) {
+          router.push(`/articles/${node.slug}`);
+        } else if (node.type === "tag" && node.slug) {
+          router.push(`/tags/${node.slug}`);
+        } else if (node.type === "collection" && node.slug) {
+          router.push(`/collections/${node.slug}`);
+        } else if (node.type === "category" && node.slug) {
+          router.push(`/category/${node.slug}`);
+        }
+        return;
+      }
+
+      // First click: focus mode — zoom into node and highlight connections
+      setFocusedNode(node);
+      const graphEl = graphRef.current;
+      if (graphEl) {
+        graphEl.centerAt(node.x, node.y, 600);
+        graphEl.zoom(3, 600);
       }
     },
-    [router]
+    [router, focusedNode]
   );
+
+  const handleClearFocus = useCallback(() => {
+    setFocusedNode(null);
+    graphRef.current?.zoomToFit(400, 60);
+  }, []);
 
   const handleNodeHover = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -191,6 +233,14 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
     []
   );
 
+  // Click on empty canvas clears focus
+  const handleBackgroundClick = useCallback(() => {
+    if (focusedNode) {
+      setFocusedNode(null);
+      graphRef.current?.zoomToFit(400, 60);
+    }
+  }, [focusedNode]);
+
   const handleZoomIn = useCallback(() => {
     graphRef.current?.zoom(1.5, 300);
   }, []);
@@ -200,42 +250,36 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
   }, []);
 
   const handleReset = useCallback(() => {
-    graphRef.current?.zoomToFit(400);
+    setFocusedNode(null);
+    graphRef.current?.zoomToFit(400, 60);
   }, []);
 
-  // Connection neighbors for glow effect on hover
-  const neighborSet = useMemo(() => {
-    if (!hoveredNode) return new Set<string>();
-    const set = new Set<string>();
-    set.add(hoveredNode.id);
-    edges.forEach((e) => {
-      const src = typeof e.source === "string" ? e.source : (e.source as GraphNode).id;
-      const tgt = typeof e.target === "string" ? e.target : (e.target as GraphNode).id;
-      if (src === hoveredNode.id) set.add(tgt);
-      if (tgt === hoveredNode.id) set.add(src);
-    });
-    return set;
-  }, [hoveredNode, edges]);
+  // Node radius based on connection count
+  const getNodeRadius = useCallback((node: GraphNode) => {
+    const base = node.type === "article" ? 6 : node.type === "category" ? 8 : node.type === "collection" ? 5 : 4;
+    const connectionBonus = Math.min((node.connections || 0) * 0.3, 6);
+    return base + connectionBonus;
+  }, []);
 
   const nodeCanvasObject = useCallback(
     (node: GraphNode, ctx: CanvasRenderingContext2D, globalScale: number) => {
       const x = node.x ?? 0;
       const y = node.y ?? 0;
-      const baseR = node.type === "article" ? 7 : node.type === "collection" || node.type === "category" ? 5 : 4;
-      const r = baseR;
+      const r = getNodeRadius(node);
       const color = typeColors[node.type] || "#666";
       const isHighlighted =
         searchQuery && node.label.toLowerCase().includes(searchQuery.toLowerCase());
       const isHovered = hoveredNode?.id === node.id;
-      const isNeighbor = hoveredNode && neighborSet.has(node.id);
-      const isDimmed = hoveredNode && !isNeighbor;
+      const isFocused = focusedNode?.id === node.id;
+      const isNeighbor = activeNode && neighborSet.has(node.id);
+      const isDimmed = activeNode && !isNeighbor;
 
-      // Glow effect for hovered/neighbor nodes
-      if (isHovered || isNeighbor) {
+      // Outer glow for hovered/focused/neighbor nodes
+      if (isHovered || isFocused || isNeighbor) {
         ctx.beginPath();
-        ctx.arc(x, y, r + 4, 0, 2 * Math.PI);
-        const grad = ctx.createRadialGradient(x, y, r, x, y, r + 8);
-        grad.addColorStop(0, color + "60");
+        ctx.arc(x, y, r + 6, 0, 2 * Math.PI);
+        const grad = ctx.createRadialGradient(x, y, r, x, y, r + 12);
+        grad.addColorStop(0, color + (isFocused ? "80" : "50"));
         grad.addColorStop(1, color + "00");
         ctx.fillStyle = grad;
         ctx.fill();
@@ -244,8 +288,17 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
       // Draw node circle
       ctx.beginPath();
       ctx.arc(x, y, r, 0, 2 * Math.PI);
-      ctx.fillStyle = isDimmed ? color + "30" : color;
+      ctx.fillStyle = isDimmed ? color + "20" : color;
       ctx.fill();
+
+      // Ring for categories (to distinguish them as hub nodes)
+      if (node.type === "category" && !isDimmed) {
+        ctx.beginPath();
+        ctx.arc(x, y, r + 2, 0, 2 * Math.PI);
+        ctx.strokeStyle = color + "60";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
 
       if (isHighlighted) {
         ctx.strokeStyle = themeColors.searchHighlight;
@@ -253,71 +306,122 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
         ctx.stroke();
       }
 
-      if (isHovered) {
+      if (isHovered || isFocused) {
         ctx.strokeStyle = themeColors.hoverStroke;
         ctx.lineWidth = 1.5;
         ctx.stroke();
       }
 
-      // Labels — always show for articles, show for others when zoomed
-      const showLabel = node.type === "article" || globalScale > 1.2;
+      // Labels
+      const showLabel =
+        isFocused ||
+        isHovered ||
+        node.type === "article" ||
+        node.type === "category" ||
+        globalScale > 1.5;
       if (showLabel && !isDimmed) {
-        const fontSize = Math.min(Math.max(11 / globalScale, 2.5), 5);
-        ctx.font = `${fontSize}px Inter, system-ui, sans-serif`;
+        const fontSize = Math.min(Math.max(12 / globalScale, 2.5), 5);
+        ctx.font = `${isFocused || node.type === "category" ? "bold " : ""}${fontSize}px Inter, system-ui, sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
         ctx.fillStyle = isDimmed ? themeColors.labelDimmed : themeColors.labelColor;
         const truncated = node.label.length > 28 ? node.label.slice(0, 26) + "…" : node.label;
-        ctx.fillText(truncated, x, y + r + 2);
+        ctx.fillText(truncated, x, y + r + 3);
       }
     },
-    [searchQuery, hoveredNode, neighborSet, themeColors]
+    [searchQuery, hoveredNode, focusedNode, activeNode, neighborSet, themeColors, getNodeRadius]
   );
 
-  const linkColor = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (link: any) => {
-      if (!hoveredNode) return themeColors.linkBase;
-      const src = typeof link.source === "string" ? link.source : link.source?.id;
-      const tgt = typeof link.target === "string" ? link.target : link.target?.id;
-      if (src === hoveredNode.id || tgt === hoveredNode.id) {
-        return themeColors.linkHighlight;
-      }
-      return themeColors.linkDimmed;
+  // Invisible larger area for easier clicking
+  const nodePointerAreaPaint = useCallback(
+    (node: GraphNode, color: string, ctx: CanvasRenderingContext2D) => {
+      const x = node.x ?? 0;
+      const y = node.y ?? 0;
+      const r = getNodeRadius(node) + 6;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, 2 * Math.PI);
+      ctx.fillStyle = color;
+      ctx.fill();
     },
-    [hoveredNode, themeColors]
+    [getNodeRadius]
   );
 
-  const linkWidth = useCallback(
+  const linkCanvasObject = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (link: any, ctx: CanvasRenderingContext2D) => {
+      const src = link.source;
+      const tgt = link.target;
+      if (!src || !tgt || src.x == null || tgt.x == null) return;
+
+      const srcId = typeof src === "string" ? src : src.id;
+      const tgtId = typeof tgt === "string" ? tgt : tgt.id;
+      const isActive = activeNode && (srcId === activeNode.id || tgtId === activeNode.id);
+      const isDimmed = activeNode && !isActive;
+
+      // Curved links for web-like appearance
+      const dx = tgt.x - src.x;
+      const dy = tgt.y - src.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const curvature = Math.min(dist * 0.15, 30);
+      // Perpendicular offset for curve
+      const mx = (src.x + tgt.x) / 2;
+      const my = (src.y + tgt.y) / 2;
+      const nx = -dy / (dist || 1);
+      const ny = dx / (dist || 1);
+      const cpx = mx + nx * curvature;
+      const cpy = my + ny * curvature;
+
+      ctx.beginPath();
+      ctx.moveTo(src.x, src.y);
+      ctx.quadraticCurveTo(cpx, cpy, tgt.x, tgt.y);
+
+      const weight = link.weight || 1;
+      if (isActive) {
+        ctx.strokeStyle = themeColors.linkHighlight;
+        ctx.lineWidth = weight * 1.8;
+        ctx.globalAlpha = 0.8;
+      } else if (isDimmed) {
+        ctx.strokeStyle = themeColors.linkDimmed;
+        ctx.lineWidth = weight * 0.4;
+        ctx.globalAlpha = 0.3;
+      } else {
+        ctx.strokeStyle = themeColors.linkBase;
+        ctx.lineWidth = weight * 0.6;
+        ctx.globalAlpha = 0.6;
+      }
+
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    },
+    [activeNode, themeColors]
+  );
+
+  // Particle count — show on active connections only
+  const linkDirectionalParticles = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (link: any) => {
-      const base = (link.weight || 1) * 0.8;
-      if (!hoveredNode) return base;
-      const src = typeof link.source === "string" ? link.source : link.source?.id;
-      const tgt = typeof link.target === "string" ? link.target : link.target?.id;
-      if (src === hoveredNode.id || tgt === hoveredNode.id) {
-        return base * 3;
-      }
-      return base * 0.3;
+      if (!activeNode) return 0;
+      const srcId = typeof link.source === "string" ? link.source : link.source?.id;
+      const tgtId = typeof link.target === "string" ? link.target : link.target?.id;
+      if (srcId === activeNode.id || tgtId === activeNode.id) return 3;
+      return 0;
     },
-    [hoveredNode]
+    [activeNode]
   );
 
   return (
     <div className="w-full bg-background">
-      {/* Header + Controls — normal flow above graph */}
+      {/* Header + Controls */}
       <div ref={overlayRef} className="relative z-10 bg-background pb-3">
-        {/* Page heading */}
         <div className="text-center pt-4 pb-2">
           <h1 className="text-xl md:text-2xl font-bold text-foreground/90 tracking-tight">
             <span className="text-accent">///</span> The Web
           </h1>
           <p className="text-[11px] md:text-xs text-muted-foreground mt-0.5">
-            Everything connected. Hover to explore, click to dive in.
+            Click a node to focus. Click again to visit. Click empty space to reset.
           </p>
         </div>
 
-        {/* Controls row */}
         <GraphControls
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -330,33 +434,34 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
         />
       </div>
 
-      {/* Graph area — fills remaining viewport */}
+      {/* Graph area */}
       <div className="relative w-full" style={{ height: dimensions.height }}>
-        {/* Web-like radial background — client-only to avoid hydration mismatch */}
+        {/* Web-like radial background */}
         {mounted && (
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <svg
               viewBox="0 0 1000 1000"
-              className="absolute inset-0 w-full h-full opacity-[0.06]"
+              className="absolute inset-0 w-full h-full opacity-[0.04]"
               preserveAspectRatio="xMidYMid slice"
             >
-              <circle cx={500} cy={500} r={100} fill="none" stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <circle cx={500} cy={500} r={200} fill="none" stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <circle cx={500} cy={500} r={300} fill="none" stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <circle cx={500} cy={500} r={400} fill="none" stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <circle cx={500} cy={500} r={500} fill="none" stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <line x1={500} y1={500} x2={1000} y2={500} stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <line x1={500} y1={500} x2={933} y2={750} stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <line x1={500} y1={500} x2={750} y2={933} stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <line x1={500} y1={500} x2={500} y2={1000} stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <line x1={500} y1={500} x2={250} y2={933} stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <line x1={500} y1={500} x2={67} y2={750} stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <line x1={500} y1={500} x2={0} y2={500} stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <line x1={500} y1={500} x2={67} y2={250} stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <line x1={500} y1={500} x2={250} y2={67} stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <line x1={500} y1={500} x2={500} y2={0} stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <line x1={500} y1={500} x2={750} y2={67} stroke="currentColor" strokeWidth={0.5} className="text-accent" />
-              <line x1={500} y1={500} x2={933} y2={250} stroke="currentColor" strokeWidth={0.5} className="text-accent" />
+              {[100, 200, 300, 400, 500].map((r) => (
+                <circle key={r} cx={500} cy={500} r={r} fill="none" stroke="currentColor" strokeWidth={0.5} className="text-accent" />
+              ))}
+              {Array.from({ length: 12 }).map((_, i) => {
+                const angle = (i * 30 * Math.PI) / 180;
+                return (
+                  <line
+                    key={i}
+                    x1={500}
+                    y1={500}
+                    x2={Math.round(500 + 500 * Math.cos(angle))}
+                    y2={Math.round(500 + 500 * Math.sin(angle))}
+                    stroke="currentColor"
+                    strokeWidth={0.5}
+                    className="text-accent"
+                  />
+                );
+              })}
             </svg>
           </div>
         )}
@@ -369,19 +474,55 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
           graphData={{ nodes: filteredNodes, links: filteredEdges }}
           nodeId="id"
           nodeCanvasObject={nodeCanvasObject as never}
-          linkColor={linkColor as never}
-          linkWidth={linkWidth as never}
-          linkDirectionalParticles={0}
+          nodePointerAreaPaint={nodePointerAreaPaint as never}
+          linkCanvasObject={linkCanvasObject as never}
+          linkDirectionalParticles={linkDirectionalParticles as never}
+          linkDirectionalParticleWidth={2}
+          linkDirectionalParticleColor={() => themeColors.linkHighlight}
+          linkCurvature={0.2}
           backgroundColor={themeColors.bg}
           onNodeClick={handleNodeClick as never}
           onNodeHover={handleNodeHover as never}
-          cooldownTicks={100}
-          d3AlphaDecay={0.02}
-          d3VelocityDecay={0.3}
+          onBackgroundClick={handleBackgroundClick}
+          onEngineStop={handleEngineStop}
+          enableNodeDrag={false}
+          cooldownTicks={150}
+          d3AlphaDecay={0.03}
+          d3VelocityDecay={0.4}
+          d3AlphaMin={0.001}
+          warmupTicks={50}
         />
 
+        {/* Focus mode banner */}
+        {focusedNode && (
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 px-4 py-2 rounded-full bg-card/95 backdrop-blur-sm border border-border shadow-lg">
+            <span
+              className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0"
+              style={{ backgroundColor: typeColors[focusedNode.type] || "#666" }}
+            />
+            <span className="text-sm font-medium text-foreground truncate max-w-[200px]">
+              {focusedNode.label}
+            </span>
+            <span className="text-[10px] text-muted-foreground">
+              {neighborSet.size - 1} connections
+            </span>
+            {focusedNode.slug && (
+              <span className="text-[10px] text-accent">Click again to visit</span>
+            )}
+            <button
+              onClick={handleClearFocus}
+              className="text-muted-foreground hover:text-foreground transition-colors ml-1"
+              aria-label="Clear focus"
+            >
+              <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="currentColor">
+                <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z" />
+              </svg>
+            </button>
+          </div>
+        )}
+
         {/* Hover tooltip */}
-        {hoveredNode && (
+        {hoveredNode && !focusedNode && (
           <div
             className="absolute z-20 pointer-events-none px-3 py-2 rounded-lg bg-card/95 backdrop-blur-sm border border-border shadow-xl max-w-[220px] transition-opacity"
             style={{
@@ -405,9 +546,12 @@ export function WebGraph({ nodes, edges }: WebGraphProps) {
             {hoveredNode.category && (
               <p className="text-[10px] text-muted-foreground mt-0.5">{hoveredNode.category}</p>
             )}
-            {(hoveredNode.type === "article" || hoveredNode.type === "collection") && (
-              <p className="text-[10px] text-accent mt-1">Click to visit &rarr;</p>
+            {hoveredNode.connections && (
+              <p className="text-[10px] text-muted-foreground mt-0.5">
+                {hoveredNode.connections} connection{hoveredNode.connections !== 1 ? "s" : ""}
+              </p>
             )}
+            <p className="text-[10px] text-accent mt-1">Click to focus &rarr;</p>
           </div>
         )}
 

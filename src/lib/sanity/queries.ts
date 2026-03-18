@@ -215,13 +215,13 @@ export const moodTagsQuery = groq`
 
 // Graph data — articles with relationships (for /the-web)
 export const graphDataQuery = groq`
-  *[_type == "article"] | order(_createdAt desc) [0...200] {
+  *[_type == "article"] | order(_createdAt desc) {
     _id,
     title,
     slug,
     mediaType,
-    category->{ _id, title },
-    tags[]->{ _id, title },
+    category->{ _id, title, slug },
+    tags[]->{ _id, title, slug },
     relatedMedia[]->{ _id, title, mediaType, posterUrl }
   }
 `;
