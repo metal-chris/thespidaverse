@@ -35,6 +35,15 @@ const PALETTES = {
     strike: "255, 220, 40",       // yellow lightning
     strikeGlow: "255, 240, 100",  // bright yellow
   },
+  peter: {
+    web: {
+      base: "30, 80, 220",         // classic Spidey blue
+      glow: "60, 120, 255",        // bright blue glow
+      dim: "20, 50, 140",          // dark blue
+    },
+    strike: "220, 220, 240",      // silver-white web fluid
+    strikeGlow: "255, 255, 255",  // bright white
+  },
   venom: {
     web: {
       base: "220, 220, 220",      // white-ish
@@ -47,13 +56,15 @@ const PALETTES = {
 };
 
 function getThemeColors() {
-  const isDark = document.documentElement.getAttribute("data-theme") === "venom";
-  const palette = isDark ? PALETTES.venom : PALETTES.miles;
+  const themeAttr = document.documentElement.getAttribute("data-theme");
+  const isDark = themeAttr === "venom";
+  const isPeter = themeAttr === "peter";
+  const palette = themeAttr === "venom" ? PALETTES.venom : themeAttr === "peter" ? PALETTES.peter : PALETTES.miles;
   
   return {
     isDark,
-    bg: isDark ? "#0A0A0A" : "#FAFAFA",
-    labelColor: isDark ? "#ffffffcc" : "#1A1A1Acc",
+    bg: isDark ? "#0A0A0A" : isPeter ? "#F0F4F8" : "#FAFAFA",
+    labelColor: isDark ? "#ffffffcc" : isPeter ? "#1A2332cc" : "#1A1A1Acc",
     // Categories: main timeline trunk (web base)
     category: `rgb(${palette.web.base})`,
     categoryGlow: `rgb(${palette.web.glow})`,

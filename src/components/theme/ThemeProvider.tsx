@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { SymbioteOverlay } from "./SymbioteOverlay";
 
-type Theme = "miles" | "venom";
+type Theme = "miles" | "peter" | "venom";
 
 interface ThemeContextValue {
   theme: Theme;
@@ -31,9 +31,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const stored = localStorage.getItem("spidaverse-theme") as Theme | null;
-    if (stored && (stored === "miles" || stored === "venom")) {
+    if (stored && (stored === "miles" || stored === "peter" || stored === "venom")) {
       setThemeState(stored);
-      document.documentElement.setAttribute("data-theme", stored === "venom" ? "venom" : "");
+      document.documentElement.setAttribute("data-theme", stored === "miles" ? "" : stored);
     } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       setThemeState("venom");
       document.documentElement.setAttribute("data-theme", "venom");
@@ -46,13 +46,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("spidaverse-theme", newTheme);
     document.documentElement.setAttribute(
       "data-theme",
-      newTheme === "venom" ? "venom" : ""
+      newTheme === "miles" ? "" : newTheme
     );
   }, []);
 
   const toggleTheme = useCallback(
     (e?: React.MouseEvent) => {
-      const next = theme === "miles" ? "venom" : "miles";
+      // Cycle: miles → peter → venom → miles
+      const next = theme === "miles" ? "peter" : theme === "peter" ? "venom" : "miles";
       const direction: "to-venom" | "to-miles" = next === "venom" ? "to-venom" : "to-miles";
 
       // Get origin from click event or toggle button position
@@ -73,12 +74,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Trigger tendril animation, swap theme partway through
-      setTransition({ direction, origin });
-
-      // Swap theme at ~40% through the animation for smooth visual
-      const swapDelay = direction === "to-venom" ? 250 : 200;
-      setTimeout(() => setTheme(next), swapDelay);
+      // Trigger tendril animation only when going to/from venom
+      if (next === "venom" || theme === "venom") {
+        setTransition({ direction, origin });
+        // Swap theme at ~40% through the animation for smooth visual
+        const swapDelay = direction === "to-venom" ? 250 : 200;
+        setTimeout(() => setTheme(next), swapDelay);
+      } else {
+        // Instant swap for miles ↔ peter (no symbiote animation)
+        setTheme(next);
+      }
     },
     [theme, setTheme]
   );
