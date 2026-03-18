@@ -56,6 +56,24 @@ const PALETTES = {
 };
 
 function getThemeColors() {
+  // Guard against SSR
+  if (typeof document === "undefined") {
+    return {
+      isDark: false,
+      bg: "#FAFAFA",
+      labelColor: "#1A1A1Acc",
+      category: `rgb(${PALETTES.miles.web.base})`,
+      categoryGlow: `rgb(${PALETTES.miles.web.glow})`,
+      tag: `rgb(${PALETTES.miles.strike})`,
+      tagGlow: `rgb(${PALETTES.miles.strikeGlow})`,
+      article: `rgb(${PALETTES.miles.strikeGlow})`,
+      articleGlow: `rgb(${PALETTES.miles.web.glow})`,
+      linkBase: `rgba(${PALETTES.miles.web.base}, 0.3)`,
+      linkGlow: `rgba(${PALETTES.miles.web.glow}, 0.8)`,
+      dimmed: `rgba(${PALETTES.miles.web.dim}, 0.2)`,
+    };
+  }
+
   const themeAttr = document.documentElement.getAttribute("data-theme");
   const isDark = themeAttr === "venom";
   const isPeter = themeAttr === "peter";
