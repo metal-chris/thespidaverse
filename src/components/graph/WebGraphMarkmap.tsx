@@ -226,9 +226,6 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
       <div className="text-center pt-4 pb-3">
         <h1 className="text-xl md:text-2xl font-bold text-foreground/90 tracking-tight">
           <span className="text-accent">///</span> The Web
-          <span className="text-xs ml-2 text-muted-foreground font-normal">
-            (Markmap View)
-          </span>
         </h1>
         <p className="text-[11px] md:text-xs text-muted-foreground mt-0.5">
           Click nodes to expand/collapse. Click article names to visit.

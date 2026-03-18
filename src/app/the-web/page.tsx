@@ -1,6 +1,6 @@
 import { getProvider } from "@/lib/providers";
 import type { GraphArticle } from "@/lib/providers";
-import { WebGraphToggle } from "@/components/graph/WebGraphToggle";
+import { WebGraphMarkmap } from "@/components/graph/WebGraphMarkmap";
 import { GraphEmptyState } from "@/components/graph/GraphEmptyState";
 import type { Metadata } from "next";
 
@@ -82,5 +82,5 @@ export default async function TheWebPage() {
 
   const { nodes, edges } = buildGraph(articles);
 
-  return <WebGraphToggle nodes={nodes as never[]} edges={edges} />;
+  return <WebGraphMarkmap nodes={nodes as never[]} edges={edges} />;
 }
