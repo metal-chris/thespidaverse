@@ -81,8 +81,8 @@ function getThemeColors() {
   
   return {
     isDark,
-    bg: isDark ? "#0A0A0A" : isPeter ? "#C8434E" : "#FAFAFA",
-    labelColor: isDark ? "#ffffffcc" : isPeter ? "#ffffffcc" : "#1A1A1Acc",
+    bg: isDark ? "#0A0A0A" : isPeter ? "#4A0A0A" : "#FAFAFA",
+    labelColor: isDark ? "#ffffffcc" : isPeter ? "#F5F5F5cc" : "#1A1A1Acc",
     // Categories: main timeline trunk (web base)
     category: `rgb(${palette.web.base})`,
     categoryGlow: `rgb(${palette.web.glow})`,
