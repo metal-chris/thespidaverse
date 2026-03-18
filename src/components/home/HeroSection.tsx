@@ -64,7 +64,7 @@ export function HeroSection() {
 
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-balance leading-[0.9]">
           The{" "}
-          <span className="text-accent relative">
+          <span className="text-accent relative [html[data-theme='venom']_&]:text-white [html[data-theme='peter']_&]:text-[#1E50DC]">
             Spidaverse
             {/* Underline accent */}
             <span
