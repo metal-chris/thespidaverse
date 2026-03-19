@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 
-const PASSCODE = "w3bd3s1gn3r";
+const PASSCODE = process.env.EARLY_ACCESS_PASSCODE;
 const COOKIE_NAME = "spidaverse-access";
 const COOKIE_VALUE = "granted";
 
 export async function POST(request: Request) {
+  if (!PASSCODE) {
+    return NextResponse.json({ error: "Not configured" }, { status: 404 });
+  }
+
   try {
     const body = await request.json();
     const { passcode } = body;

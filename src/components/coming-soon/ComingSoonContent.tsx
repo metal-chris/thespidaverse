@@ -6,9 +6,10 @@ import type { Palette } from "./particle-config";
 interface ComingSoonContentProps {
   palette: Palette;
   onTogglePalette: () => void;
+  earlyAccessEnabled?: boolean;
 }
 
-export function ComingSoonContent({ palette, onTogglePalette }: ComingSoonContentProps) {
+export function ComingSoonContent({ palette, onTogglePalette, earlyAccessEnabled = false }: ComingSoonContentProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -266,63 +267,65 @@ export function ComingSoonContent({ palette, onTogglePalette }: ComingSoonConten
               </button>
             </div>
 
-            {/* Early Access */}
-            <div className="flex flex-col items-center gap-3 mb-6">
-              {!showPasscode ? (
-                <button
-                  type="button"
-                  onClick={() => setShowPasscode(true)}
-                  className="text-[11px] font-mono tracking-[0.1em] uppercase transition-all duration-300"
-                  style={{ color: "#555" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.color = accent; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.color = "#555"; }}
-                >
-                  Early Access
-                </button>
-              ) : (
-                <form onSubmit={handleEarlyAccess} className="flex items-center gap-2 w-full max-w-[260px]">
-                  <input
-                    type="password"
-                    value={passcode}
-                    onChange={(e) => {
-                      setPasscode(e.target.value);
-                      if (accessStatus === "error") { setAccessStatus("idle"); setAccessError(""); }
-                    }}
-                    placeholder="Enter passcode"
-                    autoFocus
-                    className="flex-1 rounded-lg text-xs outline-none transition-all duration-300"
-                    style={{
-                      padding: "8px 12px",
-                      background: "rgba(255,255,255,0.04)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      color: "#F5F5F5",
-                    }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = `rgba(${accentRgb},0.5)`;
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-                    }}
-                  />
+            {/* Early Access — only rendered when EARLY_ACCESS_PASSCODE is set */}
+            {earlyAccessEnabled && (
+              <div className="flex flex-col items-center gap-3 mb-6">
+                {!showPasscode ? (
                   <button
-                    type="submit"
-                    disabled={accessStatus === "loading"}
-                    className="rounded-lg text-xs font-semibold transition-all duration-300 disabled:opacity-50"
-                    style={{
-                      padding: "8px 14px",
-                      background: `rgba(${accentRgb},0.15)`,
-                      color: accent,
-                      border: `1px solid rgba(${accentRgb},0.3)`,
-                    }}
+                    type="button"
+                    onClick={() => setShowPasscode(true)}
+                    className="text-[11px] font-mono tracking-[0.1em] uppercase transition-all duration-300"
+                    style={{ color: "#555" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = accent; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = "#555"; }}
                   >
-                    {accessStatus === "loading" ? "..." : "Go"}
+                    Early Access
                   </button>
-                </form>
-              )}
-              {accessError && (
-                <p className="text-[11px]" style={{ color: "#F87171" }}>{accessError}</p>
-              )}
-            </div>
+                ) : (
+                  <form onSubmit={handleEarlyAccess} className="flex items-center gap-2 w-full max-w-[260px]">
+                    <input
+                      type="password"
+                      value={passcode}
+                      onChange={(e) => {
+                        setPasscode(e.target.value);
+                        if (accessStatus === "error") { setAccessStatus("idle"); setAccessError(""); }
+                      }}
+                      placeholder="Enter passcode"
+                      autoFocus
+                      className="flex-1 rounded-lg text-xs outline-none transition-all duration-300"
+                      style={{
+                        padding: "8px 12px",
+                        background: "rgba(255,255,255,0.04)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        color: "#F5F5F5",
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = `rgba(${accentRgb},0.5)`;
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+                      }}
+                    />
+                    <button
+                      type="submit"
+                      disabled={accessStatus === "loading"}
+                      className="rounded-lg text-xs font-semibold transition-all duration-300 disabled:opacity-50"
+                      style={{
+                        padding: "8px 14px",
+                        background: `rgba(${accentRgb},0.15)`,
+                        color: accent,
+                        border: `1px solid rgba(${accentRgb},0.3)`,
+                      }}
+                    >
+                      {accessStatus === "loading" ? "..." : "Go"}
+                    </button>
+                  </form>
+                )}
+                {accessError && (
+                  <p className="text-[11px]" style={{ color: "#F87171" }}>{accessError}</p>
+                )}
+              </div>
+            )}
 
             {/* Social links - hidden for now
             <div className="flex items-center justify-center gap-4">

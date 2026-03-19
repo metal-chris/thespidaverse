@@ -13,5 +13,6 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ComingSoonPage />;
+  const earlyAccessEnabled = !!process.env.EARLY_ACCESS_PASSCODE;
+  return <ComingSoonPage earlyAccessEnabled={earlyAccessEnabled} />;
 }

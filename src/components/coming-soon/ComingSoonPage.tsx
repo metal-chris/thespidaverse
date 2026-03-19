@@ -5,7 +5,11 @@ import { SpiderWebCanvas } from "./NeuralNetworkCanvas";
 import { ComingSoonContent } from "./ComingSoonContent";
 import type { Palette } from "./particle-config";
 
-export function ComingSoonPage() {
+interface ComingSoonPageProps {
+  earlyAccessEnabled?: boolean;
+}
+
+export function ComingSoonPage({ earlyAccessEnabled = false }: ComingSoonPageProps) {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [palette, setPalette] = useState<Palette>("miles");
 
@@ -103,7 +107,7 @@ export function ComingSoonPage() {
       <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} />
 
       {/* Content overlay */}
-      <ComingSoonContent palette={palette} onTogglePalette={() => setPalette(p => p === "miles" ? "peter" : p === "peter" ? "venom" : "miles")} />
+      <ComingSoonContent palette={palette} onTogglePalette={() => setPalette(p => p === "miles" ? "peter" : p === "peter" ? "venom" : "miles")} earlyAccessEnabled={earlyAccessEnabled} />
     </div>
   );
 }
