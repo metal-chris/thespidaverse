@@ -25,6 +25,13 @@ interface CollectionListItem {
   articleCount: number;
 }
 
+function formatThemeLabel(theme: string): string {
+  return theme
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 export default async function CollectionsPage() {
   const provider = getProvider();
   const rawCollections = await provider.getCollections();
@@ -127,7 +134,9 @@ function CollectionCard({
             <span className="text-[11px] font-semibold text-accent uppercase tracking-wider">{collection.season}</span>
           )}
           {collection.theme && (
-            <span className="text-[11px] text-muted-foreground">{collection.theme}</span>
+            <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-md bg-accent/10 text-accent border border-accent/20">
+              {formatThemeLabel(collection.theme)}
+            </span>
           )}
         </div>
         <h3 className="font-bold text-lg group-hover:text-accent transition-colors">
