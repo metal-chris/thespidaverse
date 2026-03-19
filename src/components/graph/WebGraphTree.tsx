@@ -250,14 +250,14 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
       const isDark = themeColors?.isDark ?? false;
       const bgColor = themeColors?.bg || "#FAFAFA";
 
-      // Badge/pill background colors per theme
+      // Badge/pill background colors per theme - higher opacity for more solid look
       const badgeBg = isDark
-        ? "rgba(255, 255, 255, 0.12)"  // semi-transparent white on dark
-        : "rgba(0, 0, 0, 0.06)";        // semi-transparent black on light
+        ? "rgba(255, 255, 255, 0.18)"  // more opaque white on dark
+        : "rgba(0, 0, 0, 0.08)";        // more opaque black on light
 
       const badgeBorder = isDark
-        ? "rgba(255, 255, 255, 0.2)"
-        : "rgba(0, 0, 0, 0.1)";
+        ? "rgba(255, 255, 255, 0.3)"
+        : "rgba(0, 0, 0, 0.15)";
 
       // Text colors - always high contrast
       const labelColor = isDark ? "#FFFFFF" : "#1A1A1A";
@@ -267,13 +267,16 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
       const fontSize = isRoot ? 15 : type === "category" ? 13 : 11;
       const fontWeight = isRoot ? 700 : type === "category" ? 600 : 400;
 
-      // Measure text width (approximate)
+      // Better text width calculation - tighter fit
       const textLength = nodeDatum.name.length;
-      const charWidth = fontSize * 0.55; // approximate character width
+      // Adjust character width based on font weight and size
+      const baseCharWidth = fontSize * 0.5;
+      const weightMultiplier = fontWeight >= 700 ? 1.08 : fontWeight >= 600 ? 1.04 : 1.0;
+      const charWidth = baseCharWidth * weightMultiplier;
       const textWidth = textLength * charWidth;
-      const badgePadding = isRoot ? 10 : isTag ? 6 : 8;
+      const badgePadding = isRoot ? 8 : isTag ? 5 : 6;
       const badgeWidth = textWidth + badgePadding * 2;
-      const badgeHeight = fontSize + (isRoot ? 8 : 6);
+      const badgeHeight = fontSize + (isRoot ? 7 : 5);
       const badgeX = textX - badgePadding;
       const badgeY = -badgeHeight / 2;
 
@@ -313,14 +316,19 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
             <circle r={radius * 0.4} fill="#fff" opacity={0.9} pointerEvents="none" />
           )}
 
-          {/* Badge/pill background */}
-          <rect
-            x={badgeX}
-            y={badgeY}
-            width={badgeWidth}
-            height={badgeHeight}
-            rx={badgeHeight / 2}
-            ry={badgeHeight / 2}
+          {/* Hexagonal web-like badge background */}
+          <path
+            d={`
+              M ${badgeX + 4} ${badgeY}
+              L ${badgeX + badgeWidth - 4} ${badgeY}
+              L ${badgeX + badgeWidth} ${badgeY + badgeHeight * 0.3}
+              L ${badgeX + badgeWidth} ${badgeY + badgeHeight * 0.7}
+              L ${badgeX + badgeWidth - 4} ${badgeY + badgeHeight}
+              L ${badgeX + 4} ${badgeY + badgeHeight}
+              L ${badgeX} ${badgeY + badgeHeight * 0.7}
+              L ${badgeX} ${badgeY + badgeHeight * 0.3}
+              Z
+            `}
             fill={badgeBg}
             stroke={badgeBorder}
             strokeWidth={0.5}
