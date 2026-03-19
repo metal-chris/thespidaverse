@@ -267,17 +267,24 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
       const fontSize = isRoot ? 15 : type === "category" ? 13 : 11;
       const fontWeight = isRoot ? 700 : type === "category" ? 600 : 400;
 
-      // Balanced text width calculation with proper padding
+      // More accurate text width calculation for uniform badge sizing
       const textLength = nodeDatum.name.length;
-      // Adjust character width based on font weight and size
-      const baseCharWidth = fontSize * 0.52;
-      const weightMultiplier = fontWeight >= 700 ? 1.08 : fontWeight >= 600 ? 1.04 : 1.0;
-      const charWidth = baseCharWidth * weightMultiplier;
-      const textWidth = textLength * charWidth;
       
-      // Comfortable padding for good UI/UX
-      const badgePaddingX = isRoot ? 10 : isTag ? 7 : 8;
-      const badgePaddingY = isRoot ? 4 : 3;
+      // Character width varies by font weight - use more precise multipliers
+      let avgCharWidth: number;
+      if (fontWeight >= 700) {
+        avgCharWidth = fontSize * 0.58; // Bold text is wider
+      } else if (fontWeight >= 600) {
+        avgCharWidth = fontSize * 0.56; // Semi-bold
+      } else {
+        avgCharWidth = fontSize * 0.54; // Regular
+      }
+      
+      const textWidth = textLength * avgCharWidth;
+      
+      // Uniform padding for consistent badge appearance
+      const badgePaddingX = 8;
+      const badgePaddingY = 3;
       
       const badgeWidth = textWidth + badgePaddingX * 2;
       const badgeHeight = fontSize + badgePaddingY * 2;
@@ -306,8 +313,7 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
           <circle
             r={radius}
             fill={circleColor}
-            stroke={circleColor}
-            strokeWidth={isRoot ? 2.5 : 1.5}
+            stroke="none"
             style={{ cursor: hasChildren ? "pointer" : "default" }}
             onClick={(e) => {
               e.stopPropagation();
