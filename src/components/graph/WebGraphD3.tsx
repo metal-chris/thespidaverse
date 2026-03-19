@@ -48,6 +48,7 @@ interface ThemeColors {
   link: string;
   isDark: boolean;
   badgeBg: string;
+  badgeSolid: string;
   badgeBorder: string;
 }
 
@@ -110,7 +111,7 @@ function getThemeColors(): ThemeColors {
     return {
       bg: "#FAFAFA", text: "#1A1A1A", muted: "#6B6B6B",
       link: "#D1D5DB", isDark: false,
-      badgeBg: "rgba(0,0,0,0.06)", badgeBorder: "rgba(0,0,0,0.12)",
+      badgeBg: "rgba(0,0,0,0.06)", badgeSolid: "rgba(240,240,240,0.92)", badgeBorder: "rgba(0,0,0,0.12)",
     };
   }
   const theme = document.documentElement.getAttribute("data-theme");
@@ -118,20 +119,20 @@ function getThemeColors(): ThemeColors {
     return {
       bg: "#0A0A0A", text: "#F5F5F5", muted: "#999",
       link: "#4B5563", isDark: true,
-      badgeBg: "rgba(255,255,255,0.14)", badgeBorder: "rgba(255,255,255,0.25)",
+      badgeBg: "rgba(255,255,255,0.14)", badgeSolid: "rgba(20,20,20,0.92)", badgeBorder: "rgba(255,255,255,0.25)",
     };
   }
   if (theme === "peter") {
     return {
       bg: "#4A0A0A", text: "#F5F5F5", muted: "#CC9999",
       link: "#6B2020", isDark: true,
-      badgeBg: "rgba(255,255,255,0.14)", badgeBorder: "rgba(255,255,255,0.25)",
+      badgeBg: "rgba(255,255,255,0.14)", badgeSolid: "rgba(74,10,10,0.92)", badgeBorder: "rgba(255,255,255,0.25)",
     };
   }
   return {
     bg: "#FAFAFA", text: "#1A1A1A", muted: "#6B6B6B",
     link: "#D1D5DB", isDark: false,
-    badgeBg: "rgba(0,0,0,0.06)", badgeBorder: "rgba(0,0,0,0.12)",
+    badgeBg: "rgba(0,0,0,0.06)", badgeSolid: "rgba(240,240,240,0.92)", badgeBorder: "rgba(0,0,0,0.12)",
   };
 }
 
@@ -568,9 +569,13 @@ export function WebGraphD3({ nodes, edges }: Props) {
           const bx = textX - BADGE_PAD_X;
           const by = -bh / 2;
 
+          // Category/root badges are opaque so branches appear behind them
+          const isImportant = type === "category" || type === "root";
+          const fill = isImportant ? themeColors.badgeSolid : themeColors.badgeBg;
+
           badgeEl
             .attr("d", badgePath(bx, by, bw, bh, BADGE_CHAMFER))
-            .attr("fill", themeColors.badgeBg)
+            .attr("fill", fill)
             .attr("stroke", themeColors.badgeBorder)
             .attr("stroke-width", 0.5);
         }
