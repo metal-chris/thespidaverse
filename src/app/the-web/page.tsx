@@ -1,6 +1,6 @@
 import { getProvider } from "@/lib/providers";
 import type { GraphArticle } from "@/lib/providers";
-import { WebGraphTree } from "@/components/graph/WebGraphTree";
+import { WebGraphD3 } from "@/components/graph/WebGraphD3";
 import { GraphEmptyState } from "@/components/graph/GraphEmptyState";
 import type { Metadata } from "next";
 
@@ -82,5 +82,5 @@ export default async function TheWebPage() {
 
   const { nodes, edges } = buildGraph(articles);
 
-  return <WebGraphTree nodes={nodes as never[]} edges={edges} />;
+  return <WebGraphD3 nodes={nodes as never[]} edges={edges} />;
 }
