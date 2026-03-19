@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Tree from "react-d3-tree";
-import type { RawNodeDatum, TreeNodeDatum } from "react-d3-tree";
+import type { RawNodeDatum, CustomNodeElementProps } from "react-d3-tree";
 
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 interface GraphNode {
   id: string;
   label: string;
@@ -26,130 +29,151 @@ interface WebGraphTreeProps {
   edges: GraphEdge[];
 }
 
-// Category colors matching landing page
-const CATEGORY_COLORS: Record<string, string> = {
-  "Movies & TV": "#E82334",        // Red
-  "Video Games": "#1E50DC",        // Blue
-  "Anime & Manga": "#9333EA",      // Purple
-  "Music": "#10B981",              // Green
-};
-
-function getThemeColors() {
-  if (typeof document === "undefined") {
-    return {
-      bg: "#FAFAFA",
-      text: "#1A1A1A",
-      linkColor: "#999",
-    };
-  }
-
-  const themeAttr = document.documentElement.getAttribute("data-theme");
-  const isDark = themeAttr === "venom";
-  const isPeter = themeAttr === "peter";
-  
-  return {
-    bg: isDark ? "#0A0A0A" : isPeter ? "#4A0A0A" : "#FAFAFA",
-    text: isDark ? "#E5E5E5" : isPeter ? "#F5F5F5" : "#1A1A1A",
-    linkColor: isDark ? "#666" : isPeter ? "#8B3A3A" : "#999",
-  };
+interface ThemeColors {
+  bg: string;
+  text: string;
+  mutedText: string;
+  linkDefault: string;
 }
 
-function buildTreeData(nodes: GraphNode[], edges: GraphEdge[]): RawNodeDatum {
-  const categories = nodes.filter((n) => n.type === "category");
-  const articles = nodes.filter((n) => n.type === "article");
-  const tags = nodes.filter((n) => n.type === "tag");
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+const CATEGORY_COLORS: Record<string, string> = {
+  "Movies & TV": "#E82334",
+  "Video Games": "#1E50DC",
+  "Anime & Manga": "#9333EA",
+  Music: "#10B981",
+};
 
-  // Build adjacency map
+const ROOT_COLOR = "#6B7280";
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+function getThemeColors(): ThemeColors {
+  if (typeof document === "undefined") {
+    return { bg: "#FAFAFA", text: "#1A1A1A", mutedText: "#6B6B6B", linkDefault: "#D1D5DB" };
+  }
+
+  const theme = document.documentElement.getAttribute("data-theme");
+
+  if (theme === "venom") {
+    return { bg: "#0A0A0A", text: "#F5F5F5", mutedText: "#999999", linkDefault: "#374151" };
+  }
+  if (theme === "peter") {
+    return { bg: "#4A0A0A", text: "#F5F5F5", mutedText: "#999999", linkDefault: "#8B3A3A" };
+  }
+  // miles (default)
+  return { bg: "#FAFAFA", text: "#1A1A1A", mutedText: "#6B6B6B", linkDefault: "#D1D5DB" };
+}
+
+/**
+ * Transform flat graph nodes + edges into a hierarchical tree for react-d3-tree.
+ *
+ * Structure: Root → Categories → Tags → Articles
+ * Articles without tags sit directly under their category.
+ * All non-root nodes start collapsed.
+ */
+function buildTreeData(nodes: GraphNode[], edges: GraphEdge[]): RawNodeDatum {
+  // Build adjacency
   const adjacency = new Map<string, Set<string>>();
-  edges.forEach((edge) => {
-    if (!adjacency.has(edge.source)) {
-      adjacency.set(edge.source, new Set());
-    }
-    if (!adjacency.has(edge.target)) {
-      adjacency.set(edge.target, new Set());
-    }
+  for (const edge of edges) {
+    if (!adjacency.has(edge.source)) adjacency.set(edge.source, new Set());
+    if (!adjacency.has(edge.target)) adjacency.set(edge.target, new Set());
     adjacency.get(edge.source)!.add(edge.target);
     adjacency.get(edge.target)!.add(edge.source);
-  });
+  }
 
-  // Build tree structure
-  const children: RawNodeDatum[] = [];
+  const nodeMap = new Map<string, GraphNode>();
+  for (const n of nodes) nodeMap.set(n.id, n);
 
-  categories.forEach((category) => {
-    const categoryTags = tags.filter((tag) =>
-      adjacency.get(category.id)?.has(tag.id)
-    );
+  const categories = nodes.filter((n) => n.type === "category");
+  const tags = nodes.filter((n) => n.type === "tag");
+  const articles = nodes.filter((n) => n.type === "article");
 
-    const tagChildren: RawNodeDatum[] = [];
+  const categoryChildren: RawNodeDatum[] = categories.map((cat) => {
+    // Tags connected to this category
+    const catTags = tags.filter((t) => adjacency.get(cat.id)?.has(t.id));
 
-    categoryTags.forEach((tag) => {
-      const tagArticles = articles.filter((article) =>
-        adjacency.get(tag.id)?.has(article.id)
-      );
+    // Track which articles are placed under a tag
+    const placedArticleIds = new Set<string>();
 
-      const articleChildren: RawNodeDatum[] = tagArticles.map((article) => ({
-        name: article.label,
-        attributes: {
-          type: "article",
-          slug: article.slug || "",
-          category: category.label,
-        },
+    const tagChildren: RawNodeDatum[] = catTags.map((tag) => {
+      const tagArticles = articles.filter((a) => adjacency.get(tag.id)?.has(a.id));
+      tagArticles.forEach((a) => placedArticleIds.add(a.id));
+
+      return {
+        name: tag.label,
+        attributes: { type: "tag", category: cat.label },
+        children: tagArticles.map((a) => ({
+          name: a.label,
+          attributes: { type: "article", slug: a.slug || "", category: cat.label },
+        })),
+        __rd3t: { collapsed: true },
+      } as RawNodeDatum;
+    });
+
+    // Articles directly connected to category but not placed under any tag
+    const directArticles = articles
+      .filter((a) => adjacency.get(cat.id)?.has(a.id) && !placedArticleIds.has(a.id))
+      .map((a) => ({
+        name: a.label,
+        attributes: { type: "article", slug: a.slug || "", category: cat.label },
       }));
 
-      tagChildren.push({
-        name: tag.label,
-        attributes: {
-          type: "tag",
-          category: category.label,
-        },
-        children: articleChildren.length > 0 ? articleChildren : undefined,
-      });
-    });
-
-    // Add articles directly connected to category
-    const directArticles = articles.filter(
-      (article) =>
-        adjacency.get(category.id)?.has(article.id) &&
-        !categoryTags.some((tag) => adjacency.get(tag.id)?.has(article.id))
-    );
-
-    directArticles.forEach((article) => {
-      tagChildren.push({
-        name: article.label,
-        attributes: {
-          type: "article",
-          slug: article.slug || "",
-          category: category.label,
-        },
-      });
-    });
-
-    children.push({
-      name: category.label,
-      attributes: {
-        type: "category",
-        category: category.label,
-      },
-      children: tagChildren.length > 0 ? tagChildren : undefined,
-    });
+    return {
+      name: cat.label,
+      attributes: { type: "category", category: cat.label },
+      children: [...tagChildren, ...directArticles],
+      __rd3t: { collapsed: true },
+    } as RawNodeDatum;
   });
 
   return {
     name: "The Web",
-    attributes: {
-      type: "root",
-    },
-    children,
+    attributes: { type: "root" },
+    children: categoryChildren,
   };
 }
 
+// ---------------------------------------------------------------------------
+// Custom Node Renderer
+// ---------------------------------------------------------------------------
+function getNodeColor(nodeDatum: RawNodeDatum): string {
+  const type = (nodeDatum.attributes?.type as string) || "";
+  if (type === "root") return ROOT_COLOR;
+
+  const category = (nodeDatum.attributes?.category as string) || "";
+  return CATEGORY_COLORS[category] || ROOT_COLOR;
+}
+
+function getNodeRadius(type: string): number {
+  switch (type) {
+    case "root":
+      return 18;
+    case "category":
+      return 12;
+    case "tag":
+      return 7;
+    default:
+      return 5;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
   const router = useRouter();
-  const [treeData, setTreeData] = useState<RawNodeDatum | null>(null);
-  const [themeColors, setThemeColors] = useState<ReturnType<typeof getThemeColors> | null>(null);
-  const [translate, setTranslate] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [themeColors, setThemeColors] = useState<ThemeColors | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
 
+  // Mount + theme observer
   useEffect(() => {
+    setMounted(true);
     setThemeColors(getThemeColors());
 
     const observer = new MutationObserver(() => {
@@ -163,119 +187,185 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
     return () => observer.disconnect();
   }, []);
 
+  // Measure container
   useEffect(() => {
-    const data = buildTreeData(nodes, edges);
-    setTreeData(data);
-  }, [nodes, edges]);
+    if (!containerRef.current) return;
 
-  useEffect(() => {
-    // Center the tree
-    const container = document.getElementById("tree-container");
-    if (container) {
-      setTranslate({
-        x: container.offsetWidth / 2,
-        y: 100,
-      });
-    }
-  }, []);
+    const measure = () => {
+      if (containerRef.current) {
+        setDimensions({
+          width: containerRef.current.offsetWidth,
+          height: containerRef.current.offsetHeight,
+        });
+      }
+    };
 
-  const handleNodeClick = useCallback((node: any) => {
-    const nodeDatum = node.data as TreeNodeDatum;
-    const attrs = nodeDatum.attributes as any;
-    if (attrs?.type === "article" && attrs?.slug) {
-      router.push(`/articles/${attrs.slug}`);
-    }
-  }, [router]);
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [mounted]);
 
-  const renderCustomNode = useCallback(({ nodeDatum }: any) => {
-    const attrs = nodeDatum.attributes as any;
-    const nodeType = attrs?.type || "root";
-    const categoryName = attrs?.category || "";
-    
-    // Determine color based on category
-    let fillColor = "#6B7280"; // Default gray
-    if (nodeType === "root") {
-      fillColor = "#6B7280";
-    } else if (categoryName) {
-      fillColor = CATEGORY_COLORS[categoryName] || "#6B7280";
-    }
+  // Build tree data
+  const treeData = useMemo(() => buildTreeData(nodes, edges), [nodes, edges]);
 
-    // Node size based on type
-    const radius = nodeType === "root" ? 8 : nodeType === "category" ? 6 : 4;
+  // Node click handler
+  const handleNodeClick = useCallback(
+    (nodeDatum: RawNodeDatum) => {
+      if (nodeDatum.attributes?.type === "article" && nodeDatum.attributes?.slug) {
+        router.push(`/articles/${nodeDatum.attributes.slug}`);
+      }
+    },
+    [router]
+  );
 
+  // Custom node renderer
+  const renderCustomNode = useCallback(
+    ({ nodeDatum, toggleNode }: CustomNodeElementProps) => {
+      const type = (nodeDatum.attributes?.type as string) || "article";
+      const color = getNodeColor(nodeDatum);
+      const radius = getNodeRadius(type);
+      const isArticle = type === "article";
+      const isRoot = type === "root";
+      const hasChildren = nodeDatum.children && nodeDatum.children.length > 0;
+      const textColor = themeColors?.text || "#1A1A1A";
+
+      // Text offset based on node size
+      const textX = radius + 8;
+      const fontSize = isRoot ? 16 : type === "category" ? 14 : 12;
+      const fontWeight = isRoot ? 700 : type === "category" ? 600 : 400;
+
+      return (
+        <g>
+          {/* Node circle */}
+          <circle
+            r={radius}
+            fill={color}
+            stroke={isRoot ? textColor : color}
+            strokeWidth={isRoot ? 2 : 1.5}
+            style={{ cursor: hasChildren ? "pointer" : "default" }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (hasChildren) toggleNode();
+            }}
+          />
+
+          {/* Collapse indicator: inner dot for collapsed nodes with children */}
+          {hasChildren && (nodeDatum as any).__rd3t?.collapsed && (
+            <circle r={radius * 0.4} fill="#fff" opacity={0.8} pointerEvents="none" />
+          )}
+
+          {/* Label */}
+          {isArticle ? (
+            <text
+              x={textX}
+              dy="0.35em"
+              fontSize={fontSize}
+              fontWeight={fontWeight}
+              fill={color}
+              style={{
+                cursor: "pointer",
+                textDecoration: "none",
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleNodeClick(nodeDatum);
+              }}
+              onMouseEnter={(e) => {
+                (e.target as SVGTextElement).style.textDecoration = "underline";
+              }}
+              onMouseLeave={(e) => {
+                (e.target as SVGTextElement).style.textDecoration = "none";
+              }}
+            >
+              {nodeDatum.name}
+            </text>
+          ) : (
+            <text
+              x={textX}
+              dy="0.35em"
+              fontSize={fontSize}
+              fontWeight={fontWeight}
+              fill={isRoot ? textColor : color}
+              style={{ cursor: hasChildren ? "pointer" : "default" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (hasChildren) toggleNode();
+              }}
+            >
+              {nodeDatum.name}
+            </text>
+          )}
+        </g>
+      );
+    },
+    [themeColors, handleNodeClick]
+  );
+
+  // Don't render tree until mounted (prevents hydration mismatch)
+  if (!mounted || !themeColors) {
     return (
-      <g>
-        <circle
-          r={radius}
-          fill={fillColor}
-          stroke={fillColor}
-          strokeWidth={2}
-          style={{ cursor: nodeType === "article" ? "pointer" : "default" }}
-        />
-        <text
-          fill={themeColors?.text || "#1A1A1A"}
-          strokeWidth="0"
-          x={radius + 10}
-          y={5}
-          style={{
-            fontSize: nodeType === "root" ? "16px" : nodeType === "category" ? "14px" : "12px",
-            fontWeight: nodeType === "root" || nodeType === "category" ? "600" : "400",
-          }}
-        >
-          {nodeDatum.name}
-        </text>
-      </g>
-    );
-  }, [themeColors, router]);
-
-  if (!treeData || !themeColors) {
-    return (
-      <div className="w-full h-full flex items-center justify-center bg-background">
-        <p className="text-muted-foreground">Loading...</p>
+      <div className="w-full h-full bg-background">
+        <div className="text-center pt-4 pb-3">
+          <h1 className="text-xl md:text-2xl font-bold text-foreground/90 tracking-tight">
+            <span className="text-accent">///</span> The Web
+          </h1>
+          <p className="text-[11px] md:text-xs text-muted-foreground mt-0.5">
+            Click to expand. Click articles to visit.
+          </p>
+        </div>
+        <div className="w-full flex items-center justify-center" style={{ height: "calc(100vh - 140px)" }}>
+          <div className="text-muted-foreground text-sm">Loading...</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-full bg-background">
-      <style>{`
-        .tree-link {
-          stroke: ${themeColors.linkColor};
-          stroke-width: 2px;
-          fill: none;
-        }
-      `}</style>
-      
+    <div className="w-full h-full" style={{ backgroundColor: themeColors.bg }}>
       <div className="text-center pt-4 pb-3">
-        <h1 className="text-xl md:text-2xl font-bold text-foreground/90 tracking-tight">
+        <h1
+          className="text-xl md:text-2xl font-bold tracking-tight"
+          style={{ color: themeColors.text }}
+        >
           <span className="text-accent">///</span> The Web
         </h1>
-        <p className="text-[11px] md:text-xs text-muted-foreground mt-0.5">
-          Click nodes to expand/collapse. Click article names to visit.
+        <p className="text-[11px] md:text-xs mt-0.5" style={{ color: themeColors.mutedText }}>
+          Click to expand. Click articles to visit.
         </p>
       </div>
 
       <div
-        id="tree-container"
+        ref={containerRef}
         className="w-full"
-        style={{
-          height: "calc(100vh - 140px)",
-          backgroundColor: themeColors.bg,
-        }}
+        style={{ height: "calc(100vh - 140px)", backgroundColor: themeColors.bg }}
       >
+        {/* Dynamic link color styles */}
+        <style>{`
+          .rd3t-link {
+            stroke: ${themeColors.linkDefault} !important;
+            stroke-width: 1.5px;
+            stroke-opacity: 0.6;
+          }
+        `}</style>
         <Tree
           data={treeData}
-          translate={translate}
           orientation="horizontal"
-          pathFunc="step"
-          collapsible={true}
-          initialDepth={1}
-          onNodeClick={handleNodeClick}
-          renderCustomNodeElement={renderCustomNode}
+          pathFunc="diagonal"
+          translate={{ x: dimensions.width * 0.15, y: dimensions.height / 2 }}
+          nodeSize={{ x: 200, y: 40 }}
           separation={{ siblings: 1, nonSiblings: 1.5 }}
-          nodeSize={{ x: 200, y: 80 }}
+          collapsible={true}
+          initialDepth={0}
+          transitionDuration={300}
+          renderCustomNodeElement={renderCustomNode}
           pathClassFunc={() => "tree-link"}
-          enableLegacyTransitions
+          rootNodeClassName="tree-root"
+          branchNodeClassName="tree-branch"
+          leafNodeClassName="tree-leaf"
+          enableLegacyTransitions={false}
+          zoomable={true}
+          draggable={true}
+          scaleExtent={{ min: 0.3, max: 2 }}
         />
       </div>
     </div>
