@@ -179,35 +179,17 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
       
       setFoldState(root);
 
-      // Create instance
+      // Create instance with color array
+      // Markmap cycles through colors for each branch at depth 1
+      // colorFreezeLevel: 2 means children inherit their parent's color
       markmapRef.current = Markmap.create(svgRef.current, {
-        color: (node: any) => {
-          const depth = node.depth || 0;
-          
-          // Root node - neutral gray
-          if (depth === 0) return "#6B7280";
-          
-          // Categories get their specific colors
-          if (depth === 1) {
-            const content = node.content || node.v || '';
-            const categoryName = content.replace(/<[^>]*>/g, '').trim();
-            return CATEGORY_COLORS[categoryName] || "#6B7280";
-          }
-          
-          // Find parent category for tags and articles
-          let parent = node.parent || node.p;
-          while (parent && (parent.depth || parent.d || 0) > 1) {
-            parent = parent.parent || parent.p;
-          }
-          
-          if (parent && (parent.depth || parent.d) === 1) {
-            const content = parent.content || parent.v || '';
-            const categoryName = content.replace(/<[^>]*>/g, '').trim();
-            return CATEGORY_COLORS[categoryName] || "#6B7280";
-          }
-          
-          return "#6B7280";
-        },
+        color: [
+          "#E82334",  // Movies & TV - red (first category)
+          "#1E50DC",  // Video Games - blue (second category)
+          "#9333EA",  // Anime & Manga - purple (third category)
+          "#10B981",  // Music - green (fourth category)
+        ],
+        colorFreezeLevel: 2, // Freeze at depth 2, so all children inherit category color
         duration: 300,
         maxWidth: 300,
         paddingX: 8,
