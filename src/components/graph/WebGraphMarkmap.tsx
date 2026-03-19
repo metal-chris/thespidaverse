@@ -179,17 +179,40 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
       
       setFoldState(root);
 
-      // Create instance with color array
-      // Markmap cycles through colors for each branch at depth 1
-      // colorFreezeLevel: 2 means children inherit their parent's color
+      // Map category names to colors
+      const categoryColors = [
+        "#E82334",  // Movies & TV - red
+        "#1E50DC",  // Video Games - blue
+        "#9333EA",  // Anime & Manga - purple
+        "#10B981",  // Music - green
+      ];
+      
+      // Track which color index each category gets
+      const categoryColorMap = new Map<string, string>();
+      let colorIndex = 0;
+
+      // Create instance with color function
       markmapRef.current = Markmap.create(svgRef.current, {
-        color: [
-          "#E82334",  // Movies & TV - red (first category)
-          "#1E50DC",  // Video Games - blue (second category)
-          "#9333EA",  // Anime & Manga - purple (third category)
-          "#10B981",  // Music - green (fourth category)
-        ],
-        colorFreezeLevel: 2, // Freeze at depth 2, so all children inherit category color
+        color: (node: any) => {
+          // Root is gray
+          if (!node.parent) return "#6B7280";
+          
+          // Find the top-level category (depth 1)
+          let category = node;
+          while (category.parent && category.parent.parent) {
+            category = category.parent;
+          }
+          
+          // Get or assign color for this category
+          const categoryContent = category.content?.replace(/<[^>]*>/g, '').trim() || '';
+          
+          if (!categoryColorMap.has(categoryContent)) {
+            categoryColorMap.set(categoryContent, categoryColors[colorIndex % categoryColors.length]);
+            colorIndex++;
+          }
+          
+          return categoryColorMap.get(categoryContent) || "#6B7280";
+        },
         duration: 300,
         maxWidth: 300,
         paddingX: 8,
