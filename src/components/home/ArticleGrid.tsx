@@ -17,11 +17,21 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
     );
   }
 
+  const [featured, ...rest] = articles;
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      {articles.map((article, i) => (
-        <Card key={article._id} article={article} featured={i === 0} />
-      ))}
+    <div className="space-y-5">
+      {/* Featured article - full width */}
+      {featured && <Card article={featured} featured={true} />}
+      
+      {/* Remaining articles - grid layout */}
+      {rest.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {rest.map((article) => (
+            <Card key={article._id} article={article} featured={false} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

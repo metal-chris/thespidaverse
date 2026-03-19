@@ -5,14 +5,62 @@ import Link from "next/link";
 import Image from "next/image";
 import type { MediaDiaryEntry, MediaType } from "@/types";
 import { formatMediaType } from "@/lib/utils";
+import { useTheme } from "@/components/theme/ThemeProvider";
 
-const STATUS_COLORS: Record<string, string> = {
-  watching: "bg-blue-500",
-  playing: "bg-green-500",
-  listening: "bg-purple-500",
-  reading: "bg-yellow-500",
-  completed: "bg-emerald-500",
-  dropped: "bg-red-400",
+// Theme-aware status colors for optimal visibility and distinction
+const STATUS_COLORS: Record<string, Record<string, string>> = {
+  miles: {
+    watching: "bg-blue-600 text-white",
+    playing: "bg-green-600 text-white",
+    listening: "bg-purple-600 text-white",
+    reading: "bg-amber-600 text-white",
+    completed: "bg-emerald-600 text-white",
+    dropped: "bg-red-600 text-white",
+  },
+  peter: {
+    watching: "bg-blue-500 text-white",
+    playing: "bg-green-500 text-white",
+    listening: "bg-purple-500 text-white",
+    reading: "bg-yellow-500 text-white",
+    completed: "bg-teal-500 text-white",
+    dropped: "bg-red-500 text-white",
+  },
+  venom: {
+    watching: "bg-blue-400 text-black",
+    playing: "bg-green-400 text-black",
+    listening: "bg-purple-400 text-black",
+    reading: "bg-yellow-400 text-black",
+    completed: "bg-emerald-400 text-black",
+    dropped: "bg-red-400 text-black",
+  },
+};
+
+// Dot colors for timeline (theme-aware)
+const DOT_COLORS: Record<string, Record<string, string>> = {
+  miles: {
+    watching: "bg-blue-600",
+    playing: "bg-green-600",
+    listening: "bg-purple-600",
+    reading: "bg-amber-600",
+    completed: "bg-emerald-600",
+    dropped: "bg-red-600",
+  },
+  peter: {
+    watching: "bg-blue-500",
+    playing: "bg-green-500",
+    listening: "bg-purple-500",
+    reading: "bg-yellow-500",
+    completed: "bg-teal-500",
+    dropped: "bg-red-500",
+  },
+  venom: {
+    watching: "bg-blue-400",
+    playing: "bg-green-400",
+    listening: "bg-purple-400",
+    reading: "bg-yellow-400",
+    completed: "bg-emerald-400",
+    dropped: "bg-red-400",
+  },
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -32,8 +80,12 @@ type FilterType = "all" | MediaType;
 type FilterStatus = "all" | MediaDiaryEntry["status"];
 
 export function JournalTimeline({ entries }: JournalTimelineProps) {
+  const { theme } = useTheme();
   const [typeFilter, setTypeFilter] = useState<FilterType>("all");
   const [statusFilter, setStatusFilter] = useState<FilterStatus>("all");
+  
+  const statusColors = STATUS_COLORS[theme] || STATUS_COLORS.miles;
+  const dotColors = DOT_COLORS[theme] || DOT_COLORS.miles;
 
   const filtered = entries.filter((e) => {
     if (typeFilter !== "all" && e.mediaType !== typeFilter) return false;
@@ -116,7 +168,7 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
                 <div key={entry._id} className="flex gap-4 pl-8 relative">
                   {/* Timeline dot */}
                   <div
-                    className={`absolute left-1.5 top-3 w-3 h-3 rounded-full ${STATUS_COLORS[entry.status] || "bg-muted"}`}
+                    className={`absolute left-1.5 top-3 w-3 h-3 rounded-full ${dotColors[entry.status] || "bg-muted"}`}
                     title={STATUS_LABELS[entry.status]}
                   />
 
@@ -141,7 +193,7 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
                         </span>
                       </div>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <span className={`text-xs px-1.5 py-0.5 rounded ${STATUS_COLORS[entry.status]} text-white`}>
+                        <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${statusColors[entry.status] || "bg-muted text-muted-foreground"}`}>
                           {STATUS_LABELS[entry.status]}
                         </span>
                         {entry.rating != null && (
