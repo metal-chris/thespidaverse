@@ -47,23 +47,12 @@ export function ArticleBody({
 }: ArticleBodyProps) {
   return (
     <SpoilerProvider>
-      <ScrollProgress />
-
-      {/* ── Share + Controls Bar ── */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b-2 border-border">
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mr-2">
-            Share
-          </span>
-          <ShareBar
-            title={title}
-            url={url}
-            category={category}
-            format={format}
-          />
+      {/* ── Controls Bar ── */}
+      {hasSpoilerBlocks && (
+        <div className="flex justify-end mb-8 pb-4 border-b-2 border-border">
+          <RevealAllToggle />
         </div>
-        {hasSpoilerBlocks && <RevealAllToggle />}
-      </div>
+      )}
 
       {/* ── Web Rating Block ── */}
       {webRating != null && (
@@ -103,16 +92,29 @@ export function ArticleBody({
         <div className="flex-1 h-px bg-border" />
       </div>
 
-      {/* ── Reactions ── */}
+      {/* ── Reactions + Share (combined on tablet+) ── */}
       <div className="mb-10">
-        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-          What did you think?
-        </p>
-        <ReactionBar slug={slug} />
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 md:gap-6">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+              What did you think?
+            </p>
+            <ReactionBar slug={slug} />
+          </div>
+          <div className="hidden md:flex md:flex-col md:items-end">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+              Share
+            </p>
+            <ShareBar title={title} url={url} category={category} format={format} />
+          </div>
+        </div>
       </div>
 
-      {/* ── Bottom Share Bar (mobile) ── */}
+      {/* ── Bottom Share Bar (mobile only) ── */}
       <div className="pt-4 border-t-2 border-border md:hidden mb-8">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+          Share
+        </p>
         <ShareBar title={title} url={url} category={category} format={format} />
       </div>
 

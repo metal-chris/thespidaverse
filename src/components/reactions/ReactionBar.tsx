@@ -28,6 +28,7 @@ export function ReactionBar({ slug, className = "" }: ReactionBarProps) {
   const [submitting, setSubmitting] = useState<string | null>(null);
   const [cooldown, setCooldown] = useState(false);
   const [justReacted, setJustReacted] = useState<string | null>(null);
+  const [showFirstBadge, setShowFirstBadge] = useState(false);
 
   useEffect(() => {
     fetch(`/api/reactions/${slug}`)
@@ -55,9 +56,14 @@ export function ReactionBar({ slug, className = "" }: ReactionBarProps) {
 
         if (res.ok) {
           const d = await res.json();
+          const wasFirst = total === 0;
           setReactions(d.reactions);
           setTotal(d.total || 0);
           setJustReacted(type);
+          if (wasFirst) {
+            setShowFirstBadge(true);
+            setTimeout(() => setShowFirstBadge(false), 3000);
+          }
           setCooldown(true);
           setTimeout(() => {
             setCooldown(false);
@@ -78,9 +84,18 @@ export function ReactionBar({ slug, className = "" }: ReactionBarProps) {
 
   return (
     <div className={`${className}`} role="group" aria-label="Article reactions">
-      <p className="text-sm text-muted-foreground mb-2" aria-live="polite">
-        {total > 0 ? `${total} reaction${total !== 1 ? "s" : ""}` : "Be the first to react"}
-      </p>
+      <div 
+        className={`overflow-hidden transition-all duration-300 ease-in-out mb-2 ${
+          showFirstBadge || total > 0 ? 'max-h-6 opacity-100' : 'max-h-0 opacity-0'
+        }`}
+        aria-live="polite"
+      >
+        {showFirstBadge ? (
+          <p className="text-sm font-semibold text-green-500 animate-pulse">First!</p>
+        ) : total > 0 ? (
+          <p className="text-sm text-muted-foreground">{total} reaction{total !== 1 ? "s" : ""}</p>
+        ) : null}
+      </div>
       <div className="flex flex-wrap gap-2">
         {Object.entries(REACTION_EMOJIS).map(([type, { emoji, label }]) => {
           const count = reactions[type as keyof ReactionCounts] || 0;

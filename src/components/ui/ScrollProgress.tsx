@@ -23,7 +23,7 @@ export function ScrollProgress() {
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 z-50 h-[2px] bg-transparent"
+      className="fixed top-[65px] left-0 right-0 z-50 h-[2px] bg-transparent"
       role="progressbar"
       aria-valuenow={Math.round(progress)}
       aria-valuemin={0}

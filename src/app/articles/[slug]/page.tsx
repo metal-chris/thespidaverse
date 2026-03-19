@@ -171,7 +171,7 @@ export default async function ArticlePage({ params }: Props) {
 
       {/* ── Hero Image (full-bleed with overlay text) ── */}
       {heroUrl ? (
-        <div className="relative w-full h-[70vh] overflow-hidden">
+        <div className="relative w-full h-[100vh] overflow-hidden">
           <Image
             src={heroUrl}
             alt={article.heroImage?.alt || article.title}
@@ -180,12 +180,13 @@ export default async function ArticlePage({ params }: Props) {
             priority
             sizes="100vw"
           />
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+          {/* Gradient overlay - stronger to ensure text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
 
-          {/* Breadcrumb on image */}
-          <Container className="absolute bottom-0 left-0 right-0 pb-3 md:pb-4">
-            <nav className="text-xs text-white/60 mb-0" aria-label="Breadcrumb">
+          {/* Content positioned at bottom of hero */}
+          <Container className="absolute bottom-0 left-0 right-0 pb-8 md:pb-12">
+            {/* Breadcrumb */}
+            <nav className="text-[10px] md:text-xs text-white/60 mb-3 md:mb-4" aria-label="Breadcrumb">
               <Link href="/" className="hover:text-white/90 transition-colors">
                 Home
               </Link>
@@ -203,6 +204,97 @@ export default async function ArticlePage({ params }: Props) {
               )}
               <span className="text-white/80">{article.title}</span>
             </nav>
+
+            {/* Pills row: category + media type + format */}
+            <div className="flex flex-wrap items-center gap-2 mb-3 md:mb-4">
+              {article.category && (
+                <Link
+                  href={`/category/${article.category.slug.current}`}
+                  className={cn(
+                    "inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full border transition-colors hover:opacity-80 backdrop-blur-sm",
+                    catColor
+                  )}
+                >
+                  {article.category.title}
+                </Link>
+              )}
+              {article.mediaType && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-sm">
+                  {mediaIcons[article.mediaType]}
+                  {mediaLabel[article.mediaType]}
+                </span>
+              )}
+              {article.format && (
+                <span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-full bg-white/10 text-white/90 border border-white/20 backdrop-blur-sm">
+                  {formatBadge[article.format] || article.format}
+                </span>
+              )}
+            </div>
+
+            {/* Title */}
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-white text-balance leading-tight mb-2 md:mb-3">
+              {article.title}
+            </h1>
+
+            {/* Excerpt */}
+            {article.excerpt && (
+              <p className="text-sm md:text-base text-white/80 leading-relaxed max-w-2xl mb-3 md:mb-4">
+                {article.excerpt}
+              </p>
+            )}
+
+            {/* Metadata row with icons and dot separators */}
+            <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm text-white/60 mb-6 md:mb-8">
+              <span className="inline-flex items-center gap-1.5">
+                <svg viewBox="0 0 16 16" className="w-3 h-3 md:w-3.5 md:h-3.5" fill="currentColor" aria-hidden="true">
+                  <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm.5 4.5v4l3 1.5-.5 1-3.5-1.75V4.5h1z" />
+                </svg>
+                <time dateTime={article._createdAt} className="tabular-nums">
+                  {formatDate(article._createdAt)}
+                </time>
+              </span>
+              {article.readingTime && (
+                <>
+                  <span className="w-1 h-1 rounded-full bg-white/30" aria-hidden="true" />
+                  <span className="inline-flex items-center gap-1.5">
+                    <svg viewBox="0 0 16 16" className="w-3 h-3 md:w-3.5 md:h-3.5" fill="currentColor" aria-hidden="true">
+                      <path d="M2 2a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V2zm2 0v12h8V2H4zm2 2h4v1H6V4zm0 3h4v1H6V7zm0 3h3v1H6v-1z" />
+                    </svg>
+                    {article.readingTime} min read
+                  </span>
+                </>
+              )}
+              {article.mediaLength && (
+                <>
+                  <span className="w-1 h-1 rounded-full bg-white/30" aria-hidden="true" />
+                  <span>{article.mediaLength}</span>
+                </>
+              )}
+            </div>
+
+            {/* Tags */}
+            {article.tags && article.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 md:gap-2 mb-6 md:mb-8">
+                {article.tags.map((tag) => (
+                  <Link
+                    key={tag._id}
+                    href={`/tags/${tag.slug.current}`}
+                    className="text-[10px] md:text-xs bg-white/10 text-white/80 px-2 py-0.5 md:py-1 rounded-full hover:text-white hover:bg-white/20 transition-colors border border-white/20 backdrop-blur-sm"
+                  >
+                    #{capitalizeTag(tag.title)}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* Separator line at bottom of 100vh */}
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="flex-1 h-[2px] bg-white/20" />
+              <svg viewBox="0 0 24 24" className="w-4 h-4 md:w-5 md:h-5 text-white/30" fill="currentColor" aria-hidden="true">
+                <path d="M12 2L2 12l10 10 10-10L12 2zm0 3.83L18.17 12 12 18.17 5.83 12 12 5.83z" />
+              </svg>
+              <div className="flex-1 h-[2px] bg-white/20" />
+            </div>
           </Container>
         </div>
       ) : (
@@ -230,91 +322,7 @@ export default async function ArticlePage({ params }: Props) {
       )}
 
       {/* ── Article Content ── */}
-      <Container as="article" className="pt-4 pb-8 max-w-4xl">
-        {/* Article Header */}
-        <header className="mb-8">
-          {/* Pills row: category + media type + format */}
-          <div className="flex flex-wrap items-center gap-2 mb-4">
-            {article.category && (
-              <Link
-                href={`/category/${article.category.slug.current}`}
-                className={cn(
-                  "inline-flex items-center px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider rounded-full border transition-colors hover:opacity-80",
-                  catColor
-                )}
-              >
-                {article.category.title}
-              </Link>
-            )}
-            {article.mediaType && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] font-medium rounded-full border border-border bg-muted/50 text-muted-foreground">
-                {mediaIcons[article.mediaType]}
-                {mediaLabel[article.mediaType]}
-              </span>
-            )}
-            {article.format && (
-              <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-foreground/10 text-foreground/70 border border-foreground/10">
-                {formatBadge[article.format] || article.format}
-              </span>
-            )}
-          </div>
-
-          {/* Title */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance leading-[1.1]">
-            {article.title}
-          </h1>
-
-          {/* Excerpt */}
-          {article.excerpt && (
-            <p className="mt-3 text-lg text-muted-foreground leading-relaxed max-w-2xl">
-              {article.excerpt}
-            </p>
-          )}
-
-          {/* Metadata row with icons and dot separators */}
-          <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5">
-              <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="currentColor" aria-hidden="true">
-                <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm.5 4.5v4l3 1.5-.5 1-3.5-1.75V4.5h1z" />
-              </svg>
-              <time dateTime={article._createdAt} className="tabular-nums">
-                {formatDate(article._createdAt)}
-              </time>
-            </span>
-            {article.readingTime && (
-              <>
-                <span className="w-1 h-1 rounded-full bg-border" aria-hidden="true" />
-                <span className="inline-flex items-center gap-1.5">
-                  <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="currentColor" aria-hidden="true">
-                    <path d="M2 2a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V2zm2 0v12h8V2H4zm2 2h4v1H6V4zm0 3h4v1H6V7zm0 3h3v1H6v-1z" />
-                  </svg>
-                  {article.readingTime} min read
-                </span>
-              </>
-            )}
-            {article.mediaLength && (
-              <>
-                <span className="w-1 h-1 rounded-full bg-border" aria-hidden="true" />
-                <span>{article.mediaLength}</span>
-              </>
-            )}
-          </div>
-
-          {/* Tags */}
-          {article.tags && article.tags.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {article.tags.map((tag) => (
-                <Link
-                  key={tag._id}
-                  href={`/tags/${tag.slug.current}`}
-                  className="text-xs bg-muted text-muted-foreground px-2.5 py-1 rounded-full hover:text-foreground hover:bg-muted/80 transition-colors border border-transparent hover:border-border"
-                >
-                  #{capitalizeTag(tag.title)}
-                </Link>
-              ))}
-            </div>
-          )}
-        </header>
+      <Container as="article" className="pt-8 md:pt-12 pb-8 max-w-4xl">
 
         {/* Client-side article body with WebRating, ShareBar, Spoilers, Newsletter */}
         <ArticleBody
