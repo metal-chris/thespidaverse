@@ -285,15 +285,59 @@ export function WebGraphD3({ nodes, edges }: Props) {
     const g = svg.append("g");
     gRef.current = g.node();
 
-    // Zoom behavior
+    // Zoom behavior — supports mouse wheel, trackpad scroll/pinch, and mobile touch
     const zoomBehavior = d3Zoom
       .zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.3, 3])
+      .filter((event) => {
+        // Allow all zoom/pan events except double-click (we'll use it for reset)
+        if (event.type === "dblclick") return true;
+        // Allow wheel (mouse + trackpad), touch, and mouse drag
+        return !event.ctrlKey || event.type === "wheel";
+      })
+      .touchable(true)
       .on("zoom", (event) => {
         g.attr("transform", event.transform);
       });
 
-    svg.call(zoomBehavior);
+    svg
+      .call(zoomBehavior)
+      // Prevent trackpad scroll from scrolling the page
+      .on("wheel.zoom", function (event) {
+        event.preventDefault();
+        const currentTransform = d3Zoom.zoomTransform(this);
+        
+        // Trackpad pinch sends ctrlKey + wheel; regular scroll sends just wheel
+        if (event.ctrlKey) {
+          // Pinch-to-zoom (trackpad)
+          const scale = currentTransform.k * Math.pow(2, -event.deltaY * 0.01);
+          const clampedScale = Math.max(0.3, Math.min(3, scale));
+          const point = d3Selection.pointer(event, this);
+          svg.call(
+            zoomBehavior.transform,
+            currentTransform
+              .translate(point[0], point[1])
+              .scale(clampedScale / currentTransform.k)
+              .translate(-point[0], -point[1])
+          );
+        } else {
+          // Two-finger scroll (trackpad) or mouse wheel
+          svg.call(
+            zoomBehavior.transform,
+            currentTransform.translate(-event.deltaX, -event.deltaY)
+          );
+        }
+      })
+      // Double-click to reset view
+      .on("dblclick.zoom", () => {
+        svg
+          .transition()
+          .duration(500)
+          .call(
+            zoomBehavior.transform,
+            d3Zoom.zoomIdentity.translate(width * 0.12, height / 2)
+          );
+      });
 
     // Initial transform
     const initialX = width * 0.12;
