@@ -39,6 +39,8 @@ interface TreeDatum {
   slug?: string;
   navAction?: "next" | "prev";
   children?: TreeDatum[];
+  _allArticles?: TreeDatum[];
+  _page?: number;
 }
 
 interface ThemeColors {
@@ -142,11 +144,40 @@ function nodeColor(d: TreeDatum): string {
   return CATEGORY_COLORS[d.category || ""] || ROOT_COLOR;
 }
 
-function buildTreeData(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  pageMap: Map<string, number>
-): TreeDatum {
+/** Build page slice with nav nodes for a given category's articles */
+function buildPageChildren(allArticles: TreeDatum[], page: number, category: string): TreeDatum[] {
+  const total = allArticles.length;
+  const start = page * PAGE_SIZE;
+  const end = Math.min(start + PAGE_SIZE, total);
+  const slice = allArticles.slice(start, end);
+
+  const children: TreeDatum[] = [];
+
+  if (start > 0) {
+    children.push({
+      name: `\u25C2 Newer`,
+      type: "nav",
+      category,
+      navAction: "prev",
+    });
+  }
+
+  children.push(...slice);
+
+  if (end < total) {
+    const remaining = total - end;
+    children.push({
+      name: `${remaining} more \u25B8`,
+      type: "nav",
+      category,
+      navAction: "next",
+    });
+  }
+
+  return children;
+}
+
+function buildTreeData(nodes: GraphNode[], edges: GraphEdge[]): TreeDatum {
   const adjacency = new Map<string, Set<string>>();
   for (const e of edges) {
     if (!adjacency.has(e.source)) adjacency.set(e.source, new Set());
@@ -164,45 +195,23 @@ function buildTreeData(
   const categoryChildren: TreeDatum[] = categories.map((cat) => {
     const catAdj = adjacency.get(cat.id) || new Set();
 
-    // Get all articles for this category (already sorted by most recent from query)
-    const catArticles = articles.filter((a) => catAdj.has(a.id));
-    const totalArticles = catArticles.length;
-    const page = pageMap.get(cat.label) || 0;
-    const start = page * PAGE_SIZE;
-    const end = Math.min(start + PAGE_SIZE, totalArticles);
-    const pageArticles = catArticles.slice(start, end);
-
-    const articleChildren: TreeDatum[] = pageArticles.map((a) => ({
-      name: a.label,
-      type: "article" as const,
-      category: cat.label,
-      slug: a.slug,
-    }));
-
-    // Add navigation nodes
-    if (start > 0) {
-      articleChildren.unshift({
-        name: `\u25C2 Newer`,
-        type: "nav",
+    // Store ALL articles on the category (already sorted by most recent from query)
+    const allArticles: TreeDatum[] = articles
+      .filter((a) => catAdj.has(a.id))
+      .map((a) => ({
+        name: a.label,
+        type: "article" as const,
         category: cat.label,
-        navAction: "prev",
-      });
-    }
-    if (end < totalArticles) {
-      const remaining = totalArticles - end;
-      articleChildren.push({
-        name: `${remaining} more \u25B8`,
-        type: "nav",
-        category: cat.label,
-        navAction: "next",
-      });
-    }
+        slug: a.slug,
+      }));
 
     return {
       name: cat.label,
       type: "category" as const,
       category: cat.label,
-      children: articleChildren,
+      _allArticles: allArticles,
+      _page: 0,
+      children: buildPageChildren(allArticles, 0, cat.label),
     };
   });
 
@@ -269,9 +278,12 @@ export function WebGraphD3({ nodes, edges }: Props) {
   const gRef = useRef<SVGGElement | null>(null);
   const [mounted, setMounted] = useState(false);
   const [themeColors, setThemeColors] = useState<ThemeColors | null>(null);
-  const [pageMap, setPageMap] = useState<Map<string, number>>(new Map());
 
-  const treeData = useMemo(() => buildTreeData(nodes, edges, pageMap), [nodes, edges, pageMap]);
+  // Refs for D3 internals so handleNavClick can access them without re-render
+  const rootRef = useRef<HierarchyNode | null>(null);
+  const updateFnRef = useRef<((source: HierarchyNode) => void) | null>(null);
+
+  const treeData = useMemo(() => buildTreeData(nodes, edges), [nodes, edges]);
 
   // Mount + theme observer
   useEffect(() => {
@@ -597,19 +609,53 @@ export function WebGraphD3({ nodes, edges }: Props) {
       });
     }
 
-    function handleNavClick(d: TreeDatum) {
-      if (!d.category || !d.navAction) return;
-      setPageMap((prev) => {
-        const next = new Map(prev);
-        const current = next.get(d.category!) || 0;
-        if (d.navAction === "next") {
-          next.set(d.category!, current + 1);
-        } else if (d.navAction === "prev" && current > 0) {
-          next.set(d.category!, current - 1);
-        }
-        return next;
+    function handleNavClick(navDatum: TreeDatum) {
+      if (!navDatum.category || !navDatum.navAction) return;
+
+      // Find the parent category node in the live D3 hierarchy
+      const categoryNode = root.descendants().find(
+        (n) => n.data.type === "category" && n.data.category === navDatum.category
+      ) as HierarchyNode | undefined;
+      if (!categoryNode || !categoryNode.data._allArticles) return;
+
+      // Update page
+      const currentPage = categoryNode.data._page || 0;
+      const newPage = navDatum.navAction === "next" ? currentPage + 1 : Math.max(0, currentPage - 1);
+      categoryNode.data._page = newPage;
+
+      // Build new children data
+      const newChildrenData = buildPageChildren(
+        categoryNode.data._allArticles,
+        newPage,
+        navDatum.category
+      );
+      categoryNode.data.children = newChildrenData;
+
+      // Create new HierarchyNode children from the data
+      categoryNode.children = newChildrenData.map((childData) => {
+        const child = {
+          data: childData,
+          parent: categoryNode,
+          depth: categoryNode.depth + 1,
+          height: 0,
+          children: undefined,
+          _children: undefined,
+          // Start from parent position for smooth animation
+          x: categoryNode.x,
+          y: categoryNode.y,
+          x0: categoryNode.x,
+          y0: categoryNode.y,
+        } as unknown as HierarchyNode;
+        return child;
       });
+
+      // Animate the update from the category node
+      update(categoryNode);
     }
+
+    // Store refs for external access
+    rootRef.current = root;
+    updateFnRef.current = update;
 
     // Initial render
     update(root);
