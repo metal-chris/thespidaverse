@@ -93,12 +93,11 @@ export function Card({ article, featured = false }: CardProps) {
         className={cn(
           "group relative block rounded-xl overflow-hidden border-2 border-border card-tendril-hover",
           "transition-all duration-300 hover:shadow-xl hover:shadow-accent/5 hover:-translate-y-1",
-          "hover:border-accent/40",
-          "md:col-span-2 md:row-span-2"
+          "hover:border-accent/40"
         )}
       >
         {/* Full-bleed image */}
-        <div className="relative aspect-[16/9] md:aspect-[2/1] overflow-hidden">
+        <div className="relative aspect-[16/9] overflow-hidden">
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -134,7 +133,7 @@ export function Card({ article, featured = false }: CardProps) {
           )}
 
           {/* Overlaid text content */}
-          <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
+          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
             {/* Category pill */}
             {article.category && (
               <span
@@ -147,12 +146,12 @@ export function Card({ article, featured = false }: CardProps) {
               </span>
             )}
 
-            <h3 className="font-bold text-xl md:text-2xl lg:text-3xl text-white leading-snug group-hover:text-accent transition-colors">
+            <h3 className="font-bold text-lg md:text-xl text-white leading-snug group-hover:text-accent transition-colors">
               {article.title}
             </h3>
 
             {article.excerpt && (
-              <p className="mt-2 text-sm text-white/85 leading-relaxed line-clamp-2 max-w-2xl">
+              <p className="mt-1.5 text-xs md:text-sm text-white/85 leading-relaxed line-clamp-2">
                 {article.excerpt}
               </p>
             )}

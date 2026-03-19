@@ -11,7 +11,7 @@ const STATUS_COLORS: Record<string, string> = {
   playing: "bg-green-500",
   listening: "bg-purple-500",
   reading: "bg-yellow-500",
-  completed: "bg-accent",
+  completed: "bg-emerald-500",
   dropped: "bg-red-400",
 };
 
