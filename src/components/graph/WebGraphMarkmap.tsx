@@ -161,24 +161,37 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
         markmapRef.current.destroy();
       }
 
-      // Create instance first
+      // Recursively set fold state on all nodes except root
+      const setFoldState = (node: any, depth: number = 0) => {
+        if (depth > 0) {
+          // Initialize payload if it doesn't exist
+          if (!node.payload) {
+            node.payload = {};
+          }
+          // Set fold to 1 (collapsed)
+          node.payload.fold = 1;
+        }
+        
+        if (node.children) {
+          node.children.forEach((child: any) => setFoldState(child, depth + 1));
+        }
+      };
+      
+      setFoldState(root);
+
+      // Create instance
       markmapRef.current = Markmap.create(svgRef.current, {
         color: (node: any) => {
           const depth = node.depth || 0;
           
           // Root node - neutral gray
-          if (depth === 0) {
-            console.log('Root node color:', '#6B7280');
-            return "#6B7280";
-          }
+          if (depth === 0) return "#6B7280";
           
           // Categories get their specific colors
           if (depth === 1) {
             const content = node.content || node.v || '';
             const categoryName = content.replace(/<[^>]*>/g, '').trim();
-            const color = CATEGORY_COLORS[categoryName] || "#6B7280";
-            console.log(`Category "${categoryName}" color:`, color);
-            return color;
+            return CATEGORY_COLORS[categoryName] || "#6B7280";
           }
           
           // Find parent category for tags and articles
@@ -190,12 +203,9 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
           if (parent && (parent.depth || parent.d) === 1) {
             const content = parent.content || parent.v || '';
             const categoryName = content.replace(/<[^>]*>/g, '').trim();
-            const color = CATEGORY_COLORS[categoryName] || "#6B7280";
-            console.log(`Child of "${categoryName}" color:`, color);
-            return color;
+            return CATEGORY_COLORS[categoryName] || "#6B7280";
           }
           
-          console.log('Fallback color for depth', depth);
           return "#6B7280";
         },
         duration: 300,
@@ -209,27 +219,6 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
 
       markmapRef.current.setData(root);
       markmapRef.current.fit();
-      
-      // Collapse all nodes except root after rendering
-      setTimeout(() => {
-        if (!markmapRef.current) return;
-        
-        // Get all nodes and fold them except root
-        const foldNode = (node: any) => {
-          if (node.depth > 0 && node.children && node.children.length > 0) {
-            console.log('Folding node at depth', node.depth, node.content);
-            markmapRef.current?.toggleNode(node);
-          }
-          if (node.children) {
-            node.children.forEach(foldNode);
-          }
-        };
-        
-        const data = markmapRef.current.state.data;
-        if (data && data.children) {
-          data.children.forEach((child: any) => foldNode(child));
-        }
-      }, 500);
 
       // Handle clicks
       const svg = svgRef.current;
