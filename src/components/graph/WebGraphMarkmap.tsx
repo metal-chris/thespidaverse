@@ -253,14 +253,9 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
     const svg = svgRef.current;
     svg.style.backgroundColor = themeColors.bg;
 
-    // Update text colors
-    const textElements = svg.querySelectorAll("text");
-    textElements.forEach((text) => {
-      text.style.fill = themeColors.text;
-    });
-
-    // Update link colors
-    const pathElements = svg.querySelectorAll("path");
+    // DON'T override text colors - let Markmap's color function handle node colors
+    // Only update link/path colors for theme awareness
+    const pathElements = svg.querySelectorAll("path.markmap-link");
     pathElements.forEach((path) => {
       path.style.stroke = themeColors.linkColor;
     });
