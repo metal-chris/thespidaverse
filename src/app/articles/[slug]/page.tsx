@@ -181,13 +181,14 @@ export default async function ArticlePage({ params }: Props) {
             sizes="100vw"
           />
           {/* Gradient overlay - stronger to ensure text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/20" />
+          <div className="absolute inset-0 bg-black/30" />
 
           {/* Content positioned at bottom of hero */}
           <Container className="absolute bottom-0 left-0 right-0 pb-8 md:pb-12">
             {/* Breadcrumb */}
-            <nav className="text-[10px] md:text-xs text-white/60 mb-3 md:mb-4" aria-label="Breadcrumb">
-              <Link href="/" className="hover:text-white/90 transition-colors">
+            <nav className="text-[10px] md:text-xs text-white/80 mb-3 md:mb-4" aria-label="Breadcrumb">
+              <Link href="/" className="hover:text-white transition-colors">
                 Home
               </Link>
               {" / "}
@@ -195,14 +196,14 @@ export default async function ArticlePage({ params }: Props) {
                 <>
                   <Link
                     href={`/category/${article.category.slug.current}`}
-                    className="hover:text-white/90 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     {article.category.title}
                   </Link>
                   {" / "}
                 </>
               )}
-              <span className="text-white/80">{article.title}</span>
+              <span className="text-white">{article.title}</span>
             </nav>
 
             {/* Pills row: category + media type + format */}
@@ -219,13 +220,13 @@ export default async function ArticlePage({ params }: Props) {
                 </Link>
               )}
               {article.mediaType && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-sm">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full border border-white/30 bg-white/20 text-white backdrop-blur-sm">
                   {mediaIcons[article.mediaType]}
                   {mediaLabel[article.mediaType]}
                 </span>
               )}
               {article.format && (
-                <span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-full bg-white/10 text-white/90 border border-white/20 backdrop-blur-sm">
+                <span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-full bg-white/20 text-white border border-white/30 backdrop-blur-sm">
                   {formatBadge[article.format] || article.format}
                 </span>
               )}
@@ -238,13 +239,13 @@ export default async function ArticlePage({ params }: Props) {
 
             {/* Excerpt */}
             {article.excerpt && (
-              <p className="text-sm md:text-base text-white/80 leading-relaxed max-w-2xl mb-3 md:mb-4">
+              <p className="text-sm md:text-base text-white/90 leading-relaxed max-w-2xl mb-3 md:mb-4">
                 {article.excerpt}
               </p>
             )}
 
             {/* Metadata row with icons and dot separators */}
-            <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm text-white/60 mb-6 md:mb-8">
+            <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm text-white/80 mb-6 md:mb-8">
               <span className="inline-flex items-center gap-1.5">
                 <svg viewBox="0 0 16 16" className="w-3 h-3 md:w-3.5 md:h-3.5" fill="currentColor" aria-hidden="true">
                   <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm.5 4.5v4l3 1.5-.5 1-3.5-1.75V4.5h1z" />
@@ -255,7 +256,7 @@ export default async function ArticlePage({ params }: Props) {
               </span>
               {article.readingTime && (
                 <>
-                  <span className="w-1 h-1 rounded-full bg-white/30" aria-hidden="true" />
+                  <span className="w-1 h-1 rounded-full bg-white/50" aria-hidden="true" />
                   <span className="inline-flex items-center gap-1.5">
                     <svg viewBox="0 0 16 16" className="w-3 h-3 md:w-3.5 md:h-3.5" fill="currentColor" aria-hidden="true">
                       <path d="M2 2a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V2zm2 0v12h8V2H4zm2 2h4v1H6V4zm0 3h4v1H6V7zm0 3h3v1H6v-1z" />
@@ -266,7 +267,7 @@ export default async function ArticlePage({ params }: Props) {
               )}
               {article.mediaLength && (
                 <>
-                  <span className="w-1 h-1 rounded-full bg-white/30" aria-hidden="true" />
+                  <span className="w-1 h-1 rounded-full bg-white/50" aria-hidden="true" />
                   <span>{article.mediaLength}</span>
                 </>
               )}

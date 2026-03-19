@@ -135,7 +135,7 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
                     )}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-medium text-sm">{entry.title}</h4>
+                        <h4 className="font-medium text-sm text-foreground">{entry.title}</h4>
                         <span className="text-xs text-muted-foreground">
                           {formatMediaType(entry.mediaType)}
                         </span>

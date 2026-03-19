@@ -112,7 +112,7 @@ export function Card({ article, featured = false }: CardProps) {
           )}
 
           {/* Gradient overlay — stronger at bottom for text */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/5" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
 
           {/* Rating badge */}
           {article.webRating != null && (
@@ -152,20 +152,20 @@ export function Card({ article, featured = false }: CardProps) {
             </h3>
 
             {article.excerpt && (
-              <p className="mt-2 text-sm text-white/70 leading-relaxed line-clamp-2 max-w-2xl">
+              <p className="mt-2 text-sm text-white/85 leading-relaxed line-clamp-2 max-w-2xl">
                 {article.excerpt}
               </p>
             )}
 
             {/* Meta row */}
-            <div className="mt-3 flex items-center gap-2 text-[11px] text-white/50">
+            <div className="mt-3 flex items-center gap-2 text-[11px] text-white/70">
               {article.mediaType && (
                 <>
-                  <span className="flex items-center gap-1 text-white/60">
+                  <span className="flex items-center gap-1 text-white/75">
                     {mediaIcons[article.mediaType]}
                     {mediaLabel[article.mediaType]}
                   </span>
-                  <span className="w-1 h-1 rounded-full bg-white/30" aria-hidden="true" />
+                  <span className="w-1 h-1 rounded-full bg-white/50" aria-hidden="true" />
                 </>
               )}
               <time dateTime={article._createdAt} className="tabular-nums">
@@ -175,7 +175,7 @@ export function Card({ article, featured = false }: CardProps) {
               {article.readingTime && <span>{article.readingTime} min read</span>}
               {article.mediaLength && (
                 <>
-                  <span className="w-1 h-1 rounded-full bg-white/30" aria-hidden="true" />
+                  <span className="w-1 h-1 rounded-full bg-white/50" aria-hidden="true" />
                   <span>{article.mediaLength}</span>
                 </>
               )}
