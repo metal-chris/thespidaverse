@@ -224,6 +224,18 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
 
       markmapRef.current.setData(root);
       markmapRef.current.fit();
+      
+      // Collapse all category nodes after initial render
+      setTimeout(() => {
+        if (!markmapRef.current || !root.children) return;
+        
+        // Recursively fold all children of root
+        root.children.forEach((child: any) => {
+          if (child.children && child.children.length > 0) {
+            markmapRef.current!.toggleNode(child);
+          }
+        });
+      }, 100);
 
       // Handle clicks
       const svg = svgRef.current;
@@ -257,7 +269,7 @@ export function WebGraphMarkmap({ nodes, edges }: WebGraphMarkmapProps) {
     // Only update link/path colors for theme awareness
     const pathElements = svg.querySelectorAll("path.markmap-link");
     pathElements.forEach((path) => {
-      path.style.stroke = themeColors.linkColor;
+      (path as HTMLElement).style.stroke = themeColors.linkColor;
     });
   }, [themeColors]);
 
