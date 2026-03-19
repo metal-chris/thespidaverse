@@ -47,9 +47,10 @@ npm run dev
 
 The site will be in "coming soon" mode by default. To access the full site:
 
-1. Go to `/coming-soon`
-2. Click "Early Access"
-3. Enter passcode: `w3bd3s1gn3r`
+1. Set `EARLY_ACCESS_PASSCODE` in your `.env.local`
+2. Go to `/coming-soon`
+3. Click "Early Access"
+4. Enter your configured passcode
 
 ### Database Setup
 

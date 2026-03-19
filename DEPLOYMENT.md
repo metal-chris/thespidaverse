@@ -196,10 +196,9 @@ The site is configured with a coming-soon page that blocks all routes until a pa
 
 ### Passcode
 
-Default passcode: `w3bd3s1gn3r`
+Set via environment variable: `EARLY_ACCESS_PASSCODE`
 
-To change it, update:
-- `src/app/api/early-access/route.ts` (line 3)
+Add to Netlify environment variables or `.env.local` for local development.
 
 ### Disable Coming Soon Mode
 
@@ -222,7 +221,7 @@ To disable the coming-soon redirect and open the full site:
 ### Test Early Access
 
 1. Click "Early Access" on the coming-soon page
-2. Enter passcode: `w3bd3s1gn3r`
+2. Enter the passcode you configured in `EARLY_ACCESS_PASSCODE`
 3. You should be redirected to the full site
 4. Cookie `spidaverse-access=granted` should be set (check DevTools)
 
