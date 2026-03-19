@@ -245,21 +245,37 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
       const radius = getNodeRadius(type);
       const isArticle = type === "article";
       const isRoot = type === "root";
+      const isTag = type === "tag";
       const hasChildren = nodeDatum.children && nodeDatum.children.length > 0;
       const isDark = themeColors?.isDark ?? false;
-      const textColor = themeColors?.text || "#1A1A1A";
+      const bgColor = themeColors?.bg || "#FAFAFA";
 
-      // On dark themes, use light readable text; on light theme, use category colors
-      const labelColor = isRoot
-        ? textColor
-        : isArticle
-          ? (isDark ? (themeColors?.articleText || "#E5E5E5") : circleColor)
-          : (isDark ? (themeColors?.categoryText || "#F5F5F5") : circleColor);
+      // Badge/pill background colors per theme
+      const badgeBg = isDark
+        ? "rgba(255, 255, 255, 0.12)"  // semi-transparent white on dark
+        : "rgba(0, 0, 0, 0.06)";        // semi-transparent black on light
 
-      // Text offset based on node size
-      const textX = radius + 10;
-      const fontSize = isRoot ? 16 : type === "category" ? 14 : 12;
+      const badgeBorder = isDark
+        ? "rgba(255, 255, 255, 0.2)"
+        : "rgba(0, 0, 0, 0.1)";
+
+      // Text colors - always high contrast
+      const labelColor = isDark ? "#FFFFFF" : "#1A1A1A";
+
+      // Text offset and sizing
+      const textX = radius + 12;
+      const fontSize = isRoot ? 15 : type === "category" ? 13 : 11;
       const fontWeight = isRoot ? 700 : type === "category" ? 600 : 400;
+
+      // Measure text width (approximate)
+      const textLength = nodeDatum.name.length;
+      const charWidth = fontSize * 0.55; // approximate character width
+      const textWidth = textLength * charWidth;
+      const badgePadding = isRoot ? 10 : isTag ? 6 : 8;
+      const badgeWidth = textWidth + badgePadding * 2;
+      const badgeHeight = fontSize + (isRoot ? 8 : 6);
+      const badgeX = textX - badgePadding;
+      const badgeY = -badgeHeight / 2;
 
       // Larger invisible hit area for touch devices
       const hitRadius = Math.max(radius, 22);
@@ -283,7 +299,7 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
           <circle
             r={radius}
             fill={circleColor}
-            stroke={isRoot ? textColor : circleColor}
+            stroke={circleColor}
             strokeWidth={isRoot ? 2.5 : 1.5}
             style={{ cursor: hasChildren ? "pointer" : "default" }}
             onClick={(e) => {
@@ -297,6 +313,21 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
             <circle r={radius * 0.4} fill="#fff" opacity={0.9} pointerEvents="none" />
           )}
 
+          {/* Badge/pill background */}
+          <rect
+            x={badgeX}
+            y={badgeY}
+            width={badgeWidth}
+            height={badgeHeight}
+            rx={badgeHeight / 2}
+            ry={badgeHeight / 2}
+            fill={badgeBg}
+            stroke={badgeBorder}
+            strokeWidth={0.5}
+            opacity={0.95}
+            pointerEvents="none"
+          />
+
           {/* Label */}
           {isArticle ? (
             <text
@@ -309,6 +340,8 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
                 cursor: "pointer",
                 textDecoration: "none",
                 touchAction: "manipulation",
+                paintOrder: "stroke fill",
+                stroke: "none",
               }}
               onClick={(e) => {
                 e.stopPropagation();
@@ -316,11 +349,9 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
               }}
               onMouseEnter={(e) => {
                 (e.target as SVGTextElement).style.textDecoration = "underline";
-                if (!isDark) (e.target as SVGTextElement).style.fill = circleColor;
               }}
               onMouseLeave={(e) => {
                 (e.target as SVGTextElement).style.textDecoration = "none";
-                (e.target as SVGTextElement).style.fill = labelColor;
               }}
             >
               {nodeDatum.name}
@@ -335,6 +366,8 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
               style={{
                 cursor: hasChildren ? "pointer" : "default",
                 touchAction: hasChildren ? "manipulation" : "auto",
+                paintOrder: "stroke fill",
+                stroke: "none",
               }}
               onClick={(e) => {
                 e.stopPropagation();
