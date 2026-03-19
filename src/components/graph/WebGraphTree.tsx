@@ -34,6 +34,9 @@ interface ThemeColors {
   text: string;
   mutedText: string;
   linkDefault: string;
+  isDark: boolean;
+  articleText: string;
+  categoryText: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -53,19 +56,35 @@ const ROOT_COLOR = "#6B7280";
 // ---------------------------------------------------------------------------
 function getThemeColors(): ThemeColors {
   if (typeof document === "undefined") {
-    return { bg: "#FAFAFA", text: "#1A1A1A", mutedText: "#6B6B6B", linkDefault: "#D1D5DB" };
+    return {
+      bg: "#FAFAFA", text: "#1A1A1A", mutedText: "#6B6B6B",
+      linkDefault: "#D1D5DB", isDark: false,
+      articleText: "inherit", categoryText: "inherit",
+    };
   }
 
   const theme = document.documentElement.getAttribute("data-theme");
 
   if (theme === "venom") {
-    return { bg: "#0A0A0A", text: "#F5F5F5", mutedText: "#999999", linkDefault: "#374151" };
+    return {
+      bg: "#0A0A0A", text: "#F5F5F5", mutedText: "#999999",
+      linkDefault: "#4B5563", isDark: true,
+      articleText: "#E5E5E5", categoryText: "#F5F5F5",
+    };
   }
   if (theme === "peter") {
-    return { bg: "#4A0A0A", text: "#F5F5F5", mutedText: "#999999", linkDefault: "#8B3A3A" };
+    return {
+      bg: "#4A0A0A", text: "#F5F5F5", mutedText: "#CC9999",
+      linkDefault: "#6B2020", isDark: true,
+      articleText: "#F0D0D0", categoryText: "#F5F5F5",
+    };
   }
-  // miles (default)
-  return { bg: "#FAFAFA", text: "#1A1A1A", mutedText: "#6B6B6B", linkDefault: "#D1D5DB" };
+  // miles (default) — category colors are readable on white bg
+  return {
+    bg: "#FAFAFA", text: "#1A1A1A", mutedText: "#6B6B6B",
+    linkDefault: "#D1D5DB", isDark: false,
+    articleText: "inherit", categoryText: "inherit",
+  };
 }
 
 /**
@@ -222,26 +241,50 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
   const renderCustomNode = useCallback(
     ({ nodeDatum, toggleNode }: CustomNodeElementProps) => {
       const type = (nodeDatum.attributes?.type as string) || "article";
-      const color = getNodeColor(nodeDatum);
+      const circleColor = getNodeColor(nodeDatum);
       const radius = getNodeRadius(type);
       const isArticle = type === "article";
       const isRoot = type === "root";
       const hasChildren = nodeDatum.children && nodeDatum.children.length > 0;
+      const isDark = themeColors?.isDark ?? false;
       const textColor = themeColors?.text || "#1A1A1A";
 
+      // On dark themes, use light readable text; on light theme, use category colors
+      const labelColor = isRoot
+        ? textColor
+        : isArticle
+          ? (isDark ? (themeColors?.articleText || "#E5E5E5") : circleColor)
+          : (isDark ? (themeColors?.categoryText || "#F5F5F5") : circleColor);
+
       // Text offset based on node size
-      const textX = radius + 8;
+      const textX = radius + 10;
       const fontSize = isRoot ? 16 : type === "category" ? 14 : 12;
       const fontWeight = isRoot ? 700 : type === "category" ? 600 : 400;
 
+      // Larger invisible hit area for touch devices
+      const hitRadius = Math.max(radius, 22);
+
       return (
         <g>
+          {/* Invisible hit area for easier touch targeting */}
+          {hasChildren && (
+            <circle
+              r={hitRadius}
+              fill="transparent"
+              style={{ cursor: "pointer", touchAction: "manipulation" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleNode();
+              }}
+            />
+          )}
+
           {/* Node circle */}
           <circle
             r={radius}
-            fill={color}
-            stroke={isRoot ? textColor : color}
-            strokeWidth={isRoot ? 2 : 1.5}
+            fill={circleColor}
+            stroke={isRoot ? textColor : circleColor}
+            strokeWidth={isRoot ? 2.5 : 1.5}
             style={{ cursor: hasChildren ? "pointer" : "default" }}
             onClick={(e) => {
               e.stopPropagation();
@@ -251,7 +294,7 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
 
           {/* Collapse indicator: inner dot for collapsed nodes with children */}
           {hasChildren && (nodeDatum as any).__rd3t?.collapsed && (
-            <circle r={radius * 0.4} fill="#fff" opacity={0.8} pointerEvents="none" />
+            <circle r={radius * 0.4} fill="#fff" opacity={0.9} pointerEvents="none" />
           )}
 
           {/* Label */}
@@ -261,10 +304,11 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
               dy="0.35em"
               fontSize={fontSize}
               fontWeight={fontWeight}
-              fill={color}
+              fill={labelColor}
               style={{
                 cursor: "pointer",
                 textDecoration: "none",
+                touchAction: "manipulation",
               }}
               onClick={(e) => {
                 e.stopPropagation();
@@ -272,9 +316,11 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
               }}
               onMouseEnter={(e) => {
                 (e.target as SVGTextElement).style.textDecoration = "underline";
+                if (!isDark) (e.target as SVGTextElement).style.fill = circleColor;
               }}
               onMouseLeave={(e) => {
                 (e.target as SVGTextElement).style.textDecoration = "none";
+                (e.target as SVGTextElement).style.fill = labelColor;
               }}
             >
               {nodeDatum.name}
@@ -285,8 +331,11 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
               dy="0.35em"
               fontSize={fontSize}
               fontWeight={fontWeight}
-              fill={isRoot ? textColor : color}
-              style={{ cursor: hasChildren ? "pointer" : "default" }}
+              fill={labelColor}
+              style={{
+                cursor: hasChildren ? "pointer" : "default",
+                touchAction: hasChildren ? "manipulation" : "auto",
+              }}
               onClick={(e) => {
                 e.stopPropagation();
                 if (hasChildren) toggleNode();
@@ -339,12 +388,23 @@ export function WebGraphTree({ nodes, edges }: WebGraphTreeProps) {
         className="w-full"
         style={{ height: "calc(100vh - 140px)", backgroundColor: themeColors.bg }}
       >
-        {/* Dynamic link color styles */}
+        {/* Dynamic link color + touch styles */}
         <style>{`
           .rd3t-link {
             stroke: ${themeColors.linkDefault} !important;
             stroke-width: 1.5px;
-            stroke-opacity: 0.6;
+            stroke-opacity: ${themeColors.isDark ? 0.8 : 0.5};
+          }
+          .rd3t-tree-container {
+            touch-action: pan-x pan-y pinch-zoom;
+            -webkit-overflow-scrolling: touch;
+          }
+          .rd3t-tree-container svg {
+            touch-action: none;
+          }
+          .rd3t-node text {
+            user-select: none;
+            -webkit-user-select: none;
           }
         `}</style>
         <Tree
