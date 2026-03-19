@@ -1,6 +1,6 @@
 import { getProvider } from "@/lib/providers";
 import type { GraphArticle } from "@/lib/providers";
-import { WebGraphMarkmap } from "@/components/graph/WebGraphMarkmap";
+import { WebGraphTree } from "@/components/graph/WebGraphTree";
 import { GraphEmptyState } from "@/components/graph/GraphEmptyState";
 import type { Metadata } from "next";
 
@@ -82,5 +82,5 @@ export default async function TheWebPage() {
 
   const { nodes, edges } = buildGraph(articles);
 
-  return <WebGraphMarkmap nodes={nodes as never[]} edges={edges} />;
+  return <WebGraphTree nodes={nodes as never[]} edges={edges} />;
 }
