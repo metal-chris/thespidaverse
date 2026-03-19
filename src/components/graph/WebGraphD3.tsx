@@ -34,9 +34,10 @@ interface Props {
 
 interface TreeDatum {
   name: string;
-  type: "root" | "category" | "tag" | "article";
+  type: "root" | "category" | "tag" | "article" | "nav";
   category?: string;
   slug?: string;
+  navAction?: "next" | "prev";
   children?: TreeDatum[];
 }
 
@@ -73,6 +74,7 @@ const NODE_RADIUS: Record<string, number> = {
   category: 10,
   tag: 5,
   article: 4,
+  nav: 3,
 };
 
 const FONT_SIZE: Record<string, number> = {
@@ -80,6 +82,7 @@ const FONT_SIZE: Record<string, number> = {
   category: 12,
   tag: 11,
   article: 11,
+  nav: 10,
 };
 
 const FONT_WEIGHT: Record<string, number> = {
@@ -87,6 +90,7 @@ const FONT_WEIGHT: Record<string, number> = {
   category: 600,
   tag: 400,
   article: 400,
+  nav: 500,
 };
 
 const BADGE_PAD_X = 8;
@@ -96,6 +100,7 @@ const BADGE_CHAMFER = 3;
 const DURATION = 400;
 const HORIZONTAL_SPACING = 220;
 const VERTICAL_SPACING = 28;
+const PAGE_SIZE = 8;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -132,10 +137,15 @@ function getThemeColors(): ThemeColors {
 
 function nodeColor(d: TreeDatum): string {
   if (d.type === "root") return ROOT_COLOR;
+  if (d.type === "nav") return "#6B7280";
   return CATEGORY_COLORS[d.category || ""] || ROOT_COLOR;
 }
 
-function buildTreeData(nodes: GraphNode[], edges: GraphEdge[]): TreeDatum {
+function buildTreeData(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  pageMap: Map<string, number>
+): TreeDatum {
   const adjacency = new Map<string, Set<string>>();
   for (const e of edges) {
     if (!adjacency.has(e.source)) adjacency.set(e.source, new Set());
@@ -148,45 +158,50 @@ function buildTreeData(nodes: GraphNode[], edges: GraphEdge[]): TreeDatum {
   for (const n of nodes) nodeMap.set(n.id, n);
 
   const categories = nodes.filter((n) => n.type === "category");
-  const tags = nodes.filter((n) => n.type === "tag");
   const articles = nodes.filter((n) => n.type === "article");
 
   const categoryChildren: TreeDatum[] = categories.map((cat) => {
     const catAdj = adjacency.get(cat.id) || new Set();
-    const catTags = tags.filter((t) => catAdj.has(t.id));
-    const placedIds = new Set<string>();
 
-    const tagChildren: TreeDatum[] = catTags.map((tag) => {
-      const tagAdj = adjacency.get(tag.id) || new Set();
-      const tagArticles = articles.filter((a) => tagAdj.has(a.id));
-      tagArticles.forEach((a) => placedIds.add(a.id));
-      return {
-        name: tag.label,
-        type: "tag" as const,
-        category: cat.label,
-        children: tagArticles.map((a) => ({
-          name: a.label,
-          type: "article" as const,
-          category: cat.label,
-          slug: a.slug,
-        })),
-      };
-    });
+    // Get all articles for this category (already sorted by most recent from query)
+    const catArticles = articles.filter((a) => catAdj.has(a.id));
+    const totalArticles = catArticles.length;
+    const page = pageMap.get(cat.label) || 0;
+    const start = page * PAGE_SIZE;
+    const end = Math.min(start + PAGE_SIZE, totalArticles);
+    const pageArticles = catArticles.slice(start, end);
 
-    const directArticles = articles
-      .filter((a) => catAdj.has(a.id) && !placedIds.has(a.id))
-      .map((a) => ({
-        name: a.label,
-        type: "article" as const,
+    const articleChildren: TreeDatum[] = pageArticles.map((a) => ({
+      name: a.label,
+      type: "article" as const,
+      category: cat.label,
+      slug: a.slug,
+    }));
+
+    // Add navigation nodes
+    if (start > 0) {
+      articleChildren.unshift({
+        name: `\u25C2 Newer`,
+        type: "nav",
         category: cat.label,
-        slug: a.slug,
-      }));
+        navAction: "prev",
+      });
+    }
+    if (end < totalArticles) {
+      const remaining = totalArticles - end;
+      articleChildren.push({
+        name: `${remaining} more \u25B8`,
+        type: "nav",
+        category: cat.label,
+        navAction: "next",
+      });
+    }
 
     return {
       name: cat.label,
       type: "category" as const,
       category: cat.label,
-      children: [...tagChildren, ...directArticles],
+      children: articleChildren,
     };
   });
 
@@ -253,8 +268,9 @@ export function WebGraphD3({ nodes, edges }: Props) {
   const gRef = useRef<SVGGElement | null>(null);
   const [mounted, setMounted] = useState(false);
   const [themeColors, setThemeColors] = useState<ThemeColors | null>(null);
+  const [pageMap, setPageMap] = useState<Map<string, number>>(new Map());
 
-  const treeData = useMemo(() => buildTreeData(nodes, edges), [nodes, edges]);
+  const treeData = useMemo(() => buildTreeData(nodes, edges, pageMap), [nodes, edges, pageMap]);
 
   // Mount + theme observer
   useEffect(() => {
@@ -445,10 +461,12 @@ export function WebGraphD3({ nodes, edges }: Props) {
         .append("circle")
         .attr("r", (d) => NODE_RADIUS[d.data.type] || 4)
         .attr("fill", (d) => nodeColor(d.data))
-        .attr("cursor", (d) => (d.data.type !== "article" ? "pointer" : "default"))
+        .attr("cursor", (d) => (d.data.type === "article" ? "default" : "pointer"))
         .on("click", (event, d) => {
           event.stopPropagation();
-          if (d.data.type !== "article") {
+          if (d.data.type === "nav") {
+            handleNavClick(d.data);
+          } else if (d.data.type !== "article") {
             toggle(d as HierarchyNode);
             update(d as HierarchyNode);
           }
@@ -476,13 +494,15 @@ export function WebGraphD3({ nodes, edges }: Props) {
         .attr("dy", "0.35em")
         .attr("font-family", "Inter, system-ui, -apple-system, sans-serif")
         .attr("cursor", (d) => {
-          if (d.data.type === "article") return "pointer";
-          if (d.data.type !== "article" && (d.children || (d as HierarchyNode)._children)) return "pointer";
+          if (d.data.type === "article" || d.data.type === "nav") return "pointer";
+          if (d.children || (d as HierarchyNode)._children) return "pointer";
           return "default";
         })
         .on("click", (event, d) => {
           event.stopPropagation();
-          if (d.data.type === "article" && d.data.slug) {
+          if (d.data.type === "nav") {
+            handleNavClick(d.data);
+          } else if (d.data.type === "article" && d.data.slug) {
             router.push(`/articles/${d.data.slug}`);
           } else if (d.data.type !== "article") {
             toggle(d as HierarchyNode);
@@ -490,7 +510,7 @@ export function WebGraphD3({ nodes, edges }: Props) {
           }
         })
         .on("mouseenter", function (event, d) {
-          if (d.data.type === "article") {
+          if (d.data.type === "article" || d.data.type === "nav") {
             d3Selection.select(this).attr("text-decoration", "underline");
           }
         })
@@ -569,6 +589,20 @@ export function WebGraphD3({ nodes, edges }: Props) {
       allNodes.forEach((d) => {
         d.x0 = d.x;
         d.y0 = d.y;
+      });
+    }
+
+    function handleNavClick(d: TreeDatum) {
+      if (!d.category || !d.navAction) return;
+      setPageMap((prev) => {
+        const next = new Map(prev);
+        const current = next.get(d.category!) || 0;
+        if (d.navAction === "next") {
+          next.set(d.category!, current + 1);
+        } else if (d.navAction === "prev" && current > 0) {
+          next.set(d.category!, current - 1);
+        }
+        return next;
       });
     }
 

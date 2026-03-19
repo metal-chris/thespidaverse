@@ -86,6 +86,7 @@ export interface AnimeMetadata {
 
 export interface GraphArticle {
   _id: string;
+  _createdAt?: string;
   title: string;
   slug: { current: string };
   mediaType?: string;

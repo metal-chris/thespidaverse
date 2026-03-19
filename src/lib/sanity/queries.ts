@@ -217,6 +217,7 @@ export const moodTagsQuery = groq`
 export const graphDataQuery = groq`
   *[_type == "article"] | order(_createdAt desc) {
     _id,
+    _createdAt,
     title,
     slug,
     mediaType,
