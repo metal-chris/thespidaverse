@@ -428,9 +428,9 @@ export function WebGraphD3({ nodes, edges }: Props) {
         .append("path")
         .attr("class", "link")
         .attr("fill", "none")
-        .attr("stroke", themeColors.link)
+        .attr("stroke", themeColors!.link)
         .attr("stroke-width", 1.5)
-        .attr("stroke-opacity", themeColors.isDark ? 0.7 : 0.4)
+        .attr("stroke-opacity", themeColors!.isDark ? 0.7 : 0.4)
         .attr("d", () => {
           const o = { x: source.x0 || 0, y: source.y0 || 0 };
           return linkPath(o, o);
@@ -442,8 +442,8 @@ export function WebGraphD3({ nodes, edges }: Props) {
         .transition()
         .duration(DURATION)
         .attr("d", (d: any) => linkPath(d.source, d.target))
-        .attr("stroke", themeColors.link)
-        .attr("stroke-opacity", themeColors.isDark ? 0.7 : 0.4);
+        .attr("stroke", themeColors!.link)
+        .attr("stroke-opacity", themeColors!.isDark ? 0.7 : 0.4);
 
       // Exit links
       link
@@ -567,7 +567,7 @@ export function WebGraphD3({ nodes, edges }: Props) {
           .attr("x", textX)
           .attr("font-size", `${fs}px`)
           .attr("font-weight", fw)
-          .attr("fill", themeColors.text)
+          .attr("fill", themeColors!.text)
           .attr("paint-order", "stroke fill")
           .attr("stroke", "none")
           .text(d.data.name);
@@ -583,12 +583,12 @@ export function WebGraphD3({ nodes, edges }: Props) {
 
           // Category/root badges are opaque so branches appear behind them
           const isImportant = type === "category" || type === "root";
-          const fill = isImportant ? themeColors.badgeSolid : themeColors.badgeBg;
+          const fill = isImportant ? themeColors!.badgeSolid : themeColors!.badgeBg;
 
           badgeEl
             .attr("d", badgePath(bx, by, bw, bh, BADGE_CHAMFER))
             .attr("fill", fill)
-            .attr("stroke", themeColors.badgeBorder)
+            .attr("stroke", themeColors!.badgeBorder)
             .attr("stroke-width", 0.5);
         }
       });
