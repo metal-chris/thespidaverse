@@ -18,31 +18,37 @@ export default function AboutPage() {
 
       <div className="space-y-5 text-foreground/90 text-base md:text-lg leading-relaxed">
         <p>
-          Growing up, my dad and I bonded over nerdy stuff. He had his baseball cards and Magic: The Gathering collection, I had my Pokémon and Yu-Gi-Oh! decks. We&rsquo;d spend hours comparing pulls, debating strategies, geeking out over whatever we were into that week. That&rsquo;s what pop culture has always been for me: a way to connect. A language we speak when regular words don&rsquo;t cut it.
+          Pop culture has always been a language. Not the kind you study &mdash; the kind you just <em>speak</em>. It&rsquo;s how my dad and I bonded growing up. He had his baseball cards and Magic: The Gathering collection. I had my Pokémon and Yu-Gi-Oh! decks. We&rsquo;d spend hours comparing pulls, debating strategies, geeking out over whatever we were into that week. That&rsquo;s what this stuff does &mdash; it connects people when regular words don&rsquo;t cut it.
         </p>
         <p>
-          When life got heavy (and it did), I found myself turning to Spider-Man comics. Not because they had all the answers, but because Peter Parker never gave up. No matter how bad things got, he kept swinging. That resilience became something I needed to see, over and over again. So here we are.
+          <strong className="text-foreground">The Spidaverse</strong> exists because that connection shouldn&rsquo;t stop at your living room.
         </p>
         <p>
-          <strong className="text-foreground">The Spidaverse</strong> is where I share the movies, games, anime, manga, and music that got me through. Every piece of media gets a <strong className="text-foreground">Web Rating</strong> out of 100, visualized as a spider web that fills based on the score. Not because I want to debate whether something deserves an 87 or a 91, but because sometimes you just need to quantify how much something mattered to you. It&rsquo;s like when you tell someone a movie is &ldquo;pretty good&rdquo; but you actually watched it three times in one week. The web doesn&rsquo;t lie.
+          When life got heavy, I found myself turning to Spider-Man comics. Not because they had all the answers, but because Peter Parker never gave up. No matter how bad things got, he kept swinging. Fall down 7 times, get up 8. That resilience became something I needed to see, over and over again. And the thing about Spider-Man &mdash; the real thing &mdash; is that it was never about <em>him</em>. It&rsquo;s about the idea that anyone can wear the mask. That the web is bigger than one person.
         </p>
         <p>
-          Look, I know what you&rsquo;re thinking. <em>&ldquo;Another person with Opinions™ about movies on the internet.&rdquo;</em> Fair. But I&rsquo;m not here to prove I&rsquo;m right or win arguments in the comments. I write like I&rsquo;m talking to a friend about something we&rsquo;re both into, not like a critic getting paid to dissect frame rates and symbolism. I&rsquo;m not paid enough to be that. What I <em>am</em> trying to do is the thing I wish I saw more of on the internet: constructive criticism that actually brightens your day, puts you onto something new, or respectfully challenges your perspective without making you feel like an idiot for disagreeing.
+          That&rsquo;s what this is.
         </p>
         <p>
-          You&rsquo;ll find me nerding out over <em>Jujutsu Kaisen</em>&rsquo;s subtle urban undertones, defending why <em>Fantastic Four</em> worked as both a sci-fi flick and a superhero movie, or explaining why J. Cole&rsquo;s <em>The Fall Off</em> is going to take you 26 listens to fully unpack. Games get special love here because they&rsquo;re interactive in ways other art forms can&rsquo;t match, and if you&rsquo;re sleeping on gaming as an art form, we need to talk. I also spoiler-mark everything because consent is key, and I wouldn&rsquo;t want to ruin your first impression of something with a blank slate. You can read safely.
+          Every piece of media on this site gets a <strong className="text-foreground">Web Rating</strong> out of 100, visualized as a spider web that fills based on the score. Not because I want to debate whether something deserves an 87 or a 91 &mdash; but because sometimes you need to put a number on how much something <em>mattered</em> to you. It&rsquo;s like when you tell someone a movie is &ldquo;pretty good&rdquo; but you actually watched it three times in one week. The web doesn&rsquo;t lie.
         </p>
         <p>
-          Expect seasonal vibes (Saturday morning cartoons energy, shout out to Kendrick&rsquo;s &ldquo;Cartoons & Cereal&rdquo;), vibe-based picks, and the occasional reader request. My current white whale? The entire MCU up to this point. It&rsquo;s a lot. We&rsquo;ll get there. Eventually. Maybe.
+          You&rsquo;ll find deep dives into <em>Jujutsu Kaisen</em>&rsquo;s subtle urban undertones, arguments for why <em>Fantastic Four</em> worked as both a sci-fi flick and a superhero movie, breakdowns of why a J. Cole album takes 26 listens to fully unpack. Games get special love because they&rsquo;re interactive in ways other art forms can&rsquo;t match &mdash; and if you&rsquo;re sleeping on gaming as an art form, we need to talk.
         </p>
         <p>
-          I approach media the same way I approach food: with respect for everything I consume. Some of it&rsquo;s comfort food (Edgar Wright films are my go-tos when I need a reset). Some of it challenges you. Some of it disappoints (<em>Karate Kid: Legends</em> had <em>Cobra Kai</em> to springboard off of and still fell flat). But it all deserves to be engaged with thoughtfully. I&rsquo;ve changed my mind on plenty of things, especially music, because a lot of lyrics and musical elements are more complex than they&rsquo;re presented. That&rsquo;s the beauty of revisiting things. Giving them repeat listens. Letting them marinate.
+          But here&rsquo;s the thing: <strong className="text-foreground">this isn&rsquo;t just my web.</strong>
         </p>
         <p>
-          Spider-Man inspires hope. I&rsquo;m not him. I&rsquo;m just trying to be someone he&rsquo;d respect while being my own person. The Leap of Faith scene from <em>Into the Spider-Verse</em> lives in my head rent-free. That moment when Miles finally becomes Spider-Man, not by being perfect, but by taking the jump anyway. That&rsquo;s what this site is. A leap of faith. An invitation to connect over the things we love, challenge each other&rsquo;s perspectives, and maybe discover something new along the way.
+          I write like I&rsquo;m talking to a friend about something we&rsquo;re both into. Not like a critic getting paid to dissect frame rates and symbolism. What I&rsquo;m trying to build is the thing I wish I saw more of online: constructive criticism that actually brightens your day, puts you onto something new, or respectfully challenges your perspective without making you feel like an idiot for disagreeing. And I want <em>you</em> to do the same.
         </p>
         <p>
-          If you&rsquo;re kind, passionate, and open-minded, welcome to the web.
+          I approach media the same way I approach food &mdash; with respect for everything I consume. Some of it&rsquo;s comfort food. Some of it challenges you. Some of it disappoints. But it all deserves to be engaged with thoughtfully. I&rsquo;ve changed my mind on plenty of things because I gave them repeat listens, rewatches, and time to marinate. That&rsquo;s not weakness &mdash; that&rsquo;s the whole point.
+        </p>
+        <p>
+          The Leap of Faith scene from <em>Into the Spider-Verse</em> lives in my head rent-free. That moment when Miles finally becomes Spider-Man &mdash; not by being perfect, not by being Peter, but by taking the jump anyway. That&rsquo;s what Spider-Man has always meant to me. Not the powers, not the suit &mdash; the decision to keep swinging. That&rsquo;s what this space is. A leap of faith. An invitation to connect over the things we love, challenge each other&rsquo;s perspectives, and maybe discover something new along the way.
+        </p>
+        <p>
+          If you&rsquo;re kind, passionate, and open-minded &mdash; welcome to the web. It&rsquo;s yours too.
         </p>
       </div>
     </Container>
