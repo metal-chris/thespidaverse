@@ -66,6 +66,32 @@ export function WebSpinner({ size = "md", className = "" }: WebSpinnerProps) {
           />
         );
       })}
+      {/* Spider in center */}
+      <g transform={`translate(${center}, ${center})`}>
+        <circle
+          r={size === "sm" ? 2 : size === "md" ? 3 : 4}
+          fill="currentColor"
+          className="text-accent"
+        />
+        {/* Spider legs */}
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => {
+          const rad = (angle * Math.PI) / 180;
+          const legLength = size === "sm" ? 4 : size === "md" ? 6 : 8;
+          return (
+            <line
+              key={angle}
+              x1={0}
+              y1={0}
+              x2={Math.cos(rad) * legLength}
+              y2={Math.sin(rad) * legLength}
+              stroke="currentColor"
+              strokeWidth={size === "sm" ? 1 : size === "md" ? 1.5 : 2}
+              className="text-accent"
+              strokeLinecap="round"
+            />
+          );
+        })}
+      </g>
     </svg>
   );
 }
