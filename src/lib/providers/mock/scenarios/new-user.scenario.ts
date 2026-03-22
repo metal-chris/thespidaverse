@@ -86,5 +86,6 @@ export function buildNewUserScenario(): MockDataset {
     moods,
     consuming,
     reactions,
+    galleryPieces: [],
   };
 }

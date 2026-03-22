@@ -148,3 +148,30 @@ export interface GraphEdge {
   target: string;
   weight?: number;
 }
+
+// --- Gallery ---
+
+export type GalleryPieceType = "image" | "video";
+export type GalleryFranchise = "spider-verse" | "venom" | "anime" | "games" | "music" | "other";
+export type VideoPlatform = "youtube" | "tiktok" | "instagram";
+
+export interface GalleryPiece {
+  _id: string;
+  _createdAt: string;
+  title: string;
+  slug: { current: string };
+  pieceType: GalleryPieceType;
+  image?: SanityImage;
+  imageUrl?: string;
+  videoUrl?: string;
+  videoPlatform?: VideoPlatform;
+  videoThumbnail?: SanityImage;
+  videoThumbnailUrl?: string;
+  artistName: string;
+  artistUrl?: string;
+  originalUrl?: string;
+  franchise: GalleryFranchise;
+  description?: string;
+  isSpotlight: boolean;
+  publishedAt: string;
+}

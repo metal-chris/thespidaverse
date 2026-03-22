@@ -6,10 +6,11 @@ import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
   { href: "/journal", label: "Journal" },
   { href: "/collections", label: "Collections" },
-  { href: "/the-web", label: "The Web" },
-  { href: "/about", label: "About" },
+  { href: "/the-web", label: "Web" },
+  { href: "/gallery", label: "Gallery" },
 ];
 
 export function Nav({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {

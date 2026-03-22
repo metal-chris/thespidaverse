@@ -17,5 +17,6 @@ export function buildEmptyStatesScenario(): MockDataset {
     moods: [],
     consuming: null,
     reactions: new Map(),
+    galleryPieces: [],
   };
 }

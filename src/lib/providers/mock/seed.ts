@@ -7,6 +7,7 @@ import type {
   Tag,
   CurrentlyConsuming,
   ReactionCounts,
+  GalleryPiece,
 } from "@/types";
 
 // ---------------------------------------------------------------------------
@@ -23,6 +24,7 @@ export interface MockDataset {
   moods: string[];
   consuming: CurrentlyConsuming | null;
   reactions: Map<string, ReactionCounts>;
+  galleryPieces: GalleryPiece[];
 }
 
 // ---------------------------------------------------------------------------

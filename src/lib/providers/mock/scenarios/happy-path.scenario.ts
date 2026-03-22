@@ -8,6 +8,7 @@ import type {
   MediaDiaryEntry,
   CurrentlyConsuming,
   ReactionCounts,
+  GalleryPiece,
 } from "@/types";
 import {
   createArticle,
@@ -23,6 +24,7 @@ import {
 import { createJournalEntry, createJournalEntries } from "../factories/journal.factory";
 import { createReactions } from "../factories/reaction.factory";
 import { createCurrentlyConsuming } from "../factories/consuming.factory";
+import { createGalleryPiece } from "../factories/gallery.factory";
 import type { MockDataset } from "../seed";
 
 /**
@@ -603,6 +605,194 @@ export function buildHappyPathScenario(): MockDataset {
     },
   });
 
+  // --- Gallery Pieces ---
+  const galleryPieces: GalleryPiece[] = [
+    // Spotlight piece
+    createGalleryPiece({
+      title: "Miles Morales — Into the Spider-Verse Fan Poster",
+      artistName: "Alex Chen",
+      artistUrl: "https://instagram.com/alexchenart",
+      originalUrl: "https://instagram.com/p/abc123",
+      franchise: "spider-verse",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1635863138275-d9b33299680b?w=800&h=1000&fit=crop",
+      description: "An incredible neon-lit reimagining of Miles swinging through Brooklyn.",
+      isSpotlight: true,
+    }),
+    // Spider-Verse images (portrait & landscape mix)
+    createGalleryPiece({
+      title: "Spider-Gwen Watercolor",
+      artistName: "Maya Rodriguez",
+      franchise: "spider-verse",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1618172193622-ae2d025f4032?w=600&h=900&fit=crop",
+    }),
+    createGalleryPiece({
+      title: "Spider-Man 2099 Cityscape",
+      artistName: "Kai Tanaka",
+      franchise: "spider-verse",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=800&h=500&fit=crop",
+      description: "A futuristic skyline inspired by Spider-Man 2099's Nueva York.",
+    }),
+    createGalleryPiece({
+      title: "Peter Parker Portrait",
+      artistName: "Sarah Kim",
+      franchise: "spider-verse",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=600&h=750&fit=crop",
+    }),
+    // Venom
+    createGalleryPiece({
+      title: "Venom Symbiote Splash Art",
+      artistName: "Marcus Black",
+      franchise: "venom",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1509281373149-e957c6296406?w=800&h=600&fit=crop",
+      description: "Dark, gritty symbiote art with incredible texture work.",
+    }),
+    createGalleryPiece({
+      title: "Carnage Unleashed",
+      artistName: "Lena Wolf",
+      franchise: "venom",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=600&h=800&fit=crop",
+    }),
+    createGalleryPiece({
+      title: "Anti-Venom Digital Painting",
+      artistName: "Jordan Lee",
+      franchise: "venom",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=700&h=500&fit=crop",
+    }),
+    // Anime
+    createGalleryPiece({
+      title: "Chainsaw Man — Denji Fan Art",
+      artistName: "Yuki Sato",
+      franchise: "anime",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&h=850&fit=crop",
+    }),
+    createGalleryPiece({
+      title: "Frieren Landscape Study",
+      artistName: "Emma Liu",
+      franchise: "anime",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=450&fit=crop",
+      description: "A serene landscape inspired by Frieren's journey.",
+    }),
+    createGalleryPiece({
+      title: "One Piece — Gear 5 Luffy",
+      artistName: "Taro Yamamoto",
+      franchise: "anime",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1541562232579-512a21360020?w=600&h=600&fit=crop",
+    }),
+    createGalleryPiece({
+      title: "Jujutsu Kaisen Gojo Poster",
+      artistName: "Nina Park",
+      franchise: "anime",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&h=700&fit=crop",
+    }),
+    // Games
+    createGalleryPiece({
+      title: "Elden Ring — Erdtree at Dusk",
+      artistName: "David Hart",
+      franchise: "games",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1518562180175-34a163b1a9a6?w=800&h=500&fit=crop",
+    }),
+    createGalleryPiece({
+      title: "Hollow Knight Fan Illustration",
+      artistName: "Cleo Reyes",
+      franchise: "games",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1553356084-58ef4a67b2a7?w=600&h=800&fit=crop",
+      description: "Beautiful ink-style illustration of the Knight.",
+    }),
+    createGalleryPiece({
+      title: "Cyberpunk Night City Panorama",
+      artistName: "Viktor Kozlov",
+      franchise: "games",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1515705576963-95cad62945b6?w=900&h=400&fit=crop",
+    }),
+    // Music
+    createGalleryPiece({
+      title: "Kendrick Lamar — GNX Album Art Reimagined",
+      artistName: "Andre Williams",
+      franchise: "music",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&h=600&fit=crop",
+    }),
+    createGalleryPiece({
+      title: "Lo-Fi Girl Study Session",
+      artistName: "Mika Chen",
+      franchise: "music",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=700&h=500&fit=crop",
+    }),
+    // Videos
+    createGalleryPiece({
+      title: "Spider-Verse Animation Test",
+      artistName: "Frame Studio",
+      franchise: "spider-verse",
+      pieceType: "video",
+      videoUrl: "https://www.youtube.com/shorts/dQw4w9WgXcQ",
+      videoPlatform: "youtube",
+      videoThumbnailUrl: "https://images.unsplash.com/photo-1596727362302-b8d891c42ab8?w=600&h=400&fit=crop",
+    }),
+    createGalleryPiece({
+      title: "Anime Drawing Timelapse — Gojo",
+      artistName: "DrawWithNina",
+      franchise: "anime",
+      pieceType: "video",
+      videoUrl: "https://www.tiktok.com/@drawwithnina/video/1234567890",
+      videoPlatform: "tiktok",
+      videoThumbnailUrl: "https://images.unsplash.com/photo-1580477667995-2b94f01c9516?w=400&h=600&fit=crop",
+      description: "Incredible timelapse of a Gojo Satoru drawing.",
+    }),
+    createGalleryPiece({
+      title: "Venom Sculpt Process",
+      artistName: "ClayMaster",
+      franchise: "venom",
+      pieceType: "video",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      videoPlatform: "youtube",
+      videoThumbnailUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=400&fit=crop",
+    }),
+    // More images for load-more testing
+    createGalleryPiece({
+      title: "Spider-Punk Poster",
+      artistName: "Rico Santos",
+      franchise: "spider-verse",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1514539079130-25950c84af65?w=500&h=700&fit=crop",
+    }),
+    createGalleryPiece({
+      title: "Noir Spider-Man Detective Scene",
+      artistName: "Jack Morrison",
+      franchise: "spider-verse",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=800&h=500&fit=crop",
+    }),
+    createGalleryPiece({
+      title: "Anime Eyes Study Sheet",
+      artistName: "Hana Ito",
+      franchise: "anime",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&h=400&fit=crop",
+    }),
+    createGalleryPiece({
+      title: "Gaming Setup Aesthetic",
+      artistName: "NeonPixel",
+      franchise: "games",
+      pieceType: "image",
+      imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=450&fit=crop",
+    }),
+  ];
+
   return {
     articles,
     media,
@@ -613,5 +803,6 @@ export function buildHappyPathScenario(): MockDataset {
     moods,
     consuming,
     reactions,
+    galleryPieces,
   };
 }

@@ -333,5 +333,6 @@ export function buildEdgeCasesScenario(): MockDataset {
     moods,
     consuming,
     reactions,
+    galleryPieces: [],
   };
 }

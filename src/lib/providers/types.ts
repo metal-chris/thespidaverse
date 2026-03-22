@@ -8,6 +8,7 @@ import type {
   SpotifyNowPlaying,
   Category,
   Tag,
+  GalleryPiece,
 } from "@/types";
 
 // --- Filter & Search types ---
@@ -37,6 +38,13 @@ export interface SearchFacets {
 export interface SearchResults {
   articles: Article[];
   total: number;
+}
+
+export interface GalleryFilters {
+  franchise?: string;
+  pieceType?: string;
+  limit?: number;
+  offset?: number;
 }
 
 // --- External metadata types (Phase 3) ---
@@ -142,6 +150,10 @@ export interface DataProvider {
 
   // Graph
   getArticlesForGraph(): Promise<GraphArticle[]>;
+
+  // Gallery
+  getGalleryPieces(filters?: GalleryFilters): Promise<GalleryPiece[]>;
+  getGallerySpotlight(): Promise<GalleryPiece | null>;
 
   // External metadata (Phase 3)
   fetchMovieMetadata(tmdbId: string): Promise<MovieMetadata | null>;

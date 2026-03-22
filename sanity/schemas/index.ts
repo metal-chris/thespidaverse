@@ -5,5 +5,6 @@ import mediaDiary from "./mediaDiary";
 import currentlyConsuming from "./currentlyConsuming";
 import category from "./category";
 import tag from "./tag";
+import galleryPiece from "./galleryPiece";
 
-export const schemaTypes = [article, media, collection, mediaDiary, currentlyConsuming, category, tag];
+export const schemaTypes = [article, media, collection, mediaDiary, currentlyConsuming, category, tag, galleryPiece];

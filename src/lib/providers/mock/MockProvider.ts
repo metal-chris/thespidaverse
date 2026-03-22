@@ -8,6 +8,7 @@ import type {
   SpotifyNowPlaying,
   Category,
   Tag,
+  GalleryPiece,
 } from "@/types";
 import type {
   DataProvider,
@@ -21,6 +22,7 @@ import type {
   GameMetadata,
   MusicMetadata,
   AnimeMetadata,
+  GalleryFilters,
 } from "../types";
 import { loadScenario, type MockDataset } from "./seed";
 import { createEmptyReactions } from "./factories/reaction.factory";
@@ -320,6 +322,37 @@ export class MockProvider implements DataProvider {
       }));
     } catch {
       return [];
+    }
+  }
+
+  // ─── Gallery ──────────────────────────────────────────────
+
+  async getGalleryPieces(filters?: GalleryFilters): Promise<GalleryPiece[]> {
+    try {
+      const data = await this.getData();
+      let pieces = [...(data.galleryPieces || [])];
+
+      if (filters?.franchise) {
+        pieces = pieces.filter((p) => p.franchise === filters.franchise);
+      }
+      if (filters?.pieceType) {
+        pieces = pieces.filter((p) => p.pieceType === filters.pieceType);
+      }
+
+      const offset = filters?.offset ?? 0;
+      const limit = filters?.limit ?? pieces.length;
+      return pieces.slice(offset, offset + limit);
+    } catch {
+      return [];
+    }
+  }
+
+  async getGallerySpotlight(): Promise<GalleryPiece | null> {
+    try {
+      const data = await this.getData();
+      return (data.galleryPieces || []).find((p) => p.isSpotlight) ?? null;
+    } catch {
+      return null;
     }
   }
 

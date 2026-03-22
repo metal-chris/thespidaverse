@@ -213,6 +213,49 @@ export const moodTagsQuery = groq`
   array::unique(*[_type == "article" && defined(moodTags)].moodTags[])
 `;
 
+// Gallery pieces
+export const galleryPiecesQuery = groq`
+  *[_type == "galleryPiece"] | order(publishedAt desc) {
+    _id,
+    _createdAt,
+    title,
+    slug,
+    pieceType,
+    image,
+    videoUrl,
+    videoPlatform,
+    videoThumbnail,
+    artistName,
+    artistUrl,
+    originalUrl,
+    franchise,
+    description,
+    isSpotlight,
+    publishedAt
+  }
+`;
+
+export const gallerySpotlightQuery = groq`
+  *[_type == "galleryPiece" && isSpotlight == true] | order(publishedAt desc)[0] {
+    _id,
+    _createdAt,
+    title,
+    slug,
+    pieceType,
+    image,
+    videoUrl,
+    videoPlatform,
+    videoThumbnail,
+    artistName,
+    artistUrl,
+    originalUrl,
+    franchise,
+    description,
+    isSpotlight,
+    publishedAt
+  }
+`;
+
 // Graph data — articles with relationships (for /the-web)
 export const graphDataQuery = groq`
   *[_type == "article"] | order(_createdAt desc) {

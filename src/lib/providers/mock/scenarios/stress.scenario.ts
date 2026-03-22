@@ -119,5 +119,6 @@ export function buildStressScenario(): MockDataset {
     moods,
     consuming,
     reactions,
+    galleryPieces: [],
   };
 }

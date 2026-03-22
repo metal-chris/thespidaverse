@@ -8,6 +8,7 @@ import type {
   SpotifyNowPlaying,
   Category,
   Tag,
+  GalleryPiece,
 } from "@/types";
 import type {
   DataProvider,
@@ -21,6 +22,7 @@ import type {
   GameMetadata,
   MusicMetadata,
   AnimeMetadata,
+  GalleryFilters,
 } from "../types";
 import { sanityFetch } from "@/lib/sanity/client";
 import {
@@ -37,6 +39,8 @@ import {
   collectionBySlugQuery,
   currentlyConsumingQuery,
   graphDataQuery,
+  galleryPiecesQuery,
+  gallerySpotlightQuery,
 } from "@/lib/sanity/queries";
 
 const EMPTY_REACTIONS: ReactionCounts = {
@@ -320,6 +324,43 @@ export class LiveProvider implements DataProvider {
       );
     } catch {
       return [];
+    }
+  }
+
+  // ─── Gallery ──────────────────────────────────────────────
+
+  async getGalleryPieces(filters?: GalleryFilters): Promise<GalleryPiece[]> {
+    try {
+      let pieces = await sanityFetch<GalleryPiece[]>(
+        galleryPiecesQuery,
+        undefined,
+        []
+      );
+
+      if (filters?.franchise) {
+        pieces = pieces.filter((p) => p.franchise === filters.franchise);
+      }
+      if (filters?.pieceType) {
+        pieces = pieces.filter((p) => p.pieceType === filters.pieceType);
+      }
+
+      const offset = filters?.offset ?? 0;
+      const limit = filters?.limit ?? pieces.length;
+      return pieces.slice(offset, offset + limit);
+    } catch {
+      return [];
+    }
+  }
+
+  async getGallerySpotlight(): Promise<GalleryPiece | null> {
+    try {
+      return await sanityFetch<GalleryPiece | null>(
+        gallerySpotlightQuery,
+        undefined,
+        null
+      );
+    } catch {
+      return null;
     }
   }
 
