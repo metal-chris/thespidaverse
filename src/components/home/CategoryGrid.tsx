@@ -10,7 +10,10 @@ const categories = [
       </svg>
     ),
     href: "/journal",
-    color: "from-red-500/10 to-red-500/5",
+    color: "from-red-500/20 to-red-500/5",
+    iconColor: "text-red-400",
+    borderHover: "hover:border-red-500/40",
+    titleHover: "group-hover:text-red-400",
   },
   {
     title: "Video Games",
@@ -21,7 +24,10 @@ const categories = [
       </svg>
     ),
     href: "/journal",
-    color: "from-blue-500/10 to-blue-500/5",
+    color: "from-blue-500/20 to-blue-500/5",
+    iconColor: "text-blue-400",
+    borderHover: "hover:border-blue-500/40",
+    titleHover: "group-hover:text-blue-400",
   },
   {
     title: "Anime & Manga",
@@ -32,7 +38,10 @@ const categories = [
       </svg>
     ),
     href: "/journal",
-    color: "from-purple-500/10 to-purple-500/5",
+    color: "from-purple-500/20 to-purple-500/5",
+    iconColor: "text-purple-400",
+    borderHover: "hover:border-purple-500/40",
+    titleHover: "group-hover:text-purple-400",
   },
   {
     title: "Music",
@@ -43,7 +52,10 @@ const categories = [
       </svg>
     ),
     href: "/journal",
-    color: "from-green-500/10 to-green-500/5",
+    color: "from-green-500/20 to-green-500/5",
+    iconColor: "text-green-400",
+    borderHover: "hover:border-green-500/40",
+    titleHover: "group-hover:text-green-400",
   },
 ];
 
@@ -54,17 +66,17 @@ export function CategoryGrid() {
         <Link
           key={cat.title}
           href={cat.href}
-          className="group relative rounded-xl border border-border bg-card p-5 md:p-6 transition-all duration-300 hover:shadow-lg hover:shadow-accent/5 hover:-translate-y-0.5 hover:border-accent/30 overflow-hidden"
+          className={`group relative rounded-xl border border-border bg-card p-5 md:p-6 transition-all duration-300 hover:shadow-lg hover:shadow-accent/5 hover:-translate-y-0.5 ${cat.borderHover} overflow-hidden`}
         >
-          {/* Gradient BG */}
+          {/* Gradient BG — visible at rest, stronger on hover */}
           <div
-            className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+            className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-60 group-hover:opacity-100 transition-opacity duration-300`}
             aria-hidden="true"
           />
 
           <div className="relative">
-            <div className="text-accent mb-3">{cat.icon}</div>
-            <h3 className="font-bold text-card-foreground text-sm md:text-base group-hover:text-accent transition-colors">
+            <div className={`${cat.iconColor} mb-3`}>{cat.icon}</div>
+            <h3 className={`font-bold text-card-foreground text-sm md:text-base ${cat.titleHover} transition-colors`}>
               {cat.title}
             </h3>
             <p className="mt-1 text-xs text-muted-foreground leading-relaxed hidden md:block">

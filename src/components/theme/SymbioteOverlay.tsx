@@ -17,7 +17,7 @@ const DIRECTION_CONFIG: Record<
 > = {
   "to-venom": { flashBg: "#0A0A0A", stroke: "#0A0A0A", pathDuration: 500, totalDuration: 650 },
   "to-miles": { flashBg: "#0D0D0D", stroke: "#FFD700", pathDuration: 450, totalDuration: 600 },
-  "to-peter": { flashBg: "#4A0A0A", stroke: "#FFFFFF", pathDuration: 400, totalDuration: 550 },
+  "to-peter": { flashBg: "#3A0808", stroke: "#FFFFFF", pathDuration: 400, totalDuration: 550 },
 };
 
 // ---------------------------------------------------------------------------

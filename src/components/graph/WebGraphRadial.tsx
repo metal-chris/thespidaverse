@@ -51,7 +51,7 @@ function getThemeColors() {
   // All three themes are dark
   return {
     isDark: true,
-    bg: isVenom ? "#0A0A0A" : isPeter ? "#4A0A0A" : "#0D0D0D",
+    bg: isVenom ? "#0A0A0A" : isPeter ? "#3A0808" : "#0D0D0D",
     labelColor: isVenom ? "#ffffffcc" : isPeter ? "#F5F5F5cc" : "#F0F0F0cc",
     linkBase: isVenom ? "rgba(255,255,255,0.1)" : isPeter ? "rgba(255,200,200,0.1)" : "rgba(255,255,255,0.08)",
     linkHighlight: "rgba(232,35,52,0.6)",

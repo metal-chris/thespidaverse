@@ -127,7 +127,7 @@ function getThemeColors(): ThemeColors {
   }
   if (theme === "peter") {
     return {
-      bg: "#4A0A0A", text: "#F5F5F5", muted: "#CC9999",
+      bg: "#3A0808", text: "#F5F5F5", muted: "#CC9999",
       link: "#6B2020", isDark: true,
       badgeBg: "rgba(255,255,255,0.14)", badgeSolid: "rgba(74,10,10,0.92)", badgeBorder: "rgba(255,255,255,0.25)",
     };

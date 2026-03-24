@@ -24,7 +24,7 @@ export function ComingSoonPage({ earlyAccessEnabled = false }: ComingSoonPagePro
 
   const bgColor: Record<Palette, string> = {
     miles: "#0A0A0A",
-    peter: "#4A0A0A",
+    peter: "#3A0808",
     venom: "#0A0A0A",
   };
   const vignetteCenter: Record<Palette, string> = {

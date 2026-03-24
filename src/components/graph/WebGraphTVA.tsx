@@ -82,7 +82,7 @@ function getThemeColors() {
   // All three themes are dark
   return {
     isDark: true,
-    bg: isVenom ? "#0A0A0A" : isPeter ? "#4A0A0A" : "#0D0D0D",
+    bg: isVenom ? "#0A0A0A" : isPeter ? "#3A0808" : "#0D0D0D",
     labelColor: isVenom ? "#ffffffcc" : isPeter ? "#F5F5F5cc" : "#F0F0F0cc",
     // Categories: main timeline trunk (web base)
     category: `rgb(${palette.web.base})`,

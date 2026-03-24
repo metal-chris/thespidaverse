@@ -23,22 +23,22 @@ export function HeroSection() {
   // Palette-aware background layers
   const vignetteCenter: Record<Palette, string> = {
     miles: "rgba(232,35,52,0.04)",
-    peter: "transparent",
+    peter: "rgba(30,80,220,0.03)",
     venom: "rgba(255,255,255,0.02)",
   };
   const vignetteEdge: Record<Palette, string> = {
     miles: "rgba(0,0,0,0.4)",
-    peter: "rgba(0,0,0,0.5)",
+    peter: "rgba(30,4,4,0.15)",
     venom: "rgba(0,0,0,0.4)",
   };
   const glowPrimary: Record<Palette, string> = {
     miles: "rgba(232,35,52,0.06)",
-    peter: "rgba(20,50,140,0.08)",
+    peter: "rgba(30,80,220,0.06)",
     venom: "rgba(255,255,255,0.03)",
   };
   const glowSecondary: Record<Palette, string> = {
     miles: "rgba(180,40,255,0.03)",
-    peter: "rgba(10,30,100,0.06)",
+    peter: "rgba(30,50,140,0.04)",
     venom: "rgba(60,140,255,0.03)",
   };
 
