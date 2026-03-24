@@ -71,7 +71,7 @@ export function NewsletterSignup({ variant = "inline", className }: NewsletterSi
           {message}
         </p>
       ) : (
-        <form onSubmit={handleSubmit} className={cn("flex gap-2", isBanner ? "max-w-md mx-auto" : "")}>
+        <form onSubmit={handleSubmit} className={cn("flex flex-col sm:flex-row gap-2", isBanner ? "max-w-md mx-auto" : "")}>
           <label htmlFor="newsletter-email" className="sr-only">
             Email address
           </label>
