@@ -4,6 +4,14 @@ import { createContext, useContext, useEffect, useState, useCallback, useRef } f
 import { SymbioteOverlay } from "./SymbioteOverlay";
 
 type Theme = "miles" | "peter" | "venom";
+type TransitionDirection = "to-venom" | "to-miles" | "to-peter";
+
+/** Swap delay per direction (ms) — theme changes at ~40% through animation */
+const SWAP_DELAYS: Record<TransitionDirection, number> = {
+  "to-venom": 250,
+  "to-miles": 230,
+  "to-peter": 200,
+};
 
 interface ThemeContextValue {
   theme: Theme;
@@ -24,7 +32,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("miles");
   const [mounted, setMounted] = useState(false);
   const [transition, setTransition] = useState<{
-    direction: "to-venom" | "to-miles";
+    direction: TransitionDirection;
     origin: { x: number; y: number };
   } | null>(null);
   const toggleRef = useRef<HTMLElement | null>(null);
@@ -34,10 +42,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (stored && (stored === "miles" || stored === "peter" || stored === "venom")) {
       setThemeState(stored);
       document.documentElement.setAttribute("data-theme", stored === "miles" ? "" : stored);
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setThemeState("venom");
-      document.documentElement.setAttribute("data-theme", "venom");
     }
+    // Miles is the default — no system preference override needed (all themes are dark)
     setMounted(true);
   }, []);
 
@@ -54,7 +60,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     (e?: React.MouseEvent) => {
       // Cycle: miles → peter → venom → miles
       const next = theme === "miles" ? "peter" : theme === "peter" ? "venom" : "miles";
-      const direction: "to-venom" | "to-miles" = next === "venom" ? "to-venom" : "to-miles";
+      const direction = `to-${next}` as TransitionDirection;
 
       // Get origin from click event or toggle button position
       let origin = { x: window.innerWidth / 2, y: 40 };
@@ -74,16 +80,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Trigger tendril animation only when going to/from venom
-      if (next === "venom" || theme === "venom") {
-        setTransition({ direction, origin });
-        // Swap theme at ~40% through the animation for smooth visual
-        const swapDelay = direction === "to-venom" ? 250 : 200;
-        setTimeout(() => setTheme(next), swapDelay);
-      } else {
-        // Instant swap for miles ↔ peter (no symbiote animation)
-        setTheme(next);
-      }
+      // Trigger transition animation for ALL theme switches
+      setTransition({ direction, origin });
+      // Swap theme at ~40% through the animation for smooth visual
+      setTimeout(() => setTheme(next), SWAP_DELAYS[direction]);
     },
     [theme, setTheme]
   );

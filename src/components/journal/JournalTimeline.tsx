@@ -10,12 +10,12 @@ import { useTheme } from "@/components/theme/ThemeProvider";
 // Theme-aware status colors for optimal visibility and distinction
 const STATUS_COLORS: Record<string, Record<string, string>> = {
   miles: {
-    watching: "bg-blue-600 text-white",
-    playing: "bg-green-600 text-white",
-    listening: "bg-purple-600 text-white",
-    reading: "bg-amber-600 text-white",
-    completed: "bg-emerald-600 text-white",
-    dropped: "bg-red-600 text-white",
+    watching: "bg-blue-500 text-white",
+    playing: "bg-green-500 text-white",
+    listening: "bg-purple-500 text-white",
+    reading: "bg-amber-500 text-white",
+    completed: "bg-emerald-500 text-white",
+    dropped: "bg-red-500 text-white",
   },
   peter: {
     watching: "bg-blue-500 text-white",
@@ -38,12 +38,12 @@ const STATUS_COLORS: Record<string, Record<string, string>> = {
 // Dot colors for timeline (theme-aware)
 const DOT_COLORS: Record<string, Record<string, string>> = {
   miles: {
-    watching: "bg-blue-600",
-    playing: "bg-green-600",
-    listening: "bg-purple-600",
-    reading: "bg-amber-600",
-    completed: "bg-emerald-600",
-    dropped: "bg-red-600",
+    watching: "bg-blue-500",
+    playing: "bg-green-500",
+    listening: "bg-purple-500",
+    reading: "bg-amber-500",
+    completed: "bg-emerald-500",
+    dropped: "bg-red-500",
   },
   peter: {
     watching: "bg-blue-500",

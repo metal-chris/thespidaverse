@@ -3,18 +3,18 @@
 @tailwind utilities;
 
 /* ========================================
-   Miles Mode (Light) — Default Theme
+   Miles Mode (Black & Red) — Default Theme
    ======================================== */
 :root {
-  --color-background: #FAFAFA;
-  --color-foreground: #1A1A1A;
+  --color-background: #0D0D0D;
+  --color-foreground: #F0F0F0;
   --color-accent: #E82334;
-  --color-accent-hover: #C91D2E;
-  --color-muted: #F0F0F0;
-  --color-muted-foreground: #6B6B6B;
-  --color-border: #E5E5E5;
-  --color-card: #FFFFFF;
-  --color-card-foreground: #1A1A1A;
+  --color-accent-hover: #FF2D40;
+  --color-muted: #1A1A1A;
+  --color-muted-foreground: #8A8A8A;
+  --color-border: #2A1015;
+  --color-card: #161616;
+  --color-card-foreground: #F0F0F0;
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
@@ -29,9 +29,9 @@
   --color-accent: #1E50DC;
   --color-accent-hover: #3C78FF;
   --color-muted: #2A0606;
-  --color-muted-foreground: #999999;
-  --color-border: #3A0808;
-  --color-card: #3A0808;
+  --color-muted-foreground: #B08080;
+  --color-border: #5A1515;
+  --color-card: #350808;
   --color-card-foreground: #F5F5F5;
 }
 
@@ -44,9 +44,9 @@
   --color-accent: #FFFFFF;
   --color-accent-hover: #E0E0E0;
   --color-muted: #1A1A1A;
-  --color-muted-foreground: #999999;
-  --color-border: #2A2A2A;
-  --color-card: #141414;
+  --color-muted-foreground: #7A7A8A;
+  --color-border: #2A2A30;
+  --color-card: #121218;
   --color-card-foreground: #F5F5F5;
 }
 
@@ -184,7 +184,7 @@
   inset: 0;
   background: radial-gradient(
     ellipse at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(255, 255, 255, 0.03) 0%,
+    rgba(200, 180, 255, 0.04) 0%,
     transparent 60%
   );
   opacity: 0;
@@ -371,6 +371,31 @@
 /* Skip redundant outline on elements with spidey-sense focus ring */
 .spidey-sense-hover:focus-visible {
   outline: none;
+}
+
+/* ========================================
+   Ambient Glow Drift (shared: hero + coming-soon)
+   ======================================== */
+@keyframes ambientDrift1 {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  25% { transform: translate(-45%, -48%) scale(1.04); }
+  50% { transform: translate(-52%, -44%) scale(0.97); }
+  75% { transform: translate(-48%, -52%) scale(1.02); }
+}
+
+@keyframes ambientDrift2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-3vw, -2vh) scale(1.03); }
+  50% { transform: translate(4vw, -4vh) scale(0.97); }
+  75% { transform: translate(-2vw, 3vh) scale(1.02); }
+}
+
+/* Comic-book halftone dot overlay */
+.halftone-overlay {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 6px 6px;
+  mix-blend-mode: screen;
+  opacity: 0.6;
 }
 
 /* ========================================

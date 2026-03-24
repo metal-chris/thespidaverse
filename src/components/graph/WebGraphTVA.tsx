@@ -56,12 +56,12 @@ const PALETTES = {
 };
 
 function getThemeColors() {
-  // Guard against SSR
+  // Guard against SSR — Miles (dark) fallback
   if (typeof document === "undefined") {
     return {
-      isDark: false,
-      bg: "#FAFAFA",
-      labelColor: "#1A1A1Acc",
+      isDark: true,
+      bg: "#0D0D0D",
+      labelColor: "#F0F0F0cc",
       category: `rgb(${PALETTES.miles.web.base})`,
       categoryGlow: `rgb(${PALETTES.miles.web.glow})`,
       tag: `rgb(${PALETTES.miles.strike})`,
@@ -75,14 +75,15 @@ function getThemeColors() {
   }
 
   const themeAttr = document.documentElement.getAttribute("data-theme");
-  const isDark = themeAttr === "venom";
+  const isVenom = themeAttr === "venom";
   const isPeter = themeAttr === "peter";
-  const palette = themeAttr === "venom" ? PALETTES.venom : themeAttr === "peter" ? PALETTES.peter : PALETTES.miles;
-  
+  const palette = isVenom ? PALETTES.venom : isPeter ? PALETTES.peter : PALETTES.miles;
+
+  // All three themes are dark
   return {
-    isDark,
-    bg: isDark ? "#0A0A0A" : isPeter ? "#4A0A0A" : "#FAFAFA",
-    labelColor: isDark ? "#ffffffcc" : isPeter ? "#F5F5F5cc" : "#1A1A1Acc",
+    isDark: true,
+    bg: isVenom ? "#0A0A0A" : isPeter ? "#4A0A0A" : "#0D0D0D",
+    labelColor: isVenom ? "#ffffffcc" : isPeter ? "#F5F5F5cc" : "#F0F0F0cc",
     // Categories: main timeline trunk (web base)
     category: `rgb(${palette.web.base})`,
     categoryGlow: `rgb(${palette.web.glow})`,

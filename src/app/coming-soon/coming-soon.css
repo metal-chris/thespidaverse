@@ -34,6 +34,7 @@ body:has(.coming-soon-layout) .sr-only[href="#main-content"] {
 /* ========================================
    Comic-Book Halftone Dot Overlay
    ======================================== */
+/* Uses shared .halftone-overlay from globals.css + z-index for stacking */
 .cs-halftone {
   background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
   background-size: 6px 6px;

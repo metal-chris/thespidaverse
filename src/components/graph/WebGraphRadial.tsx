@@ -45,15 +45,18 @@ const typeLabels: Record<string, string> = {
 
 /** Theme-aware colors */
 function getThemeColors() {
-  const isDark = document.documentElement.getAttribute("data-theme") === "venom";
+  const themeAttr = document.documentElement.getAttribute("data-theme");
+  const isVenom = themeAttr === "venom";
+  const isPeter = themeAttr === "peter";
+  // All three themes are dark
   return {
-    isDark,
-    bg: isDark ? "#0A0A0A" : "#FAFAFA",
-    labelColor: isDark ? "#ffffffcc" : "#1A1A1Acc",
-    linkBase: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
+    isDark: true,
+    bg: isVenom ? "#0A0A0A" : isPeter ? "#4A0A0A" : "#0D0D0D",
+    labelColor: isVenom ? "#ffffffcc" : isPeter ? "#F5F5F5cc" : "#F0F0F0cc",
+    linkBase: isVenom ? "rgba(255,255,255,0.1)" : isPeter ? "rgba(255,200,200,0.1)" : "rgba(255,255,255,0.08)",
     linkHighlight: "rgba(232,35,52,0.6)",
-    searchHighlight: isDark ? "#fff" : "#1A1A1A",
-    hoverStroke: isDark ? "#fff" : "#1A1A1A",
+    searchHighlight: "#fff",
+    hoverStroke: "#fff",
   };
 }
 

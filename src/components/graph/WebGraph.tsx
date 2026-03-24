@@ -55,17 +55,20 @@ const typeLabels: Record<string, string> = {
 
 /** Theme-aware colors for canvas rendering */
 function getThemeColors() {
-  const isDark = document.documentElement.getAttribute("data-theme") === "venom";
+  const themeAttr = document.documentElement.getAttribute("data-theme");
+  const isVenom = themeAttr === "venom";
+  const isPeter = themeAttr === "peter";
+  // All three themes are dark
   return {
-    isDark,
-    bg: isDark ? "#0A0A0A" : "#FAFAFA",
-    labelColor: isDark ? "#ffffffcc" : "#1A1A1Acc",
-    labelDimmed: isDark ? "#ffffff20" : "#1A1A1A20",
-    linkBase: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
-    linkDimmed: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)",
+    isDark: true,
+    bg: isVenom ? "#0A0A0A" : isPeter ? "#4A0A0A" : "#0D0D0D",
+    labelColor: isVenom ? "#ffffffcc" : isPeter ? "#F5F5F5cc" : "#F0F0F0cc",
+    labelDimmed: isVenom ? "#ffffff20" : isPeter ? "#F5F5F520" : "#F0F0F020",
+    linkBase: isVenom ? "rgba(255,255,255,0.08)" : isPeter ? "rgba(255,200,200,0.08)" : "rgba(255,255,255,0.06)",
+    linkDimmed: isVenom ? "rgba(255,255,255,0.02)" : isPeter ? "rgba(255,200,200,0.02)" : "rgba(255,255,255,0.02)",
     linkHighlight: "rgba(232,35,52,0.6)",
-    searchHighlight: isDark ? "#fff" : "#1A1A1A",
-    hoverStroke: isDark ? "#fff" : "#1A1A1A",
+    searchHighlight: "#fff",
+    hoverStroke: "#fff",
     webStroke: "#E82334",
   };
 }

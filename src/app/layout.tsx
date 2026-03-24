@@ -71,8 +71,8 @@ export default function RootLayout({
               (function() {
                 try {
                   var theme = localStorage.getItem('spidaverse-theme');
-                  if (theme === 'venom' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.setAttribute('data-theme', 'venom');
+                  if (theme === 'venom' || theme === 'peter') {
+                    document.documentElement.setAttribute('data-theme', theme);
                   }
                 } catch(e) {}
               })();

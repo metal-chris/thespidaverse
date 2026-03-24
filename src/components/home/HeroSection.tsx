@@ -1,62 +1,99 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { Container } from "@/components/ui/Container";
+import { SpiderWebCanvas } from "@/components/coming-soon/NeuralNetworkCanvas";
+import { useTheme } from "@/components/theme/ThemeProvider";
+import type { Palette } from "@/components/coming-soon/particle-config";
 
 export function HeroSection() {
+  const { theme } = useTheme();
+  const palette: Palette = theme; // miles | peter | venom — same type
+
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  // Palette-aware background layers
+  const vignetteCenter: Record<Palette, string> = {
+    miles: "rgba(232,35,52,0.04)",
+    peter: "transparent",
+    venom: "rgba(255,255,255,0.02)",
+  };
+  const vignetteEdge: Record<Palette, string> = {
+    miles: "rgba(0,0,0,0.4)",
+    peter: "rgba(0,0,0,0.5)",
+    venom: "rgba(0,0,0,0.4)",
+  };
+  const glowPrimary: Record<Palette, string> = {
+    miles: "rgba(232,35,52,0.06)",
+    peter: "rgba(20,50,140,0.08)",
+    venom: "rgba(255,255,255,0.03)",
+  };
+  const glowSecondary: Record<Palette, string> = {
+    miles: "rgba(180,40,255,0.03)",
+    peter: "rgba(10,30,100,0.06)",
+    venom: "rgba(60,140,255,0.03)",
+  };
+
   return (
     <section className="relative py-20 md:py-32 overflow-hidden">
-      {/* Layered background: radial glow + grid pattern */}
+      {/* Layer 1: Radial vignette */}
       <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `
-            radial-gradient(circle at 30% 40%, var(--color-accent) 0%, transparent 45%),
-            radial-gradient(circle at 70% 60%, var(--color-accent) 0%, transparent 45%)
-          `,
-          opacity: 0.06,
-        }}
+        className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
-      />
-      <div
-        className="absolute inset-0 opacity-[0.03]"
         style={{
-          backgroundImage: `
-            linear-gradient(var(--color-foreground) 1px, transparent 1px),
-            linear-gradient(90deg, var(--color-foreground) 1px, transparent 1px)
-          `,
-          backgroundSize: "48px 48px",
+          background: `radial-gradient(ellipse at 50% 50%, ${vignetteCenter[palette]} 0%, transparent 50%, ${vignetteEdge[palette]} 100%)`,
+          transition: "background 0.6s ease",
         }}
-        aria-hidden="true"
       />
 
-      {/* SVG spider web accent (decorative) */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
-        <svg
-          viewBox="0 0 400 400"
-          className="w-[500px] h-[500px] md:w-[700px] md:h-[700px] text-accent opacity-[0.04]"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="0.5"
-        >
-          {/* Radial lines */}
-          {Array.from({ length: 12 }).map((_, i) => {
-            const angle = (i * 30 * Math.PI) / 180;
-            return (
-              <line
-                key={`r-${i}`}
-                x1="200"
-                y1="200"
-                x2={Math.round(200 + 190 * Math.cos(angle))}
-                y2={Math.round(200 + 190 * Math.sin(angle))}
-              />
-            );
-          })}
-          {/* Concentric rings */}
-          {[50, 100, 150, 190].map((r) => (
-            <circle key={r} cx="200" cy="200" r={r} />
-          ))}
-        </svg>
+      {/* Layer 2: Ambient glow — slow drift */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div
+          className="absolute rounded-full"
+          style={{
+            width: "60vmax",
+            height: "60vmax",
+            top: "30%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            background: `radial-gradient(circle, ${glowPrimary[palette]} 0%, transparent 60%)`,
+            animation: "ambientDrift1 80s ease-in-out infinite",
+            transition: "background 0.6s ease",
+          }}
+        />
+        <div
+          className="absolute rounded-full"
+          style={{
+            width: "40vmax",
+            height: "40vmax",
+            bottom: "-10%",
+            right: "-5%",
+            background: `radial-gradient(circle, ${glowSecondary[palette]} 0%, transparent 60%)`,
+            animation: "ambientDrift2 100s ease-in-out infinite",
+            transition: "background 0.6s ease",
+          }}
+        />
       </div>
 
-      <Container className="relative text-center">
+      {/* Layer 3: Comic-book halftone texture */}
+      <div
+        className="absolute inset-0 pointer-events-none halftone-overlay"
+        aria-hidden="true"
+      />
+
+      {/* Layer 4: Interactive spider web canvas */}
+      <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} />
+
+      {/* Content — above all background layers */}
+      <Container className="relative z-10 text-center">
         {/* Mono tagline above heading */}
         <p className="font-mono text-xs md:text-sm uppercase tracking-[0.25em] text-accent mb-4">
           A Pop Culture Web

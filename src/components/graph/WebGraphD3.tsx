@@ -110,10 +110,11 @@ const PAGE_SIZE = 8;
 // ---------------------------------------------------------------------------
 function getThemeColors(): ThemeColors {
   if (typeof document === "undefined") {
+    // SSR fallback — Miles (dark)
     return {
-      bg: "#FAFAFA", text: "#1A1A1A", muted: "#6B6B6B",
-      link: "#D1D5DB", isDark: false,
-      badgeBg: "rgba(0,0,0,0.06)", badgeSolid: "rgba(240,240,240,0.92)", badgeBorder: "rgba(0,0,0,0.12)",
+      bg: "#0D0D0D", text: "#F0F0F0", muted: "#8A8A8A",
+      link: "#3D1520", isDark: true,
+      badgeBg: "rgba(255,255,255,0.10)", badgeSolid: "rgba(22,22,22,0.92)", badgeBorder: "rgba(255,255,255,0.18)",
     };
   }
   const theme = document.documentElement.getAttribute("data-theme");
@@ -131,10 +132,11 @@ function getThemeColors(): ThemeColors {
       badgeBg: "rgba(255,255,255,0.14)", badgeSolid: "rgba(74,10,10,0.92)", badgeBorder: "rgba(255,255,255,0.25)",
     };
   }
+  // Miles (default) — dark with red tint
   return {
-    bg: "#FAFAFA", text: "#1A1A1A", muted: "#6B6B6B",
-    link: "#D1D5DB", isDark: false,
-    badgeBg: "rgba(0,0,0,0.06)", badgeSolid: "rgba(240,240,240,0.92)", badgeBorder: "rgba(0,0,0,0.12)",
+    bg: "#0D0D0D", text: "#F0F0F0", muted: "#8A8A8A",
+    link: "#3D1520", isDark: true,
+    badgeBg: "rgba(255,255,255,0.10)", badgeSolid: "rgba(22,22,22,0.92)", badgeBorder: "rgba(255,255,255,0.18)",
   };
 }
 
