@@ -161,7 +161,7 @@ export function ComingSoonPage({ earlyAccessEnabled = false }: ComingSoonPagePro
           className="fixed inset-0 z-50 cs-portal-wipe"
           style={{
             background: accents[palette],
-            animationDelay: "1.8s",
+            animationDelay: "2.2s",
             clipPath: "circle(0% at 50% 50%)",
           }}
         />

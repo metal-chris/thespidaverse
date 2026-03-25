@@ -38,7 +38,7 @@ export function ComingSoonContent({ palette, onTogglePalette, earlyAccessEnabled
         onAccessGranted?.();
         setTimeout(() => {
           window.location.href = "/";
-        }, 2600);
+        }, 3200);
       } else {
         setAccessStatus("error");
         setAccessError("Invalid passcode.");

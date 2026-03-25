@@ -7,10 +7,11 @@ type Theme = "miles" | "peter" | "venom";
 type TransitionDirection = "to-venom" | "to-miles" | "to-peter";
 
 /** Swap delay per direction (ms) — theme changes at ~40% through animation */
+/** Theme swaps during spinner hold phase (after 3s wipe completes) */
 const SWAP_DELAYS: Record<TransitionDirection, number> = {
-  "to-venom": 250,
-  "to-miles": 230,
-  "to-peter": 200,
+  "to-venom": 3200,
+  "to-miles": 3200,
+  "to-peter": 3200,
 };
 
 interface ThemeContextValue {

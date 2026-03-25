@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { WebSpinner } from "@/components/ui/WebSpinner";
 
 type TransitionDirection = "to-venom" | "to-miles" | "to-peter";
 
@@ -13,145 +14,244 @@ interface SymbioteOverlayProps {
 /** Per-direction visual configuration */
 const DIRECTION_CONFIG: Record<
   TransitionDirection,
-  { flashBg: string; stroke: string; pathDuration: number; totalDuration: number }
+  { stroke: string; wipeColor: string; spinnerColor: string; totalDuration: number }
 > = {
-  "to-venom": { flashBg: "#0A0A0A", stroke: "#0A0A0A", pathDuration: 500, totalDuration: 650 },
-  "to-miles": { flashBg: "#0D0D0D", stroke: "#FFD700", pathDuration: 450, totalDuration: 600 },
-  "to-peter": { flashBg: "#3A0808", stroke: "#FFFFFF", pathDuration: 400, totalDuration: 550 },
+  "to-venom": { stroke: "#0A0A0A", wipeColor: "#0A0A0A", spinnerColor: "rgba(255,255,255,0.6)", totalDuration: 4000 },
+  "to-miles":  { stroke: "#FFD700", wipeColor: "#FFD700", spinnerColor: "rgba(0,0,0,0.5)", totalDuration: 4000 },
+  "to-peter":  { stroke: "#FFFFFF", wipeColor: "#FFFFFF", spinnerColor: "rgba(0,0,0,0.4)", totalDuration: 4000 },
 };
 
+const STROKE_DURATION = 2500;
+
 // ---------------------------------------------------------------------------
-// Path generators — one per character
+// Shared: evenly distribute start points around viewport perimeter
+// ---------------------------------------------------------------------------
+function perimeterPoint(index: number, total: number, vw: number, vh: number): [number, number] {
+  // Walk around the perimeter evenly: top → right → bottom → left
+  const perimeter = 2 * (vw + vh);
+  const pos = (index / total) * perimeter;
+
+  if (pos < vw) return [pos, 0]; // top edge
+  if (pos < vw + vh) return [vw, pos - vw]; // right edge
+  if (pos < 2 * vw + vh) return [vw - (pos - vw - vh), vh]; // bottom edge
+  return [0, vh - (pos - 2 * vw - vh)]; // left edge
+}
+
+// ---------------------------------------------------------------------------
+// 1. MILES — Fractal Lightning (edges → center)
 // ---------------------------------------------------------------------------
 
-/** Venom: Organic symbiote tendrils — smooth bezier curves from edges toward center */
-function generateTendrilPath(
-  index: number,
-  total: number,
-  vw: number,
-  vh: number
-): string {
-  const edge = index % 4;
-  const spread = (index / total) * 0.8 + 0.1;
-
-  let startX: number, startY: number;
-  switch (edge) {
-    case 0: startX = vw * spread; startY = 0; break;
-    case 1: startX = vw; startY = vh * spread; break;
-    case 2: startX = vw * (1 - spread); startY = vh; break;
-    default: startX = 0; startY = vh * (1 - spread); break;
-  }
-
-  const endX = vw / 2 + (Math.random() - 0.5) * vw * 0.3;
-  const endY = vh / 2 + (Math.random() - 0.5) * vh * 0.3;
-
-  const midX = (startX + endX) / 2 + (Math.random() - 0.5) * 120;
-  const midY = (startY + endY) / 2 + (Math.random() - 0.5) * 120;
-  const cp1x = startX + (midX - startX) * 0.4 + (Math.random() - 0.5) * 60;
-  const cp1y = startY + (midY - startY) * 0.6 + (Math.random() - 0.5) * 60;
-  const cp2x = midX + (endX - midX) * 0.6 + (Math.random() - 0.5) * 60;
-  const cp2y = midY + (endY - midY) * 0.4 + (Math.random() - 0.5) * 60;
-
-  return `M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`;
+interface BoltPath {
+  d: string;
+  width: number;
+  delay: number;
+  glow?: boolean;
 }
 
-/** Miles: Electric lightning bolts — jagged zigzag from edges toward center */
-function generateLightningPath(
-  index: number,
-  total: number,
-  vw: number,
-  vh: number
+/**
+ * Recursive midpoint-displacement lightning.
+ * Displaces the midpoint perpendicular to each segment, then recurses.
+ * Branches are baked into the same continuous path (no disconnected M jumps).
+ */
+/**
+ * Recursive midpoint-displacement lightning.
+ * Collects actual displaced midpoints so forks can branch from real positions.
+ */
+function fractalBolt(
+  x1: number, y1: number,
+  x2: number, y2: number,
+  depth: number,
+  maxDepth: number,
+  displacement: number,
+  midpoints?: { x: number; y: number; dx: number; dy: number; t: number }[],
+  tStart = 0,
+  tEnd = 1,
 ): string {
-  const edge = index % 4;
-  const spread = (index / total) * 0.8 + 0.1;
-
-  let startX: number, startY: number;
-  switch (edge) {
-    case 0: startX = vw * spread; startY = 0; break;
-    case 1: startX = vw; startY = vh * spread; break;
-    case 2: startX = vw * (1 - spread); startY = vh; break;
-    default: startX = 0; startY = vh * (1 - spread); break;
+  if (depth >= maxDepth) {
+    return `L ${x2} ${y2}`;
   }
 
-  // Lightning strikes toward center with slight randomization
-  const endX = vw / 2 + (Math.random() - 0.5) * vw * 0.5;
-  const endY = vh / 2 + (Math.random() - 0.5) * vh * 0.5;
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len = Math.sqrt(dx * dx + dy * dy);
+  if (len < 1) return `L ${x2} ${y2}`;
 
-  // Build jagged zigzag segments between start and end
-  const segments = 6 + Math.floor(Math.random() * 4); // 6-9 segments
-  let d = `M ${startX} ${startY}`;
+  const perpX = -dy / len;
+  const perpY = dx / len;
+  const offset = (Math.random() - 0.5) * len * displacement;
+  const mx = (x1 + x2) / 2 + perpX * offset;
+  const my = (y1 + y2) / 2 + perpY * offset;
+  const tMid = (tStart + tEnd) / 2;
 
-  for (let s = 1; s <= segments; s++) {
-    const t = s / segments;
-    const baseX = startX + (endX - startX) * t;
-    const baseY = startY + (endY - startY) * t;
-    // Sharp perpendicular jitter — lightning character
-    const jitter = s < segments ? (Math.random() - 0.5) * 80 : 0;
-    const perpX = -(endY - startY) / Math.max(vw, vh);
-    const perpY = (endX - startX) / Math.max(vw, vh);
-    d += ` L ${baseX + perpX * jitter} ${baseY + perpY * jitter}`;
+  // Collect early-depth midpoints for forking (with their position along the bolt)
+  if (midpoints && depth <= 2) {
+    midpoints.push({ x: mx, y: my, dx, dy, t: tMid });
   }
 
-  return d;
+  return fractalBolt(x1, y1, mx, my, depth + 1, maxDepth, displacement, midpoints, tStart, tMid)
+       + fractalBolt(mx, my, x2, y2, depth + 1, maxDepth, displacement, midpoints, tMid, tEnd);
 }
 
-/** Peter: Web strands — radial lines from origin outward with slight curve */
-function generateWebPath(
-  index: number,
-  total: number,
-  originX: number,
-  originY: number,
-  vw: number,
-  vh: number
-): string {
-  const angle = (index / total) * Math.PI * 2;
-  // Ensure strands always reach past viewport edges from any origin
-  const diagonal = Math.sqrt(vw * vw + vh * vh);
-  const length = diagonal * (0.6 + Math.random() * 0.5);
+function generateLightning(vw: number, vh: number): BoltPath[] {
+  const boltCount = 8;
+  const paths: BoltPath[] = [];
 
-  const endX = originX + Math.cos(angle) * length;
-  const endY = originY + Math.sin(angle) * length;
+  for (let i = 0; i < boltCount; i++) {
+    const [sx, sy] = perimeterPoint(i, boltCount, vw, vh);
+    const angle = (i / boltCount) * Math.PI * 2;
+    const scatter = 60;
+    const cx = vw / 2 + Math.cos(angle) * scatter;
+    const cy = vh / 2 + Math.sin(angle) * scatter;
 
-  // Slight curve for organic web feel
-  const sag = (Math.random() - 0.5) * 30;
-  const midAngle = angle + Math.PI / 2;
-  const cpX = (originX + endX) / 2 + Math.cos(midAngle) * sag;
-  const cpY = (originY + endY) / 2 + Math.sin(midAngle) * sag;
+    // Collect real midpoints during generation
+    const midpoints: { x: number; y: number; dx: number; dy: number; t: number }[] = [];
+    const mainD = `M ${sx} ${sy}` + fractalBolt(sx, sy, cx, cy, 0, 5, 0.35, midpoints);
+    const delay = i * 120;
+    const width = 1.5 + Math.random() * 1;
 
-  return `M ${originX} ${originY} Q ${cpX} ${cpY}, ${endX} ${endY}`;
-}
+    // Glow layer behind
+    paths.push({ d: mainD, width: width + 4, delay, glow: true });
+    // Core bolt
+    paths.push({ d: mainD, width, delay });
 
-/** Peter: Concentric web ring arcs connecting radial strands */
-function generateWebRing(
-  ringIndex: number,
-  totalRings: number,
-  totalStrands: number,
-  originX: number,
-  originY: number,
-  vw: number,
-  vh: number
-): string {
-  const maxR = Math.sqrt(vw * vw + vh * vh) * 0.5;
-  const r = maxR * ((ringIndex + 1) / (totalRings + 1));
+    // 1-2 fork branches from REAL midpoints on the bolt
+    const forkCount = 1 + Math.floor(Math.random() * 2);
+    const usable = midpoints.filter((_, idx) => idx > 0); // skip first midpoint (too close to start)
+    for (let f = 0; f < forkCount && usable.length > 0; f++) {
+      const mp = usable.splice(Math.floor(Math.random() * usable.length), 1)[0];
+      const mainAngle = Math.atan2(mp.dy, mp.dx);
+      const forkAngle = mainAngle + (Math.random() > 0.5 ? 1 : -1) * (0.4 + Math.random() * 0.8);
+      const forkLen = 80 + Math.random() * 120;
+      const fex = mp.x + Math.cos(forkAngle) * forkLen;
+      const fey = mp.y + Math.sin(forkAngle) * forkLen;
+      const forkD = `M ${mp.x} ${mp.y}` + fractalBolt(mp.x, mp.y, fex, fey, 0, 3, 0.3);
 
-  // Build arc segments between each strand angle
-  let d = "";
-  for (let i = 0; i < totalStrands; i++) {
-    const a1 = (i / totalStrands) * Math.PI * 2;
-    const a2 = ((i + 1) / totalStrands) * Math.PI * 2;
-
-    const x1 = originX + Math.cos(a1) * r;
-    const y1 = originY + Math.sin(a1) * r;
-    const x2 = originX + Math.cos(a2) * r;
-    const y2 = originY + Math.sin(a2) * r;
-
-    if (i === 0) {
-      d += `M ${x1} ${y1}`;
+      // Fork starts drawing when the main bolt's stroke reaches this point
+      const forkDelay = delay + Math.round(mp.t * STROKE_DURATION);
+      paths.push({ d: forkD, width: width * 0.6, delay: forkDelay, glow: true });
+      paths.push({ d: forkD, width: width * 0.4, delay: forkDelay });
     }
-    d += ` A ${r} ${r} 0 0 1 ${x2} ${y2}`;
   }
 
-  return d;
+  return paths;
+}
+
+// ---------------------------------------------------------------------------
+// 2. PETER — Pre-built Spider Web (revealed from center outward)
+// ---------------------------------------------------------------------------
+
+/**
+ * Generates a complete spider web SVG as a single group of paths.
+ * The web is NOT stroke-animated — it's rendered statically and
+ * revealed via an expanding clip-path circle from center outward.
+ */
+function generateFullWeb(vw: number, vh: number) {
+  const cx = vw / 2;
+  const cy = vh / 2;
+  const spokeCount = 20;
+  const ringCount = 8;
+  const diagonal = Math.sqrt(vw * vw + vh * vh);
+  const maxR = diagonal * 0.55;
+
+  // Spoke angles — even spacing, slight jitter for organic feel
+  const angles: number[] = [];
+  for (let i = 0; i < spokeCount; i++) {
+    angles.push((i / spokeCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.04);
+  }
+
+  // Ring radii — slight exponential bias (tighter near center, matching coming-soon web)
+  const ringRadii: number[] = [];
+  for (let i = 1; i <= ringCount; i++) {
+    const t = i / ringCount;
+    ringRadii.push(maxR * (t * t * 0.4 + t * 0.6));
+  }
+
+  // Build spoke paths
+  const spokes: string[] = angles.map((a) => {
+    const endX = cx + Math.cos(a) * maxR;
+    const endY = cy + Math.sin(a) * maxR;
+    return `M ${cx} ${cy} L ${endX} ${endY}`;
+  });
+
+  // Build ring paths — quadratic bezier with inward sag between each spoke pair
+  const rings: string[] = ringRadii.map((r, ri) => {
+    const sagRatio = 0.22 + ri * 0.015; // inner rings sag more proportionally
+    let d = "";
+    for (let s = 0; s < spokeCount; s++) {
+      const a1 = angles[s];
+      const a2 = angles[(s + 1) % spokeCount];
+
+      const x1 = cx + Math.cos(a1) * r;
+      const y1 = cy + Math.sin(a1) * r;
+      const x2 = cx + Math.cos(a2) * r;
+      const y2 = cy + Math.sin(a2) * r;
+
+      // Midpoint angle — handle wrapping
+      let mid = (a1 + a2) / 2;
+      if (a2 < a1) mid = a1 + ((a2 + Math.PI * 2) - a1) / 2;
+
+      // Control point pulled inward — concave scallop
+      const cpR = r * (1 - sagRatio);
+      const cpX = cx + Math.cos(mid) * cpR;
+      const cpY = cy + Math.sin(mid) * cpR;
+
+      if (s === 0) d += `M ${x1} ${y1}`;
+      d += ` Q ${cpX} ${cpY}, ${x2} ${y2}`;
+    }
+    return d;
+  });
+
+  return { spokes, rings, cx, cy };
+}
+
+// ---------------------------------------------------------------------------
+// 3. VENOM — Simple S-Curve Tendrils (edges → scattered center points)
+// ---------------------------------------------------------------------------
+
+interface TendrilPath {
+  d: string;
+  width: number;
+  delay: number;
+  isOutline?: boolean;
+}
+
+function generateTendrils(vw: number, vh: number): TendrilPath[] {
+  const tendrilCount = 16;
+  const paths: TendrilPath[] = [];
+
+  for (let i = 0; i < tendrilCount; i++) {
+    const [sx, sy] = perimeterPoint(i, tendrilCount, vw, vh);
+
+    // Each tendril ends at a DIFFERENT point in the center region — no single convergence
+    const angle = (i / tendrilCount) * Math.PI * 2;
+    const scatter = 80 + Math.random() * 120;
+    const ex = vw / 2 + Math.cos(angle) * scatter;
+    const ey = vh / 2 + Math.sin(angle) * scatter;
+
+    // Simple S-curve: single cubic bezier with two offset control points
+    const dx = ex - sx;
+    const dy = ey - sy;
+    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+    const perpX = -dy / len;
+    const perpY = dx / len;
+    const sign = i % 2 === 0 ? 1 : -1;
+    const jitter = 100 + Math.random() * 100;
+
+    const cp1x = sx + dx * 0.33 + perpX * jitter * sign;
+    const cp1y = sy + dy * 0.33 + perpY * jitter * sign;
+    const cp2x = sx + dx * 0.66 - perpX * jitter * sign;
+    const cp2y = sy + dy * 0.66 - perpY * jitter * sign;
+
+    const d = `M ${sx} ${sy} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${ex} ${ey}`;
+    const baseDelay = i * 120;
+    // Thicker at edges (~25% boost), slightly thicker overall (~15%)
+    const width = 5 + Math.random() * 5;
+
+    // Main tendril only — no outline
+    paths.push({ d, width, delay: baseDelay });
+  }
+
+  return paths;
 }
 
 // ---------------------------------------------------------------------------
@@ -159,99 +259,173 @@ function generateWebRing(
 // ---------------------------------------------------------------------------
 
 export function SymbioteOverlay({ direction, origin, onComplete }: SymbioteOverlayProps) {
-  const [phase, setPhase] = useState<"animate" | "done">("animate");
+  const [phase, setPhase] = useState<"animate" | "hold" | "fade" | "done">("animate");
+  const [webReveal, setWebReveal] = useState(0); // 0 to 1 — clip-path radius for web reveal
 
-  // Use full visual viewport — clientWidth/Height excludes scrollbar
   const vw = typeof document !== "undefined" ? document.documentElement.clientWidth : 1280;
   const vh = typeof document !== "undefined" ? document.documentElement.clientHeight : 800;
 
   const config = DIRECTION_CONFIG[direction];
 
-  const paths = useMemo(() => {
-    if (direction === "to-venom") {
-      // Symbiote tendrils — thick organic curves from edges
-      const count = 12;
-      return Array.from({ length: count }, (_, i) => ({
-        d: generateTendrilPath(i, count, vw, vh),
-        delay: i * 30,
-        width: 2 + Math.random() * 4,
-      }));
-    } else if (direction === "to-miles") {
-      // Lightning bolts — sharp zigzag from edges
-      const count = 14;
-      return Array.from({ length: count }, (_, i) => ({
-        d: generateLightningPath(i, count, vw, vh),
-        delay: i * 18,
-        width: 1 + Math.random() * 2.5,
-      }));
-    } else {
-      // Web — radial strands from click origin + concentric rings
-      const strandCount = 12;
-      const ringCount = 3;
-      const strands = Array.from({ length: strandCount }, (_, i) => ({
-        d: generateWebPath(i, strandCount, origin.x, origin.y, vw, vh),
-        delay: i * 15,
-        width: 1 + Math.random() * 1.5,
-      }));
-      const rings = Array.from({ length: ringCount }, (_, i) => ({
-        d: generateWebRing(i, ringCount, strandCount, origin.x, origin.y, vw, vh),
-        delay: 100 + i * 60, // rings appear after strands start
-        width: 0.8 + Math.random() * 0.8,
-      }));
-      return [...strands, ...rings];
-    }
+  const { lightning, webData, tendrils } = useMemo(() => ({
+    lightning: direction === "to-miles" ? generateLightning(vw, vh) : [],
+    webData: direction === "to-peter" ? generateFullWeb(vw, vh) : null,
+    tendrils: direction === "to-venom" ? generateTendrils(vw, vh) : [],
   // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [direction]);
+
+  // Web reveal animation — expand clip from 0% to 100% over 3s
+  useEffect(() => {
+    if (direction !== "to-peter") return;
+    let raf: number;
+    const start = performance.now();
+    const duration = 3000;
+    function tick(now: number) {
+      const t = Math.min((now - start) / duration, 1);
+      // Ease-out cubic
+      const eased = 1 - Math.pow(1 - t, 3);
+      setWebReveal(eased);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    }
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, [direction]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const holdTimer = setTimeout(() => setPhase("hold"), 3000);
+    const fadeTimer = setTimeout(() => setPhase("fade"), 3600);
+    const doneTimer = setTimeout(() => {
       setPhase("done");
       onComplete();
     }, config.totalDuration);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(holdTimer);
+      clearTimeout(fadeTimer);
+      clearTimeout(doneTimer);
+    };
   }, [direction, onComplete, config.totalDuration]);
 
   if (phase === "done") return null;
+
+  const pathLength = 1200;
+  const diagonal = Math.sqrt(vw * vw + vh * vh);
 
   return (
     <div
       className="fixed inset-0 z-[9999] pointer-events-none"
       aria-hidden="true"
     >
-      {/* Flash overlay at peak */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundColor: config.flashBg,
-          animation: `symbiote-flash ${config.totalDuration}ms ease-out forwards`,
-        }}
-      />
-
-      {/* SVG paths — overflow visible so strands bleed past edges */}
-      <svg
-        className="absolute inset-0 w-full h-full overflow-visible"
-        viewBox={`0 0 ${vw} ${vh}`}
-        preserveAspectRatio="none"
-      >
-        {paths.map((p, i) => {
-          const pathLength = 1200;
-          return (
+      {/* SVG stroke animations — Miles & Venom (stroke-draw) */}
+      {phase === "animate" && (direction === "to-miles" || direction === "to-venom") && (
+        <svg
+          className="absolute inset-0 w-full h-full overflow-visible"
+          viewBox={`0 0 ${vw} ${vh}`}
+          preserveAspectRatio="none"
+        >
+          {/* Miles — Fractal Lightning */}
+          {lightning.map((bolt, i) => (
             <path
-              key={i}
-              d={p.d}
+              key={`bolt-${i}`}
+              d={bolt.d}
+              fill="none"
+              stroke={bolt.glow ? "rgba(255,215,0,0.3)" : config.stroke}
+              strokeWidth={bolt.width}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray={pathLength}
+              strokeDashoffset={pathLength}
+              style={{
+                animation: `tendril-draw ${STROKE_DURATION}ms ease-out ${bolt.delay}ms forwards`,
+              }}
+            />
+          ))}
+
+          {/* Venom — S-Curve Tendrils */}
+          {tendrils.map((t, i) => (
+            <path
+              key={`tendril-${i}`}
+              d={t.d}
               fill="none"
               stroke={config.stroke}
-              strokeWidth={p.width}
+              strokeWidth={t.width}
               strokeLinecap="round"
               strokeDasharray={pathLength}
               strokeDashoffset={pathLength}
               style={{
-                animation: `tendril-draw ${config.pathDuration}ms ease-out ${p.delay}ms forwards`,
+                animation: `tendril-draw ${STROKE_DURATION}ms ease-out ${t.delay}ms forwards`,
               }}
             />
-          );
-        })}
-      </svg>
+          ))}
+        </svg>
+      )}
+
+      {/* Peter — Pre-built web revealed via expanding clip-path */}
+      {phase === "animate" && webData && (
+        <svg
+          className="absolute inset-0 w-full h-full overflow-visible"
+          viewBox={`0 0 ${vw} ${vh}`}
+          preserveAspectRatio="none"
+          style={{
+            clipPath: `circle(${webReveal * diagonal * 0.6}px at ${vw / 2}px ${vh / 2}px)`,
+          }}
+        >
+          {/* Spokes */}
+          {webData.spokes.map((d, i) => (
+            <path
+              key={`spoke-${i}`}
+              d={d}
+              fill="none"
+              stroke={config.stroke}
+              strokeWidth={1.5}
+              strokeLinecap="round"
+              opacity={0.9}
+            />
+          ))}
+          {/* Rings with concave sag */}
+          {webData.rings.map((d, i) => (
+            <path
+              key={`ring-${i}`}
+              d={d}
+              fill="none"
+              stroke={config.stroke}
+              strokeWidth={1}
+              strokeLinecap="round"
+              opacity={0.7}
+            />
+          ))}
+        </svg>
+      )}
+
+      {/* Circle-wipe portal — expands from click origin */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundColor: config.wipeColor,
+          clipPath: phase === "hold" || phase === "fade"
+            ? `circle(150% at ${origin.x}px ${origin.y}px)`
+            : `circle(0% at ${origin.x}px ${origin.y}px)`,
+          opacity: phase === "fade" ? 0 : 1,
+          transition: phase === "animate"
+            ? "clip-path 3s cubic-bezier(0.4, 0, 0.2, 1)"
+            : phase === "fade"
+              ? "opacity 0.4s ease-out"
+              : "none",
+        }}
+      />
+
+      {/* Theme-aware WebSpinner — visible during hold */}
+      {(phase === "hold" || phase === "fade") && (
+        <div
+          className="absolute inset-0 flex items-center justify-center"
+          style={{
+            opacity: phase === "fade" ? 0 : 1,
+            transition: "opacity 0.3s ease-out",
+            color: config.spinnerColor,
+          }}
+        >
+          <WebSpinner size="lg" />
+        </div>
+      )}
     </div>
   );
 }
