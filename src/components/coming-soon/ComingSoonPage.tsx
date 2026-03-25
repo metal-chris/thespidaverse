@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { SpiderWebCanvas } from "./NeuralNetworkCanvas";
 import { ComingSoonContent } from "./ComingSoonContent";
 import type { Palette } from "./particle-config";
@@ -11,7 +11,47 @@ interface ComingSoonPageProps {
 
 export function ComingSoonPage({ earlyAccessEnabled = false }: ComingSoonPageProps) {
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [palette, setPalette] = useState<Palette>("miles");
+  const [palette, setPaletteState] = useState<Palette>("miles");
+  const [accessGranted, setAccessGranted] = useState(false);
+  const strikeTriggerRef = useRef<((x: number, y: number) => void) | null>(null);
+
+  const handleRendererReady = useCallback((trigger: (x: number, y: number) => void) => {
+    strikeTriggerRef.current = trigger;
+  }, []);
+
+  const handleAccessGranted = useCallback(() => {
+    setAccessGranted(true);
+    // Fire 8 strikes in a radial burst from the center of the viewport
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+    const trigger = strikeTriggerRef.current;
+    if (trigger && !reducedMotion) {
+      for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2;
+        const r = 80;
+        setTimeout(() => {
+          trigger(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+        }, i * 60);
+      }
+    }
+  }, [reducedMotion]);
+
+  // Sync palette with main site's theme in localStorage
+  const setPalette = useCallback((p: Palette | ((prev: Palette) => Palette)) => {
+    setPaletteState(prev => {
+      const next = typeof p === "function" ? p(prev) : p;
+      localStorage.setItem("spidaverse-theme", next);
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    // Read stored theme so coming soon matches any prior selection
+    const stored = localStorage.getItem("spidaverse-theme");
+    if (stored === "miles" || stored === "peter" || stored === "venom") {
+      setPaletteState(stored);
+    }
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -21,6 +61,12 @@ export function ComingSoonPage({ earlyAccessEnabled = false }: ComingSoonPagePro
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
   }, []);
+
+  const accents: Record<Palette, string> = {
+    miles: "#E82334",
+    peter: "#1E50DC",
+    venom: "#FFFFFF",
+  };
 
   const bgColor: Record<Palette, string> = {
     miles: "#0A0A0A",
@@ -104,10 +150,22 @@ export function ComingSoonPage({ earlyAccessEnabled = false }: ComingSoonPagePro
       />
 
       {/* Spider web canvas */}
-      <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} />
+      <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} onRendererReady={handleRendererReady} />
 
       {/* Content overlay */}
-      <ComingSoonContent palette={palette} onTogglePalette={() => setPalette(p => p === "miles" ? "peter" : p === "peter" ? "venom" : "miles")} earlyAccessEnabled={earlyAccessEnabled} />
+      <ComingSoonContent palette={palette} onTogglePalette={() => setPalette(p => p === "miles" ? "peter" : p === "peter" ? "venom" : "miles")} earlyAccessEnabled={earlyAccessEnabled} onAccessGranted={handleAccessGranted} />
+
+      {/* Portal wipe overlay — covers screen before redirect */}
+      {accessGranted && (
+        <div
+          className="fixed inset-0 z-50 cs-portal-wipe"
+          style={{
+            background: accents[palette],
+            animationDelay: "1.8s",
+            clipPath: "circle(0% at 50% 50%)",
+          }}
+        />
+      )}
     </div>
   );
 }

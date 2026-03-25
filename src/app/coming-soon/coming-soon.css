@@ -172,6 +172,87 @@ body:has(.coming-soon-layout) .sr-only[href="#main-content"] {
 }
 
 /* ========================================
+   Early Access — Success Animations
+   ======================================== */
+
+/* Card glow pulse on access granted */
+@keyframes cs-access-glow {
+  0% { box-shadow: 0 0 0 0 var(--access-glow-color, rgba(232,35,52,0.4)); }
+  40% { box-shadow: 0 0 30px 8px var(--access-glow-color, rgba(232,35,52,0.6)), 0 0 60px 16px var(--access-glow-color, rgba(232,35,52,0.2)); }
+  100% { box-shadow: 0 0 20px 4px var(--access-glow-color, rgba(232,35,52,0.3)); }
+}
+
+.cs-access-glow {
+  animation: cs-access-glow 1s ease-out forwards;
+}
+
+/* Faster, more intense glitch for "Access Granted" */
+@keyframes cs-glitch-access-red {
+  0% { transform: translate(-4px, -2px); opacity: 0.9; }
+  10% { transform: translate(3px, 1px); opacity: 0.8; }
+  20% { transform: translate(-2px, 2px); opacity: 0.7; }
+  30% { transform: translate(4px, -1px); opacity: 0.6; }
+  50% { transform: translate(-1px, 0); opacity: 0.3; }
+  100% { transform: translate(0, 0); opacity: 0; }
+}
+
+@keyframes cs-glitch-access-blue {
+  0% { transform: translate(4px, 2px); opacity: 0.8; }
+  10% { transform: translate(-3px, -1px); opacity: 0.7; }
+  20% { transform: translate(2px, -2px); opacity: 0.6; }
+  30% { transform: translate(-4px, 1px); opacity: 0.5; }
+  50% { transform: translate(1px, 0); opacity: 0.2; }
+  100% { transform: translate(0, 0); opacity: 0; }
+}
+
+.cs-glitch-access {
+  position: relative;
+}
+
+.cs-glitch-access::before,
+.cs-glitch-access::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cs-glitch-access::before {
+  color: #ff3c50;
+  animation: cs-glitch-access-red 0.8s ease-out forwards;
+  clip-path: inset(0 0 50% 0);
+}
+
+.cs-glitch-access::after {
+  color: #64c8ff;
+  animation: cs-glitch-access-blue 0.8s ease-out forwards;
+  clip-path: inset(50% 0 0 0);
+}
+
+/* Circle wipe portal transition */
+@keyframes cs-portal-wipe {
+  0% { clip-path: circle(0% at 50% 50%); opacity: 1; }
+  100% { clip-path: circle(150% at 50% 50%); opacity: 1; }
+}
+
+.cs-portal-wipe {
+  animation: cs-portal-wipe 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Access granted text fade in + scale */
+@keyframes cs-access-reveal {
+  0% { opacity: 0; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.cs-access-reveal {
+  animation: cs-access-reveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ========================================
    Reduced Motion
    ======================================== */
 @media (prefers-reduced-motion: reduce) {
@@ -211,5 +292,27 @@ body:has(.coming-soon-layout) .sr-only[href="#main-content"] {
 
   .cs-halftone {
     opacity: 0.3;
+  }
+
+  @keyframes cs-access-glow {
+    0%, 100% { box-shadow: none; }
+  }
+
+  @keyframes cs-glitch-access-red {
+    0%, 100% { transform: none; opacity: 0; }
+  }
+
+  @keyframes cs-glitch-access-blue {
+    0%, 100% { transform: none; opacity: 0; }
+  }
+
+  @keyframes cs-portal-wipe {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes cs-access-reveal {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
   }
 }

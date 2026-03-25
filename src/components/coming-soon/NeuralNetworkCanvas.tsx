@@ -7,11 +7,14 @@ import type { Palette } from "./particle-config";
 interface SpiderWebCanvasProps {
   reducedMotion: boolean;
   palette: Palette;
+  onRendererReady?: (trigger: (x: number, y: number) => void) => void;
 }
 
-export function SpiderWebCanvas({ reducedMotion, palette }: SpiderWebCanvasProps) {
+export function SpiderWebCanvas({ reducedMotion, palette, onRendererReady }: SpiderWebCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rendererRef = useRef<SpiderWebRenderer | null>(null);
+  const onRendererReadyRef = useRef(onRendererReady);
+  onRendererReadyRef.current = onRendererReady;
 
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -43,6 +46,8 @@ export function SpiderWebCanvas({ reducedMotion, palette }: SpiderWebCanvasProps
     const renderer = new SpiderWebRenderer(canvas, reducedMotion, palette);
     rendererRef.current = renderer;
     renderer.start();
+
+    onRendererReadyRef.current?.((x: number, y: number) => renderer.triggerStrike(x, y));
 
     const handleResize = () => resizeCanvas();
     window.addEventListener("resize", handleResize);

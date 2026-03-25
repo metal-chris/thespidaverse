@@ -7,9 +7,10 @@ interface ComingSoonContentProps {
   palette: Palette;
   onTogglePalette: () => void;
   earlyAccessEnabled?: boolean;
+  onAccessGranted?: () => void;
 }
 
-export function ComingSoonContent({ palette, onTogglePalette, earlyAccessEnabled = false }: ComingSoonContentProps) {
+export function ComingSoonContent({ palette, onTogglePalette, earlyAccessEnabled = false, onAccessGranted }: ComingSoonContentProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -18,7 +19,7 @@ export function ComingSoonContent({ palette, onTogglePalette, earlyAccessEnabled
   // Early access
   const [showPasscode, setShowPasscode] = useState(false);
   const [passcode, setPasscode] = useState("");
-  const [accessStatus, setAccessStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [accessStatus, setAccessStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [accessError, setAccessError] = useState("");
 
   const handleEarlyAccess = async (e: React.FormEvent) => {
@@ -33,7 +34,11 @@ export function ComingSoonContent({ palette, onTogglePalette, earlyAccessEnabled
         body: JSON.stringify({ passcode }),
       });
       if (res.ok) {
-        window.location.href = "/";
+        setAccessStatus("success");
+        onAccessGranted?.();
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2600);
       } else {
         setAccessStatus("error");
         setAccessError("Invalid passcode.");
@@ -58,11 +63,20 @@ export function ComingSoonContent({ palette, onTogglePalette, earlyAccessEnabled
     setStatus("loading");
     setErrorMessage("");
 
-    // Simulate API call — replace with real endpoint
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-      setStatus("success");
-      setEmail("");
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setStatus("success");
+        setEmail("");
+      } else {
+        setStatus("error");
+        setErrorMessage(data.error || "Something went wrong. Please try again.");
+      }
     } catch {
       setStatus("error");
       setErrorMessage("Something went wrong. Please try again.");
@@ -82,7 +96,10 @@ export function ComingSoonContent({ palette, onTogglePalette, earlyAccessEnabled
         style={{ animation: "fadeInUp 0.8s ease-out 2s both" }}
       >
         {/* Card */}
-        <div className="relative rounded-2xl overflow-hidden">
+        <div
+          className={`relative rounded-2xl overflow-hidden${accessStatus === "success" ? " cs-access-glow" : ""}`}
+          style={accessStatus === "success" ? { "--access-glow-color": `rgba(${accentRgb},0.5)` } as React.CSSProperties : undefined}
+        >
           {/* Accent border — left edge only */}
           <div
             className="absolute left-0 top-0 bottom-0 w-[3px] pointer-events-none"
@@ -270,7 +287,20 @@ export function ComingSoonContent({ palette, onTogglePalette, earlyAccessEnabled
             {/* Early Access — only rendered when EARLY_ACCESS_PASSCODE is set */}
             {earlyAccessEnabled && (
               <div className="flex flex-col items-center gap-3 mb-6">
-                {!showPasscode ? (
+                {accessStatus === "success" ? (
+                  <div className="text-center cs-access-reveal">
+                    <p
+                      className="text-lg font-extrabold tracking-[0.15em] uppercase cs-glitch-access"
+                      style={{ color: accent }}
+                      data-text="Access Granted"
+                    >
+                      Access Granted
+                    </p>
+                    <p className="text-xs mt-2" style={{ color: "#666" }}>
+                      Welcome to the web.
+                    </p>
+                  </div>
+                ) : !showPasscode ? (
                   <button
                     type="button"
                     onClick={() => setShowPasscode(true)}
