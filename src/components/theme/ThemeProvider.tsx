@@ -6,13 +6,15 @@ import { SymbioteOverlay } from "./SymbioteOverlay";
 type Theme = "miles" | "peter" | "venom";
 type TransitionDirection = "to-venom" | "to-miles" | "to-peter";
 
-/** Swap delay per direction (ms) — theme changes at ~40% through animation */
-/** Theme swaps during spinner hold phase (after 3s wipe completes) */
+/** Theme swaps during spinner hold phase (after 3s character animation) */
 const SWAP_DELAYS: Record<TransitionDirection, number> = {
   "to-venom": 3200,
   "to-miles": 3200,
   "to-peter": 3200,
 };
+
+/** When transitions are disabled, just show a quick loading screen */
+const QUICK_SWAP_DELAY = 500;
 
 interface ThemeContextValue {
   theme: Theme;
@@ -35,6 +37,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [transition, setTransition] = useState<{
     direction: TransitionDirection;
     origin: { x: number; y: number };
+    quick: boolean;
   } | null>(null);
   const toggleRef = useRef<HTMLElement | null>(null);
 
@@ -76,15 +79,22 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
       if (prefersReducedMotion) {
-        // Instant swap for reduced motion
         setTheme(next);
         return;
       }
 
-      // Trigger transition animation for ALL theme switches
-      setTransition({ direction, origin });
-      // Swap theme at ~40% through the animation for smooth visual
-      setTimeout(() => setTheme(next), SWAP_DELAYS[direction]);
+      // Check if transitions are enabled (read directly from localStorage)
+      const transitionsOn = localStorage.getItem("spidaverse-transitions") !== "false";
+
+      if (transitionsOn) {
+        // Full character animation + loading screen
+        setTransition({ direction, origin, quick: false });
+        setTimeout(() => setTheme(next), SWAP_DELAYS[direction]);
+      } else {
+        // Quick loading screen only (1s)
+        setTransition({ direction, origin, quick: true });
+        setTimeout(() => setTheme(next), QUICK_SWAP_DELAY);
+      }
     },
     [theme, setTheme]
   );
@@ -100,6 +110,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         <SymbioteOverlay
           direction={transition.direction}
           origin={transition.origin}
+          quick={transition.quick}
           onComplete={handleTransitionComplete}
         />
       )}

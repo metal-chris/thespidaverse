@@ -8,6 +8,7 @@ type TransitionDirection = "to-venom" | "to-miles" | "to-peter";
 interface SymbioteOverlayProps {
   direction: TransitionDirection;
   origin: { x: number; y: number };
+  quick?: boolean;
   onComplete: () => void;
 }
 
@@ -148,8 +149,8 @@ function generateLightning(vw: number, vh: number): BoltPath[] {
 function generateFullWeb(vw: number, vh: number) {
   const cx = vw / 2;
   const cy = vh / 2;
-  const spokeCount = 20;
-  const ringCount = 8;
+  const spokeCount = 12;
+  const ringCount = 5;
   const diagonal = Math.sqrt(vw * vw + vh * vh);
   const maxR = diagonal * 0.55;
 
@@ -205,50 +206,99 @@ function generateFullWeb(vw: number, vh: number) {
 }
 
 // ---------------------------------------------------------------------------
-// 3. VENOM — Simple S-Curve Tendrils (edges → scattered center points)
+// 3. VENOM — Slow Creeping Symbiote Tendrils (edges → center)
+//    16 tapered tendrils rendered as filled shapes that narrow to a point.
 // ---------------------------------------------------------------------------
 
 interface TendrilPath {
   d: string;
-  width: number;
   delay: number;
-  isOutline?: boolean;
+  baseWidth: number;
+  startX: number;
+  startY: number;
+}
+
+/** Sample a point on a quadratic bezier at parameter t */
+function quadBezier(t: number, p0x: number, p0y: number, cpx: number, cpy: number, p1x: number, p1y: number): [number, number] {
+  const mt = 1 - t;
+  return [
+    mt * mt * p0x + 2 * mt * t * cpx + t * t * p1x,
+    mt * mt * p0y + 2 * mt * t * cpy + t * t * p1y,
+  ];
+}
+
+/** Get the tangent direction at parameter t on a quadratic bezier */
+function quadBezierTangent(t: number, p0x: number, p0y: number, cpx: number, cpy: number, p1x: number, p1y: number): [number, number] {
+  const mt = 1 - t;
+  const tx = 2 * mt * (cpx - p0x) + 2 * t * (p1x - cpx);
+  const ty = 2 * mt * (cpy - p0y) + 2 * t * (p1y - cpy);
+  const len = Math.sqrt(tx * tx + ty * ty) || 1;
+  return [tx / len, ty / len];
 }
 
 function generateTendrils(vw: number, vh: number): TendrilPath[] {
   const tendrilCount = 16;
   const paths: TendrilPath[] = [];
+  const samples = 20; // points along centerline for outline generation
 
   for (let i = 0; i < tendrilCount; i++) {
     const [sx, sy] = perimeterPoint(i, tendrilCount, vw, vh);
 
-    // Each tendril ends at a DIFFERENT point in the center region — no single convergence
     const angle = (i / tendrilCount) * Math.PI * 2;
-    const scatter = 80 + Math.random() * 120;
+    const scatter = 50 + Math.random() * 70;
     const ex = vw / 2 + Math.cos(angle) * scatter;
     const ey = vh / 2 + Math.sin(angle) * scatter;
 
-    // Simple S-curve: single cubic bezier with two offset control points
+    // Quadratic bezier control point
+    const midX = (sx + ex) / 2;
+    const midY = (sy + ey) / 2;
     const dx = ex - sx;
     const dy = ey - sy;
     const len = Math.sqrt(dx * dx + dy * dy) || 1;
     const perpX = -dy / len;
     const perpY = dx / len;
     const sign = i % 2 === 0 ? 1 : -1;
-    const jitter = 100 + Math.random() * 100;
+    const curve = 30 + Math.random() * 50;
+    const cpX = midX + perpX * curve * sign;
+    const cpY = midY + perpY * curve * sign;
 
-    const cp1x = sx + dx * 0.33 + perpX * jitter * sign;
-    const cp1y = sy + dy * 0.33 + perpY * jitter * sign;
-    const cp2x = sx + dx * 0.66 - perpX * jitter * sign;
-    const cp2y = sy + dy * 0.66 - perpY * jitter * sign;
+    const baseWidth = 10 + Math.random() * 6; // half-width at base (total 20-32px)
 
-    const d = `M ${sx} ${sy} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${ex} ${ey}`;
-    const baseDelay = i * 120;
-    // Thicker at edges (~25% boost), slightly thicker overall (~15%)
-    const width = 5 + Math.random() * 5;
+    // Sample points along centerline, build left and right edges
+    const left: [number, number][] = [];
+    const right: [number, number][] = [];
 
-    // Main tendril only — no outline
-    paths.push({ d, width, delay: baseDelay });
+    for (let s = 0; s <= samples; s++) {
+      const t = s / samples;
+      const [px, py] = quadBezier(t, sx, sy, cpX, cpY, ex, ey);
+      const [tx, ty] = quadBezierTangent(t, sx, sy, cpX, cpY, ex, ey);
+
+      // Perpendicular to tangent
+      const nx = -ty;
+      const ny = tx;
+
+      // Width tapers: full at base (t=0), pointed at tip (t=1)
+      // Use cubic falloff for organic taper — fat base, long thin tip
+      const halfW = baseWidth * Math.pow(1 - t, 2);
+
+      left.push([px + nx * halfW, py + ny * halfW]);
+      right.push([px - nx * halfW, py - ny * halfW]);
+    }
+
+    // Build closed shape: left edge forward, right edge backward
+    let d = `M ${left[0][0]} ${left[0][1]}`;
+    for (let s = 1; s < left.length; s++) {
+      d += ` L ${left[s][0]} ${left[s][1]}`;
+    }
+    // Tip point
+    d += ` L ${ex} ${ey}`;
+    // Right edge backward
+    for (let s = right.length - 1; s >= 0; s--) {
+      d += ` L ${right[s][0]} ${right[s][1]}`;
+    }
+    d += " Z";
+
+    paths.push({ d, delay: i * 150, baseWidth, startX: sx, startY: sy });
   }
 
   return paths;
@@ -258,8 +308,8 @@ function generateTendrils(vw: number, vh: number): TendrilPath[] {
 // Component
 // ---------------------------------------------------------------------------
 
-export function SymbioteOverlay({ direction, origin, onComplete }: SymbioteOverlayProps) {
-  const [phase, setPhase] = useState<"animate" | "hold" | "fade" | "done">("animate");
+export function SymbioteOverlay({ direction, origin, quick = false, onComplete }: SymbioteOverlayProps) {
+  const [phase, setPhase] = useState<"animate" | "hold" | "fade" | "done">(quick ? "hold" : "animate");
   const [webReveal, setWebReveal] = useState(0); // 0 to 1 — clip-path radius for web reveal
 
   const vw = typeof document !== "undefined" ? document.documentElement.clientWidth : 1280;
@@ -274,24 +324,30 @@ export function SymbioteOverlay({ direction, origin, onComplete }: SymbioteOverl
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [direction]);
 
-  // Web reveal animation — expand clip from 0% to 100% over 3s
+  // Web reveal animation — expand clip from 0% to 100% over 3s (full mode only)
   useEffect(() => {
-    if (direction !== "to-peter") return;
+    if (direction !== "to-peter" || quick) return;
     let raf: number;
     const start = performance.now();
     const duration = 3000;
     function tick(now: number) {
       const t = Math.min((now - start) / duration, 1);
-      // Ease-out cubic
       const eased = 1 - Math.pow(1 - t, 3);
       setWebReveal(eased);
       if (t < 1) raf = requestAnimationFrame(tick);
     }
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [direction]);
+  }, [direction, quick]);
 
   useEffect(() => {
+    if (quick) {
+      // Quick mode: skip animation, just hold spinner briefly then fade
+      const fadeTimer = setTimeout(() => setPhase("fade"), 600);
+      const doneTimer = setTimeout(() => { setPhase("done"); onComplete(); }, 1000);
+      return () => { clearTimeout(fadeTimer); clearTimeout(doneTimer); };
+    }
+    // Full mode: 3s animation → hold → fade
     const holdTimer = setTimeout(() => setPhase("hold"), 3000);
     const fadeTimer = setTimeout(() => setPhase("fade"), 3600);
     const doneTimer = setTimeout(() => {
@@ -303,7 +359,7 @@ export function SymbioteOverlay({ direction, origin, onComplete }: SymbioteOverl
       clearTimeout(fadeTimer);
       clearTimeout(doneTimer);
     };
-  }, [direction, onComplete, config.totalDuration]);
+  }, [direction, onComplete, config.totalDuration, quick]);
 
   if (phase === "done") return null;
 
@@ -340,19 +396,16 @@ export function SymbioteOverlay({ direction, origin, onComplete }: SymbioteOverl
             />
           ))}
 
-          {/* Venom — S-Curve Tendrils */}
+          {/* Venom — Tapered filled tendrils growing from edges */}
           {tendrils.map((t, i) => (
             <path
               key={`tendril-${i}`}
               d={t.d}
-              fill="none"
-              stroke={config.stroke}
-              strokeWidth={t.width}
-              strokeLinecap="round"
-              strokeDasharray={pathLength}
-              strokeDashoffset={pathLength}
+              fill={config.stroke}
+              opacity={0}
               style={{
-                animation: `tendril-draw ${STROKE_DURATION}ms ease-out ${t.delay}ms forwards`,
+                transformOrigin: `${t.startX}px ${t.startY}px`,
+                animation: `venom-grow ${STROKE_DURATION}ms cubic-bezier(0.2, 0, 0.3, 1) ${t.delay}ms forwards`,
               }}
             />
           ))}
@@ -376,7 +429,7 @@ export function SymbioteOverlay({ direction, origin, onComplete }: SymbioteOverl
               d={d}
               fill="none"
               stroke={config.stroke}
-              strokeWidth={1.5}
+              strokeWidth={2}
               strokeLinecap="round"
               opacity={0.9}
             />
@@ -388,7 +441,7 @@ export function SymbioteOverlay({ direction, origin, onComplete }: SymbioteOverl
               d={d}
               fill="none"
               stroke={config.stroke}
-              strokeWidth={1}
+              strokeWidth={1.5}
               strokeLinecap="round"
               opacity={0.7}
             />
@@ -401,11 +454,11 @@ export function SymbioteOverlay({ direction, origin, onComplete }: SymbioteOverl
         className="absolute inset-0"
         style={{
           backgroundColor: config.wipeColor,
-          clipPath: phase === "hold" || phase === "fade"
+          clipPath: phase === "hold" || phase === "fade" || quick
             ? `circle(150% at ${origin.x}px ${origin.y}px)`
             : `circle(0% at ${origin.x}px ${origin.y}px)`,
           opacity: phase === "fade" ? 0 : 1,
-          transition: phase === "animate"
+          transition: phase === "animate" && !quick
             ? "clip-path 3s cubic-bezier(0.4, 0, 0.2, 1)"
             : phase === "fade"
               ? "opacity 0.4s ease-out"

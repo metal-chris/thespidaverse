@@ -168,6 +168,33 @@
   }
 }
 
+/* Venom tendril — uses pathLength=1 normalization */
+@keyframes venom-creep {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0.9;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+/* Venom tapered tendril — grows from edge toward center */
+@keyframes venom-grow {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* Venom Mode — subtle tendril hover on cards */
 [data-theme="venom"] .card-tendril-hover {
   position: relative;
