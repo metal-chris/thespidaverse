@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import type { GalleryPiece } from "@/types";
 import { ArtistSpotlight } from "./ArtistSpotlight";
 import { GalleryFilterBar } from "./GalleryFilterBar";
 import { MasonryGrid } from "./MasonryGrid";
-import { GalleryLightbox } from "./GalleryLightbox";
+import { GalleryViewer } from "./GalleryViewer";
 
 const BATCH_SIZE = 16;
 
@@ -17,10 +17,10 @@ interface GalleryPageClientProps {
 
 export function GalleryPageClient({ initialPieces, spotlight }: GalleryPageClientProps) {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const [pieces, setPieces] = useState<GalleryPiece[]>(initialPieces);
   const [activeType, setActiveType] = useState("all");
-  const [lightboxPiece, setLightboxPiece] = useState<GalleryPiece | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialPieces.length >= BATCH_SIZE);
 
@@ -30,14 +30,11 @@ export function GalleryPageClient({ initialPieces, spotlight }: GalleryPageClien
     return pieces.filter((p) => p.pieceType === activeType);
   }, [pieces, activeType]);
 
-  // Deep-link: open lightbox from ?piece=slug
-  useEffect(() => {
-    const pieceSlug = searchParams.get("piece");
-    if (pieceSlug) {
-      const found = pieces.find((p) => p.slug.current === pieceSlug);
-      if (found) setLightboxPiece(found);
-    }
-  }, [searchParams, pieces]);
+  // Check if we're viewing a specific piece
+  const pieceSlug = searchParams.get("piece");
+  const viewerPiece = pieceSlug
+    ? pieces.find((p) => p.slug.current === pieceSlug) || null
+    : null;
 
   const handleLoadMore = useCallback(async () => {
     setLoading(true);
@@ -60,17 +57,29 @@ export function GalleryPageClient({ initialPieces, spotlight }: GalleryPageClien
     }
   }, [pieces.length]);
 
-  const handleLightboxNavigate = useCallback((piece: GalleryPiece) => {
-    setLightboxPiece(piece);
-  }, []);
+  // Navigate to piece viewer
+  const handlePieceClick = useCallback((piece: GalleryPiece) => {
+    router.push(`/gallery?piece=${piece.slug.current}`, { scroll: false });
+  }, [router]);
 
+  // ── Viewer mode: full-page film strip viewer ──
+  if (viewerPiece) {
+    return (
+      <GalleryViewer
+        initialPiece={viewerPiece}
+        pieces={filteredPieces}
+      />
+    );
+  }
+
+  // ── Grid mode: masonry gallery ──
   return (
     <>
       {/* Artist Spotlight */}
       {spotlight && (
         <ArtistSpotlight
           piece={spotlight}
-          onClick={() => setLightboxPiece(spotlight)}
+          onClick={() => handlePieceClick(spotlight)}
         />
       )}
 
@@ -83,7 +92,7 @@ export function GalleryPageClient({ initialPieces, spotlight }: GalleryPageClien
       {/* Masonry Grid */}
       <MasonryGrid
         pieces={filteredPieces}
-        onPieceClick={setLightboxPiece}
+        onPieceClick={handlePieceClick}
       />
 
       {/* Load More */}
@@ -97,16 +106,6 @@ export function GalleryPageClient({ initialPieces, spotlight }: GalleryPageClien
             {loading ? "Loading..." : "Load More"}
           </button>
         </div>
-      )}
-
-      {/* Lightbox */}
-      {lightboxPiece && (
-        <GalleryLightbox
-          piece={lightboxPiece}
-          pieces={filteredPieces}
-          onClose={() => setLightboxPiece(null)}
-          onNavigate={handleLightboxNavigate}
-        />
       )}
     </>
   );

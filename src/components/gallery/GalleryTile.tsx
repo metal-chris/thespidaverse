@@ -41,7 +41,7 @@ export function GalleryTile({ piece, onClick }: GalleryTileProps) {
           alt={altText}
           width={600}
           height={0}
-          className="w-full h-auto object-cover group-hover:scale-[1.03] transition-transform duration-500"
+          className="w-full h-auto object-cover"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           unoptimized
         />
@@ -52,6 +52,9 @@ export function GalleryTile({ piece, onClick }: GalleryTileProps) {
           </svg>
         </div>
       )}
+
+      {/* Hover overlay — lighter on top, darker at bottom */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/10 to-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
       {/* Video play icon overlay */}
       {piece.pieceType === "video" && (
@@ -64,17 +67,12 @@ export function GalleryTile({ piece, onClick }: GalleryTileProps) {
         </div>
       )}
 
-      {/* Hover overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
-        <p className="text-white text-sm font-semibold truncate">{piece.artistName}</p>
-        <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-md bg-accent/80 text-white w-fit">
+      {/* Slide-up hover bar — inline layout, lighter bg */}
+      <div className="absolute bottom-0 inset-x-0 px-2.5 py-2 bg-black/45 backdrop-blur-sm translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-between gap-2">
+        <p className="text-white text-xs font-semibold truncate min-w-0">{piece.artistName}</p>
+        <span className="flex-shrink-0 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-md bg-accent/80 text-white">
           {FRANCHISE_LABELS[piece.franchise] || piece.franchise}
         </span>
-      </div>
-
-      {/* Franchise badge (always visible) */}
-      <div className="absolute top-2 right-2 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-md bg-black/50 text-white backdrop-blur-sm">
-        {FRANCHISE_LABELS[piece.franchise] || piece.franchise}
       </div>
     </button>
   );

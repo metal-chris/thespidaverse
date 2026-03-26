@@ -18,9 +18,9 @@ export function MasonryGrid({ pieces, onPieceClick }: MasonryGridProps) {
   }
 
   return (
-    <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4">
+    <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-2">
       {pieces.map((piece) => (
-        <div key={piece._id} className="break-inside-avoid mb-4">
+        <div key={piece._id} className="break-inside-avoid mb-2">
           <GalleryTile piece={piece} onClick={() => onPieceClick(piece)} />
         </div>
       ))}

@@ -6,6 +6,7 @@ import { urlFor } from "@/lib/sanity/image";
 import { ShareBar } from "@/components/content/ShareBar";
 import { ReactionBar } from "@/components/reactions/ReactionBar";
 import { VideoEmbed } from "./VideoEmbed";
+import { FilmStrip } from "./FilmStrip";
 import type { GalleryPiece } from "@/types";
 
 const FRANCHISE_LABELS: Record<string, string> = {
@@ -33,12 +34,13 @@ export function GalleryLightbox({ piece, pieces, onClose, onNavigate }: GalleryL
     ? `${window.location.origin}/gallery?piece=${piece.slug.current}`
     : `/gallery?piece=${piece.slug.current}`;
 
-  // Keyboard navigation
+  // Keyboard navigation — arrows + escape
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
-      if (e.key === "ArrowLeft" && prevPiece) onNavigate(prevPiece);
-      if (e.key === "ArrowRight" && nextPiece) onNavigate(nextPiece);
+      // Left/Up = prev, Right/Down = next
+      if ((e.key === "ArrowLeft" || e.key === "ArrowUp") && prevPiece) onNavigate(prevPiece);
+      if ((e.key === "ArrowRight" || e.key === "ArrowDown") && nextPiece) onNavigate(nextPiece);
     },
     [onClose, onNavigate, prevPiece, nextPiece]
   );
@@ -52,7 +54,7 @@ export function GalleryLightbox({ piece, pieces, onClose, onNavigate }: GalleryL
     };
   }, [handleKeyDown]);
 
-  // Update URL
+  // Update URL for deep-linking
   useEffect(() => {
     const url = new URL(window.location.href);
     url.searchParams.set("piece", piece.slug.current);
@@ -74,7 +76,7 @@ export function GalleryLightbox({ piece, pieces, onClose, onNavigate }: GalleryL
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 z-10 p-2 rounded-full bg-card/80 backdrop-blur-sm border border-border text-muted-foreground hover:text-foreground transition-colors"
+        className="absolute top-4 right-4 z-20 p-2 rounded-full bg-card/80 backdrop-blur-sm border border-border text-muted-foreground hover:text-foreground transition-colors"
         aria-label="Close"
       >
         <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -82,58 +84,69 @@ export function GalleryLightbox({ piece, pieces, onClose, onNavigate }: GalleryL
         </svg>
       </button>
 
-      {/* Navigation arrows */}
-      {prevPiece && (
-        <button
-          onClick={() => onNavigate(prevPiece)}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-card/80 backdrop-blur-sm border border-border text-muted-foreground hover:text-foreground transition-colors"
-          aria-label="Previous piece"
-        >
-          <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-      )}
-      {nextPiece && (
-        <button
-          onClick={() => onNavigate(nextPiece)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-card/80 backdrop-blur-sm border border-border text-muted-foreground hover:text-foreground transition-colors"
-          aria-label="Next piece"
-        >
-          <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      )}
+      {/* ── Content wrapper ── */}
+      <div className="relative h-full flex flex-col md:flex-row" onClick={(e) => e.stopPropagation()}>
 
-      {/* Content */}
-      <div className="relative h-full overflow-y-auto flex items-start justify-center pt-12 pb-8 px-4">
-        <div className="w-full max-w-3xl">
-          {/* Media */}
-          <div className="rounded-xl overflow-hidden bg-card border border-border">
-            {piece.pieceType === "image" && imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt={piece.image?.alt || piece.title}
-                width={1200}
-                height={0}
-                className="w-full h-auto"
-                sizes="(max-width: 768px) 100vw, 768px"
-                priority
-                unoptimized
-              />
-            ) : piece.pieceType === "video" && piece.videoUrl ? (
+        {/* ══════ MOBILE LAYOUT (stacked) ══════ */}
+        {/* Image → Info → Horizontal Film Strip */}
+
+        {/* ══════ DESKTOP LAYOUT (3 columns) ══════ */}
+        {/* Image (55%) │ Info (30%) │ Film Strip (15%) */}
+
+        {/* ── Column 1: Media ── */}
+        <div className="relative flex-1 min-h-0 max-h-[50vh] md:max-h-none flex items-center justify-center p-4 pt-14 md:pt-4">
+          {/* Navigation arrows */}
+          {prevPiece && (
+            <button
+              onClick={() => onNavigate(prevPiece)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-card/80 backdrop-blur-sm border border-border text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Previous piece"
+            >
+              <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
+          {nextPiece && (
+            <button
+              onClick={() => onNavigate(nextPiece)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-card/80 backdrop-blur-sm border border-border text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Next piece"
+            >
+              <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
+
+          {/* Media content */}
+          {piece.pieceType === "image" && imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt={piece.image?.alt || piece.title}
+              width={1200}
+              height={800}
+              className="max-h-full max-w-full object-contain rounded-xl"
+              sizes="(max-width: 768px) 100vw, 55vw"
+              priority
+              unoptimized
+            />
+          ) : piece.pieceType === "video" && piece.videoUrl ? (
+            <div className="w-full max-w-2xl">
               <VideoEmbed videoUrl={piece.videoUrl} videoPlatform={piece.videoPlatform} />
-            ) : (
-              <div className="aspect-video bg-muted flex items-center justify-center">
-                <p className="text-muted-foreground">No media available</p>
-              </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="w-full aspect-video bg-muted rounded-xl flex items-center justify-center">
+              <p className="text-muted-foreground">No media available</p>
+            </div>
+          )}
+        </div>
 
-          {/* Info section */}
-          <div className="mt-4 p-4 rounded-xl bg-card border border-border">
-            <div className="flex items-start justify-between gap-4 flex-wrap">
+        {/* ── Column 2: Info Sidebar ── */}
+        <div className="flex-shrink-0 overflow-y-auto max-h-[35vh] md:max-h-none md:w-[280px] lg:w-[320px] p-4 md:pt-4 md:border-l md:border-border">
+          <div className="rounded-xl bg-card border border-border p-4">
+            {/* Title + franchise */}
+            <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-xl font-bold">{piece.title}</h2>
                 <p className="text-muted-foreground mt-0.5">
@@ -152,15 +165,17 @@ export function GalleryLightbox({ piece, pieces, onClose, onNavigate }: GalleryL
                   )}
                 </p>
               </div>
-              <span className="px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider rounded-md bg-accent/10 text-accent border border-accent/20">
+              <span className="flex-shrink-0 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider rounded-md bg-accent/10 text-accent border border-accent/20">
                 {FRANCHISE_LABELS[piece.franchise] || piece.franchise}
               </span>
             </div>
 
+            {/* Description */}
             {piece.description && (
               <p className="text-sm text-muted-foreground mt-3">{piece.description}</p>
             )}
 
+            {/* View Original */}
             {piece.originalUrl && (
               <a
                 href={piece.originalUrl}
@@ -175,6 +190,11 @@ export function GalleryLightbox({ piece, pieces, onClose, onNavigate }: GalleryL
               </a>
             )}
 
+            {/* Piece counter */}
+            <p className="text-xs text-muted-foreground mt-4">
+              {currentIndex + 1} of {pieces.length}
+            </p>
+
             {/* Reactions */}
             <div className="mt-4 pt-4 border-t border-border">
               <ReactionBar slug={`gallery-${piece.slug.current}`} />
@@ -186,6 +206,27 @@ export function GalleryLightbox({ piece, pieces, onClose, onNavigate }: GalleryL
               <ShareBar title={piece.title} url={shareUrl} />
             </div>
           </div>
+        </div>
+
+        {/* ── Column 3: Film Strip (desktop = vertical, mobile = horizontal) ── */}
+        {/* Desktop: vertical rail on the right */}
+        <div className="hidden md:flex h-full">
+          <FilmStrip
+            pieces={pieces}
+            currentPieceId={piece._id}
+            onNavigate={onNavigate}
+            orientation="vertical"
+          />
+        </div>
+
+        {/* Mobile: horizontal strip at bottom */}
+        <div className="md:hidden">
+          <FilmStrip
+            pieces={pieces}
+            currentPieceId={piece._id}
+            onNavigate={onNavigate}
+            orientation="horizontal"
+          />
         </div>
       </div>
     </div>

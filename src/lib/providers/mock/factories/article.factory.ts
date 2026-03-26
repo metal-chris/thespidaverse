@@ -98,17 +98,102 @@ function createTag(overrides: Partial<Tag> = {}): Tag {
   };
 }
 
+// ─── Rich body helpers ─────────────────────────────────────────────────
+
+function k() { return faker.string.alphanumeric(12); }
+
+function textBlock(
+  text: string,
+  style: "normal" | "h2" | "h3" | "blockquote" = "normal",
+  marks?: { text: string; mark: string }[],
+): any {
+  if (marks && marks.length > 0) {
+    const markDefs: any[] = [];
+    const children: any[] = [];
+    let remaining = text;
+    for (const m of marks) {
+      const idx = remaining.indexOf(m.text);
+      if (idx === -1) continue;
+      if (idx > 0) {
+        children.push({ _key: k(), _type: "span", text: remaining.slice(0, idx), marks: [] });
+      }
+      if (m.mark === "link") {
+        const defKey = k();
+        markDefs.push({ _key: defKey, _type: "link", href: "https://example.com" });
+        children.push({ _key: k(), _type: "span", text: m.text, marks: [defKey] });
+      } else {
+        children.push({ _key: k(), _type: "span", text: m.text, marks: [m.mark] });
+      }
+      remaining = remaining.slice(idx + m.text.length);
+    }
+    if (remaining) children.push({ _key: k(), _type: "span", text: remaining, marks: [] });
+    return { _key: k(), _type: "block", style, children, markDefs };
+  }
+  return {
+    _key: k(), _type: "block", style,
+    children: [{ _key: k(), _type: "span", text, marks: [] }],
+    markDefs: [],
+  };
+}
+
+function imageBlock(seed: string, alt: string, caption?: string): any {
+  return {
+    _key: k(), _type: "image",
+    asset: { _ref: `image-mock-${seed}-1200x630-jpg`, _type: "reference" },
+    alt,
+    caption,
+    // Mock-only: direct URL for rendering without Sanity CDN
+    mockUrl: `https://picsum.photos/seed/${seed}/800/450`,
+  };
+}
+
+function spoilerBlock(label: string, text: string): any {
+  return {
+    _key: k(), _type: "spoilerBlock",
+    label,
+    content: [textBlock(text)],
+  };
+}
+
+/** Generates a rich Portable Text body from structured sections */
+function generateRichBody(sections: {
+  heading?: string;
+  paragraphs: string[];
+  image?: { seed: string; alt: string; caption?: string };
+  spoiler?: { label: string; text: string };
+  marks?: { text: string; mark: string }[];
+}[]): any[] {
+  const blocks: any[] = [];
+  for (const section of sections) {
+    if (section.heading) {
+      blocks.push(textBlock(section.heading, "h2"));
+    }
+    for (let i = 0; i < section.paragraphs.length; i++) {
+      const p = section.paragraphs[i];
+      blocks.push(textBlock(p, "normal", i === 0 ? section.marks : undefined));
+    }
+    if (section.image) {
+      blocks.push(imageBlock(section.image.seed, section.image.alt, section.image.caption));
+    }
+    if (section.spoiler) {
+      blocks.push(spoilerBlock(section.spoiler.label, section.spoiler.text));
+    }
+  }
+  return blocks;
+}
+
+/** Fallback: generates a basic body with lorem text (for articles without hand-crafted body) */
 function generatePortableTextBody(): any[] {
   const blockCount = faker.number.int({ min: 3, max: 8 });
   const blocks: any[] = [];
   for (let i = 0; i < blockCount; i++) {
     blocks.push({
-      _key: faker.string.alphanumeric(12),
+      _key: k(),
       _type: "block",
       style: i === 0 ? "h2" : "normal",
       children: [
         {
-          _key: faker.string.alphanumeric(8),
+          _key: k(),
           _type: "span",
           text: i === 0 ? faker.lorem.sentence() : faker.lorem.paragraph(),
           marks: [],
@@ -182,4 +267,4 @@ export function createArticles(
   return Array.from({ length: count }, () => createArticle(overrides));
 }
 
-export { createCategory, createTag, createSanityImage, generatePortableTextBody };
+export { createCategory, createTag, createSanityImage, generatePortableTextBody, generateRichBody };

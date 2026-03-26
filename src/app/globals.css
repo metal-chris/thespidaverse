@@ -440,3 +440,421 @@
     transform: scale(1.02);
   }
 }
+
+/* ========================================
+   Gallery Viewer — Full-page scroll-driven
+   ======================================== */
+
+.gallery-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--color-background);
+  display: flex;
+  flex-direction: column;
+}
+
+.gallery-viewer-back {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--color-card) 80%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border);
+  color: var(--color-muted-foreground);
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.gallery-viewer-back:hover {
+  color: var(--color-foreground);
+  border-color: var(--color-accent);
+}
+
+.gallery-viewer-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Desktop: side by side */
+@media (min-width: 768px) {
+  .gallery-viewer-content {
+    flex-direction: row;
+  }
+}
+
+/* Main area: image + details */
+.gallery-viewer-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.gallery-viewer-media {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  padding-top: 56px;
+}
+
+@media (min-width: 768px) {
+  .gallery-viewer-media {
+    padding-top: 16px;
+  }
+}
+
+.gallery-viewer-details {
+  flex-shrink: 0;
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-card) 50%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+/* ── Piece transitions ── */
+
+.gallery-viewer-media {
+  overflow: hidden;
+  position: relative;
+}
+
+.gallery-piece-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Resting state */
+.gallery-piece-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Entering from below (scrolling down / "next") */
+.gallery-piece-enter-next {
+  animation: piece-in-next 300ms ease-out forwards;
+}
+
+/* Entering from above (scrolling up / "prev") */
+.gallery-piece-enter-prev {
+  animation: piece-in-prev 300ms ease-out forwards;
+}
+
+@keyframes piece-in-next {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes piece-in-prev {
+  0% {
+    opacity: 0;
+    transform: translateY(-24px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Details crossfade */
+.gallery-details-inner {
+  transition: opacity 200ms ease;
+}
+
+.gallery-details-visible {
+  opacity: 1;
+}
+
+.gallery-details-fade {
+  opacity: 0;
+}
+
+/* Film strip rail */
+.gallery-viewer-strip {
+  --film-bg: #111111;
+  --sprocket-color: #2a2a2a;
+  --border-w: 16px;
+  --sprocket-h: 3px;
+  --sprocket-gap: 10px;
+
+  position: relative;
+  flex-shrink: 0;
+  background: var(--film-bg);
+  overflow: hidden;
+}
+
+/* Mobile: horizontal strip at bottom */
+.gallery-viewer-strip {
+  height: 96px;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Desktop: vertical strip on right */
+@media (min-width: 768px) {
+  .gallery-viewer-strip {
+    width: 130px;
+    height: auto;
+    border-top: none;
+    border-left: 1px solid var(--color-border);
+  }
+}
+
+/* Sprocket holes */
+.gallery-viewer-strip::before,
+.gallery-viewer-strip::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Mobile: horizontal sprockets top/bottom */
+.gallery-viewer-strip::before {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--film-bg) 0px,
+    var(--film-bg) 4px,
+    var(--sprocket-color) 4px,
+    var(--sprocket-color) 7px,
+    var(--film-bg) 7px,
+    var(--film-bg) 12px
+  );
+}
+
+.gallery-viewer-strip::after {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--film-bg) 0px,
+    var(--film-bg) 4px,
+    var(--sprocket-color) 4px,
+    var(--sprocket-color) 7px,
+    var(--film-bg) 7px,
+    var(--film-bg) 12px
+  );
+}
+
+/* Desktop: vertical sprockets left/right */
+@media (min-width: 768px) {
+  .gallery-viewer-strip::before {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: var(--border-w);
+    height: auto;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--film-bg) 0px,
+      var(--film-bg) 3px,
+      var(--sprocket-color) 3px,
+      var(--sprocket-color) calc(3px + var(--sprocket-h)),
+      var(--film-bg) calc(3px + var(--sprocket-h)),
+      var(--film-bg) var(--sprocket-gap)
+    );
+  }
+
+  .gallery-viewer-strip::after {
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: auto;
+    width: var(--border-w);
+    height: auto;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--film-bg) 0px,
+      var(--film-bg) 3px,
+      var(--sprocket-color) 3px,
+      var(--sprocket-color) calc(3px + var(--sprocket-h)),
+      var(--film-bg) calc(3px + var(--sprocket-h)),
+      var(--film-bg) var(--sprocket-gap)
+    );
+  }
+}
+
+/* Scroll container */
+.gallery-viewer-strip-scroll {
+  height: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior: contain;
+}
+
+.gallery-viewer-strip-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mobile: horizontal layout (passive follower) */
+.gallery-viewer-strip-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px;
+  pointer-events: none;
+}
+
+/* Desktop: vertical layout (passive follower) */
+@media (min-width: 768px) {
+  .gallery-viewer-strip-scroll {
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: block;
+    padding: 8px var(--border-w);
+    pointer-events: none;
+  }
+}
+
+/* Spacers fill ~half the strip so first/last frame can center */
+.gallery-viewer-snap-spacer {
+  flex-shrink: 0;
+}
+
+/* Mobile spacer */
+.gallery-viewer-snap-spacer {
+  width: calc(50vw - 36px);
+  height: 1px;
+}
+
+/* Desktop spacer */
+@media (min-width: 768px) {
+  .gallery-viewer-snap-spacer {
+    width: auto;
+    height: calc(50vh - 60px);
+  }
+}
+
+/* ========================================
+   Film Strip Frames — Shared styles
+   ======================================== */
+
+/* Individual film frame */
+.film-frame {
+  position: relative;
+  margin-bottom: 4px;
+}
+
+/* Frame thumbnail container */
+.film-frame-thumb {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid #333;
+  transition: all 0.3s ease;
+  filter: brightness(0.4);
+}
+
+/* In viewer strip: size to fill between sprockets */
+.gallery-viewer-strip .film-frame-thumb {
+  width: calc(130px - 16px * 2);
+}
+
+/* Mobile viewer: smaller horizontal frames */
+@media (max-width: 767px) {
+  .gallery-viewer-strip .film-frame-thumb {
+    width: 56px;
+    height: 56px;
+    aspect-ratio: auto;
+    flex-shrink: 0;
+  }
+
+  .gallery-viewer-strip .film-frame {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+  }
+}
+
+/* Active frame — light table backlight */
+.film-frame-active .film-frame-thumb {
+  filter: brightness(1);
+  border-color: var(--color-accent);
+  box-shadow:
+    0 0 12px color-mix(in srgb, var(--color-accent) 40%, transparent),
+    0 0 24px color-mix(in srgb, var(--color-accent) 15%, transparent),
+    inset 0 0 8px rgba(255, 255, 255, 0.05);
+}
+
+/* Frame number — Kodak edge printing style */
+.film-frame-number {
+  font-family: 'Courier New', 'Courier', monospace;
+  font-size: 7px;
+  letter-spacing: 0.5px;
+  color: #888;
+  text-align: center;
+  padding: 1px 0;
+  line-height: 1;
+  user-select: none;
+  opacity: 0.6;
+}
+
+.film-frame-active .film-frame-number {
+  color: var(--color-accent);
+  opacity: 1;
+}
+
+/* Film stock branding text (decorative, rotated on left edge) */
+.film-stock-label {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  transform: rotate(-90deg) translateX(-50%);
+  transform-origin: left center;
+  font-family: 'Courier New', 'Courier', monospace;
+  font-size: 6px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #444;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 3;
+  user-select: none;
+}
+
+/* Video indicator on film frame */
+.film-frame-video-badge {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Mobile horizontal spacers for film strip */
+@media (max-width: 767px) {
+  .gallery-viewer-strip .film-frame-number {
+    font-size: 6px;
+  }
+}

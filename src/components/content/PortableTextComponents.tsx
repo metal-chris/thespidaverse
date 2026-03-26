@@ -9,7 +9,8 @@ export const portableTextComponents: PTComponents = {
   types: {
     image: ({ value }) => {
       if (!value?.asset) return null;
-      const imageUrl = urlFor(value).width(800).url();
+      const imageUrl = urlFor(value).width(800).url() || value.mockUrl || "";
+      if (!imageUrl) return null;
       return (
         <figure className="my-6">
           <div className="relative rounded-lg overflow-hidden">
