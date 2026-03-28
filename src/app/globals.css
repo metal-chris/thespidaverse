@@ -295,6 +295,61 @@
 }
 
 /* ========================================
+   Glitch Text — Page Headers
+   Subtle red/blue chromatic shift flicker
+   ======================================== */
+.glitch-text {
+  position: relative;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Red shifted copy — top half */
+.glitch-text::before {
+  color: #ff3c50;
+  animation: glitch-text-red 6s ease-in-out infinite;
+  clip-path: inset(0 0 55% 0);
+}
+
+/* Blue shifted copy — bottom half */
+.glitch-text::after {
+  color: #64c8ff;
+  animation: glitch-text-blue 6s ease-in-out infinite;
+  clip-path: inset(55% 0 0 0);
+}
+
+@keyframes glitch-text-red {
+  0%, 86%, 94%, 100% { transform: translate(0, 0); opacity: 0; }
+  88% { transform: translate(-3px, -1px); opacity: 0.8; }
+  90% { transform: translate(2px, 1px); opacity: 0.6; }
+  92% { transform: translate(-1px, 0); opacity: 0; }
+}
+
+@keyframes glitch-text-blue {
+  0%, 86%, 94%, 100% { transform: translate(0, 0); opacity: 0; }
+  88% { transform: translate(3px, 1px); opacity: 0.6; }
+  90% { transform: translate(-2px, -1px); opacity: 0.5; }
+  92% { transform: translate(1px, 0); opacity: 0; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .glitch-text::before,
+  .glitch-text::after {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ========================================
    Glitch / Dimension-Hop Page Transition
    ======================================== */
 @keyframes glitch-tear {
@@ -538,6 +593,27 @@
   height: 100%;
 }
 
+/* ── Video container — fills available space instead of max-w-3xl ── */
+.gallery-video-container {
+  width: 100%;
+  max-width: 960px;
+}
+@media (min-width: 1024px) {
+  .gallery-video-container {
+    max-width: min(80%, 1200px);
+  }
+}
+
+/* ── Portrait images — constrain width so they don't look tiny ── */
+.gallery-media-portrait {
+  max-width: min(60%, 600px);
+}
+@media (max-width: 767px) {
+  .gallery-media-portrait {
+    max-width: 85%;
+  }
+}
+
 /* Resting state */
 .gallery-piece-active {
   opacity: 1;
@@ -712,7 +788,7 @@
   display: none;
 }
 
-/* Mobile: horizontal layout (passive follower) */
+/* Mobile: horizontal layout — interactive + scrollable */
 .gallery-viewer-strip-scroll {
   overflow-x: auto;
   overflow-y: hidden;
@@ -720,17 +796,19 @@
   align-items: center;
   gap: 4px;
   padding: 10px 8px;
-  pointer-events: none;
+  pointer-events: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
-/* Desktop: vertical layout (passive follower) */
+/* Desktop: vertical layout — scrollable + tappable */
 @media (min-width: 768px) {
   .gallery-viewer-strip-scroll {
     overflow-x: hidden;
     overflow-y: auto;
     display: block;
     padding: 8px var(--border-w);
-    pointer-events: none;
+    pointer-events: auto;
   }
 }
 
@@ -753,6 +831,76 @@
   }
 }
 
+/* ── Swipe hint — fades in, bounces, fades out ── */
+.gallery-swipe-hint {
+  position: absolute;
+  bottom: 96px; /* above the strip */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--color-card) 85%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border);
+  font-size: 12px;
+  color: var(--color-muted-foreground);
+  pointer-events: none;
+  z-index: 5;
+  animation: swipe-hint 3.5s ease-in-out forwards;
+}
+
+@keyframes swipe-hint {
+  0% { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  20% { transform: translateX(-45%) translateY(0); }
+  30% { transform: translateX(-55%) translateY(0); }
+  40% { transform: translateX(-50%) translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; pointer-events: none; }
+}
+
+/* Only show on mobile */
+@media (min-width: 768px) {
+  .gallery-swipe-hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-swipe-hint {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ========================================
+   Gallery Tile — Appear animation
+   ======================================== */
+
+.gallery-tile-appear {
+  animation: tile-fade-in 0.4s ease-out both;
+}
+
+@keyframes tile-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-tile-appear {
+    animation: none;
+  }
+}
+
 /* ========================================
    Film Strip Frames — Shared styles
    ======================================== */
@@ -761,6 +909,7 @@
 .film-frame {
   position: relative;
   margin-bottom: 4px;
+  overflow: visible;
 }
 
 /* Frame thumbnail container */
@@ -769,8 +918,9 @@
   aspect-ratio: 1;
   overflow: hidden;
   border: 1px solid #333;
-  transition: all 0.3s ease;
-  filter: brightness(0.4);
+  transition: transform 0.3s ease, filter 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  filter: brightness(0.35);
+  transform: scale(1);
 }
 
 /* In viewer strip: size to fill between sprockets */
@@ -778,13 +928,14 @@
   width: calc(130px - 16px * 2);
 }
 
-/* Mobile viewer: smaller horizontal frames */
+/* Mobile viewer: horizontal frames — tappable */
 @media (max-width: 767px) {
   .gallery-viewer-strip .film-frame-thumb {
     width: 56px;
     height: 56px;
     aspect-ratio: auto;
     flex-shrink: 0;
+    cursor: pointer;
   }
 
   .gallery-viewer-strip .film-frame {
@@ -794,16 +945,36 @@
     align-items: center;
     gap: 1px;
   }
+
+  /* Active frame scales up — needs room */
+  .gallery-viewer-strip .film-frame-active .film-frame-thumb {
+    transform: scale(1.25);
+  }
+
+  /* Tap feedback — brief scale pulse (non-active only) */
+  .gallery-viewer-strip .film-frame:not(.film-frame-active) .film-frame-thumb:active {
+    transform: scale(0.92);
+  }
 }
 
-/* Active frame — light table backlight */
+/* Active frame — light table backlight + scale up */
 .film-frame-active .film-frame-thumb {
   filter: brightness(1);
+  transform: scale(1.25);
   border-color: var(--color-accent);
+  border-width: 2px;
+  z-index: 3;
   box-shadow:
-    0 0 12px color-mix(in srgb, var(--color-accent) 40%, transparent),
-    0 0 24px color-mix(in srgb, var(--color-accent) 15%, transparent),
-    inset 0 0 8px rgba(255, 255, 255, 0.05);
+    0 0 14px color-mix(in srgb, var(--color-accent) 50%, transparent),
+    0 0 28px color-mix(in srgb, var(--color-accent) 20%, transparent),
+    inset 0 0 12px rgba(255, 255, 255, 0.08);
+}
+
+/* Hover — brighten non-active frames to show clickability */
+.film-frame:not(.film-frame-active) .film-frame-thumb:hover {
+  filter: brightness(0.7);
+  border-color: #555;
+  cursor: pointer;
 }
 
 /* Frame number — Kodak edge printing style */

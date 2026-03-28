@@ -1,11 +1,10 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { urlFor } from "@/lib/sanity/image";
-import { ShareBar } from "@/components/content/ShareBar";
-import { ReactionBar } from "@/components/reactions/ReactionBar";
+import { CollapsibleActions } from "./CollapsibleActions";
 import { VideoEmbed } from "./VideoEmbed";
 import { useGalleryNavigation } from "@/hooks/useGalleryNavigation";
 import type { GalleryPiece } from "@/types";
@@ -25,6 +24,13 @@ function frameNumber(index: number): string {
   return `${base}${suffix}`;
 }
 
+/** Parse width×height from a Sanity asset _ref like "image-abc123-1200x630-jpg" */
+function parseDimensions(ref?: string): { w: number; h: number } | null {
+  if (!ref) return null;
+  const m = ref.match(/-(\d+)x(\d+)-/);
+  return m ? { w: Number(m[1]), h: Number(m[2]) } : null;
+}
+
 function getThumbnailUrl(piece: GalleryPiece): string {
   if (piece.pieceType === "image") {
     return piece.imageUrl || (piece.image ? urlFor(piece.image).width(150).url() : "") || "";
@@ -33,7 +39,17 @@ function getThumbnailUrl(piece: GalleryPiece): string {
 }
 
 function getFullImageUrl(piece: GalleryPiece): string {
-  return piece.imageUrl || (piece.image ? urlFor(piece.image).width(1200).url() : "") || "";
+  if (piece.imageUrl) return piece.imageUrl;
+  if (!piece.image) return "";
+  const dims = parseDimensions(piece.image.asset._ref);
+  // Request at natural width, capped at 2400px for perf
+  const w = dims ? Math.min(dims.w, 2400) : 1200;
+  return urlFor(piece.image).width(w).url() || "";
+}
+
+function getImageDimensions(piece: GalleryPiece): { width: number; height: number } {
+  const dims = parseDimensions(piece.image?.asset._ref);
+  return dims ? { width: dims.w, height: dims.h } : { width: 1200, height: 800 };
 }
 
 interface GalleryViewerProps {
@@ -51,6 +67,8 @@ export function GalleryViewer({ initialPiece, pieces }: GalleryViewerProps) {
     activeIndex,
     direction,
     isAnimating,
+    swipeProgress,
+    goTo,
     containerRef,
   } = useGalleryNavigation({
     totalPieces: pieces.length,
@@ -63,6 +81,11 @@ export function GalleryViewer({ initialPiece, pieces }: GalleryViewerProps) {
 
   const activePiece = pieces[activeIndex];
   const imageUrl = getFullImageUrl(activePiece);
+  const imageDims = getImageDimensions(activePiece);
+  const isPortrait = imageDims.height > imageDims.width;
+
+  // Track if user has interacted (hides the swipe hint)
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   // Share URL — built client-side to avoid hydration mismatch
   const [shareUrl, setShareUrl] = useState(`/gallery?piece=${activePiece.slug.current}`);
@@ -76,6 +99,13 @@ export function GalleryViewer({ initialPiece, pieces }: GalleryViewerProps) {
     url.searchParams.set("piece", activePiece.slug.current);
     window.history.replaceState(null, "", url.toString());
   }, [activePiece.slug]);
+
+  // Hide hint on first navigation
+  useEffect(() => {
+    if (activeIndex !== Math.max(0, initialIndex)) {
+      setHasInteracted(true);
+    }
+  }, [activeIndex, initialIndex]);
 
   // Escape to go back
   useEffect(() => {
@@ -93,9 +123,15 @@ export function GalleryViewer({ initialPiece, pieces }: GalleryViewerProps) {
       `[data-piece-id="${activePiece._id}"]`
     );
     if (el) {
-      el.scrollIntoView({ behavior: isAnimating ? "smooth" : "auto", block: "center" });
+      el.scrollIntoView({ behavior: isAnimating ? "smooth" : "auto", block: "center", inline: "center" });
     }
   }, [activeIndex, activePiece._id, isAnimating]);
+
+  // Handle thumbnail tap (mobile) — navigate to that piece
+  const handleThumbTap = useCallback((index: number) => {
+    setHasInteracted(true);
+    goTo(index);
+  }, [goTo]);
 
   // Transition class for the main image
   const transitionClass = isAnimating
@@ -103,6 +139,11 @@ export function GalleryViewer({ initialPiece, pieces }: GalleryViewerProps) {
       ? "gallery-piece-enter-next"
       : "gallery-piece-enter-prev"
     : "gallery-piece-active";
+
+  // Swipe-follow transform — moves image with finger during drag
+  const swipeTransform = !isAnimating && Math.abs(swipeProgress) > 0
+    ? `translateY(${-swipeProgress * 30}px) scale(${1 - Math.abs(swipeProgress) * 0.02})`
+    : undefined;
 
   return (
     <div ref={containerRef} className="gallery-viewer">
@@ -118,28 +159,39 @@ export function GalleryViewer({ initialPiece, pieces }: GalleryViewerProps) {
         <span className="hidden sm:inline text-sm">Gallery</span>
       </button>
 
+      {/* ── Swipe hint (mobile only, first visit) ── */}
+      {!hasInteracted && (
+        <div className="gallery-swipe-hint">
+          <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+          </svg>
+          Swipe to browse
+        </div>
+      )}
+
       {/* ── Main content area ── */}
       <div className="gallery-viewer-content">
         <div className="gallery-viewer-main">
-          {/* ── Image with transition ── */}
+          {/* ── Image with transition + swipe follow ── */}
           <div className="gallery-viewer-media">
             <div
               key={activePiece._id}
               className={`gallery-piece-wrapper ${transitionClass}`}
+              style={swipeTransform ? { transform: swipeTransform } : undefined}
             >
               {activePiece.pieceType === "image" && imageUrl ? (
                 <Image
                   src={imageUrl}
                   alt={activePiece.image?.alt || activePiece.title}
-                  width={1200}
-                  height={800}
-                  className="max-h-full max-w-full object-contain"
-                  sizes="(max-width: 768px) 100vw, 70vw"
+                  width={imageDims.width}
+                  height={imageDims.height}
+                  className={`max-h-full max-w-full object-contain ${isPortrait ? "gallery-media-portrait" : ""}`}
+                  sizes={isPortrait ? "(max-width: 768px) 90vw, 50vw" : "(max-width: 768px) 100vw, 75vw"}
                   priority
                   unoptimized
                 />
               ) : activePiece.pieceType === "video" && activePiece.videoUrl ? (
-                <div className="w-full max-w-3xl">
+                <div className="gallery-video-container">
                   <VideoEmbed videoUrl={activePiece.videoUrl} videoPlatform={activePiece.videoPlatform} />
                 </div>
               ) : (
@@ -190,33 +242,23 @@ export function GalleryViewer({ initialPiece, pieces }: GalleryViewerProps) {
                 <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{activePiece.description}</p>
               )}
 
-              <div className="flex items-center gap-4 mt-3 flex-wrap">
-                {activePiece.originalUrl && (
-                  <a
-                    href={activePiece.originalUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm text-accent hover:underline"
-                  >
-                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                    Original
-                  </a>
-                )}
-
-                <ReactionBar slug={`gallery-${activePiece.slug.current}`} />
-
-                <div className="flex items-center gap-2 ml-auto">
-                  <ShareBar title={activePiece.title} url={shareUrl} />
-                </div>
-              </div>
+              <CollapsibleActions
+                slug={`gallery-${activePiece.slug.current}`}
+                title={activePiece.title}
+                shareUrl={shareUrl}
+                originalUrl={activePiece.originalUrl}
+              />
             </div>
           </div>
         </div>
 
-        {/* ── Film Strip (passive follower) ── */}
-        <div className="gallery-viewer-strip">
+        {/* ── Film Strip — interactive on mobile, passive on desktop ── */}
+        <div
+          className="gallery-viewer-strip"
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
+          onTouchEnd={(e) => e.stopPropagation()}
+        >
           <span className="film-stock-label" aria-hidden="true">
             Parker TX 35mm
           </span>
@@ -244,11 +286,11 @@ export function GalleryViewer({ initialPiece, pieces }: GalleryViewerProps) {
                     {frameNumber(i)}
                   </div>
 
-                  <div
+                  <button
                     className="film-frame-thumb"
                     aria-label={`${piece.title} by ${piece.artistName}`}
                     aria-current={isActive ? "true" : undefined}
-                    role="img"
+                    onClick={() => handleThumbTap(i)}
                   >
                     {thumbUrl ? (
                       <Image
@@ -274,7 +316,7 @@ export function GalleryViewer({ initialPiece, pieces }: GalleryViewerProps) {
                         </svg>
                       </div>
                     )}
-                  </div>
+                  </button>
                 </div>
               );
             })}
