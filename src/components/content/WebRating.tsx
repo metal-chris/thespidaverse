@@ -11,9 +11,6 @@ import { cn } from "@/lib/utils";
  * - `badge`    — Glassmorphism pill with compact web + score number (for cards)
  * - `inline`   — Tiny web + score, for list rows
  * - `full`     — Large animated web with centered score (article detail)
- *
- * The unfilled portion of the web is always visible as a subtle tinted
- * background so users can gauge the rating at a glance.
  */
 
 type WebRatingVariant = "full" | "compact" | "badge" | "inline";
@@ -28,7 +25,6 @@ const RINGS = 5;
 const SPOKES = 8;
 const CENTER = 50;
 
-/** SVG path for a web ring at a given radius. */
 function ringPath(radius: number): string {
   const points: [number, number][] = [];
   for (let i = 0; i < SPOKES; i++) {
@@ -41,29 +37,39 @@ function ringPath(radius: number): string {
   return points.map((p, i) => `${i === 0 ? "M" : "L"}${p[0]},${p[1]}`).join(" ") + " Z";
 }
 
-/** SVG path for the filled portion of the web at a given score (0-100). */
 function filledWebPath(score: number): string {
   const finalRadius = (score / 100) * 40;
   return ringPath(Math.max(finalRadius, 0.5));
 }
 
-/* ── Size presets ── */
+function ratingLabel(score: number): string {
+  if (score >= 90) return "Masterpiece";
+  if (score >= 80) return "Excellent";
+  if (score >= 70) return "Great";
+  if (score >= 60) return "Good";
+  if (score >= 50) return "Decent";
+  if (score >= 40) return "Below Average";
+  if (score >= 25) return "Poor";
+  return "Abysmal";
+}
+
 const SIZE_MAP: Record<WebRatingVariant, string> = {
   compact: "w-8 h-8",
   badge: "w-7 h-7",
   inline: "w-6 h-6",
-  full: "w-32 h-32 md:w-40 md:h-40",
+  full: "w-36 h-36 md:w-44 md:h-44",
 };
 
 export function WebRating({ score, variant = "full", className }: WebRatingProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isAnimated = variant === "full";
+  const isFull = variant === "full";
   const [visible, setVisible] = useState(!isAnimated);
   const [animProgress, setAnimProgress] = useState(isAnimated ? 0 : 1);
   const [bursting, setBursting] = useState(false);
+  const [doneAnimating, setDoneAnimating] = useState(!isAnimated);
   const clampedScore = Math.max(0, Math.min(100, Math.round(score)));
 
-  // Intersection Observer for scroll-into-view animation (full variant only)
   useEffect(() => {
     if (!isAnimated) return;
     const el = ref.current;
@@ -73,6 +79,7 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
     if (prefersReduced) {
       setVisible(true);
       setAnimProgress(1);
+      setDoneAnimating(true);
       return;
     }
 
@@ -89,7 +96,6 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
     return () => observer.disconnect();
   }, [isAnimated]);
 
-  // Animate fill when visible
   useEffect(() => {
     if (!visible || !isAnimated) return;
     const duration = 1200;
@@ -103,9 +109,12 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
 
       if (t < 1) {
         requestAnimationFrame(tick);
-      } else if (clampedScore === 100) {
-        setBursting(true);
-        setTimeout(() => setBursting(false), 600);
+      } else {
+        setDoneAnimating(true);
+        if (clampedScore === 100) {
+          setBursting(true);
+          setTimeout(() => setBursting(false), 600);
+        }
       }
     }
     requestAnimationFrame(tick);
@@ -113,11 +122,20 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
 
   const displayScore = Math.round(clampedScore * animProgress);
   const fillScore = clampedScore * animProgress;
-  const isCompact = variant === "compact" || variant === "badge" || variant === "inline";
-  const strokeW = isCompact ? 0.8 : 0.5;
-  const fillStrokeW = isCompact ? 1.2 : 0.8;
+  const isCompact = variant !== "full";
 
-  /* ── The SVG web ── */
+  /*
+   * Contrast fix: use muted-foreground for web structure (visible on all themes)
+   * instead of border color which is nearly invisible on Miles dark theme.
+   * Full variant gets higher opacity for drama; compact variants stay subtle.
+   */
+  const structureColor = isFull ? "var(--color-muted-foreground)" : "var(--color-border)";
+  const structureOpacity = isFull ? 0.25 : 1;
+  const strokeW = isCompact ? 0.8 : 0.6;
+  const fillStrokeW = isCompact ? 1.2 : 1;
+  const fillOpacity = isFull ? 0.35 : 0.25;
+  const bgOpacity = isFull ? 0.06 : 0.08;
+
   const webSvg = (
     <svg
       viewBox="0 0 100 100"
@@ -126,11 +144,11 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
         bursting && "animate-web-burst"
       )}
     >
-      {/* Unfilled web background — always visible for contrast */}
+      {/* Unfilled web background */}
       <path
         d={ringPath(40)}
-        fill="var(--color-border)"
-        fillOpacity={0.08}
+        fill={structureColor}
+        fillOpacity={bgOpacity}
       />
 
       {/* Spokes */}
@@ -145,13 +163,14 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
             y1={CENTER}
             x2={x2}
             y2={y2}
-            stroke="var(--color-border)"
+            stroke={structureColor}
             strokeWidth={strokeW}
+            strokeOpacity={structureOpacity}
           />
         );
       })}
 
-      {/* Concentric rings (background structure) */}
+      {/* Concentric rings */}
       {Array.from({ length: RINGS }).map((_, i) => {
         const radius = ((i + 1) / RINGS) * 40;
         return (
@@ -159,8 +178,9 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
             key={`ring-${i}`}
             d={ringPath(radius)}
             fill="none"
-            stroke="var(--color-border)"
+            stroke={structureColor}
             strokeWidth={strokeW}
+            strokeOpacity={structureOpacity}
           />
         );
       })}
@@ -170,14 +190,15 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
         <path
           d={filledWebPath(fillScore)}
           fill="var(--color-accent)"
-          fillOpacity={0.25}
+          fillOpacity={fillOpacity}
           stroke="var(--color-accent)"
           strokeWidth={fillStrokeW}
+          className={doneAnimating && isFull ? "web-rating-pulse" : ""}
         />
       )}
 
-      {/* Spoke intersection dots — lit when filled past that ring */}
-      {!isCompact && Array.from({ length: RINGS }).map((_, ringIdx) => {
+      {/* Spoke intersection dots — full variant only */}
+      {isFull && Array.from({ length: RINGS }).map((_, ringIdx) => {
         const ringRadius = ((ringIdx + 1) / RINGS) * 40;
         const fillRadius = (fillScore / 100) * 40;
         const isFilled = fillRadius >= ringRadius - 0.5;
@@ -192,9 +213,9 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
               key={`dot-${ringIdx}-${spokeIdx}`}
               cx={cx}
               cy={cy}
-              r={isFilled ? 1.2 : 0.6}
-              fill={isFilled ? "var(--color-accent)" : "var(--color-border)"}
-              fillOpacity={isFilled ? 0.8 : 0.3}
+              r={isFilled ? 1.4 : 0.7}
+              fill={isFilled ? "var(--color-accent)" : structureColor}
+              fillOpacity={isFilled ? 0.9 : 0.2}
             />
           );
         });
@@ -226,9 +247,7 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
     </svg>
   );
 
-  /* ── Variant renderers ── */
-
-  // Badge: glassmorphism pill with web + score
+  /* ── Badge ── */
   if (variant === "badge") {
     return (
       <div
@@ -247,7 +266,7 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
     );
   }
 
-  // Inline: tiny web + score for list rows
+  /* ── Inline ── */
   if (variant === "inline") {
     return (
       <span
@@ -262,7 +281,7 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
     );
   }
 
-  // Compact: small web only, no score text
+  /* ── Compact ── */
   if (variant === "compact") {
     return (
       <div
@@ -276,18 +295,43 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
     );
   }
 
-  // Full: large animated web with centered score
+  /* ── Full: centered composition with score-driven glow ── */
+  const glowIntensity = Math.round((clampedScore / 100) * 20); // 0-20% glow
+
   return (
     <div
       ref={ref}
-      className={cn("relative inline-flex items-center justify-center", SIZE_MAP.full, className)}
+      className={cn("web-rating-full", className)}
       role="img"
       aria-label={`Rating: ${clampedScore} out of 100`}
     >
-      {webSvg}
-      <span className="absolute inset-0 flex items-center justify-center text-xl md:text-2xl font-bold text-accent tabular-nums">
-        {displayScore}
-      </span>
+      {/* Score-driven radial glow behind the web */}
+      <div
+        className="web-rating-glow"
+        style={{
+          opacity: animProgress * 0.8,
+          background: `radial-gradient(circle, color-mix(in srgb, var(--color-accent) ${glowIntensity}%, transparent) 0%, transparent 70%)`,
+        }}
+      />
+
+      {/* Web SVG — centered */}
+      <div className={cn("relative z-10", SIZE_MAP.full)}>
+        {webSvg}
+        {/* Score centered inside the web */}
+        <span className="absolute inset-0 flex items-center justify-center text-2xl md:text-3xl font-black text-accent tabular-nums drop-shadow-sm">
+          {displayScore}
+        </span>
+      </div>
+
+      {/* Label below */}
+      <div className="relative z-10 text-center mt-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+          Web Rating
+        </p>
+        <p className="text-sm md:text-base font-bold text-foreground/80 mt-0.5">
+          {ratingLabel(displayScore)}
+        </p>
+      </div>
     </div>
   );
 }

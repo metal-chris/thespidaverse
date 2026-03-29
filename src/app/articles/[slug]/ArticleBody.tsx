@@ -23,16 +23,6 @@ interface ArticleBodyProps {
   ambientAudioUrl?: string;
 }
 
-function ratingLabel(score: number): string {
-  if (score >= 90) return "Masterpiece";
-  if (score >= 80) return "Excellent";
-  if (score >= 70) return "Great";
-  if (score >= 60) return "Good";
-  if (score >= 50) return "Decent";
-  if (score >= 40) return "Below Average";
-  if (score >= 25) return "Poor";
-  return "Abysmal";
-}
 
 export function ArticleBody({
   body,
@@ -56,25 +46,8 @@ export function ArticleBody({
 
       {/* ── Web Rating Block ── */}
       {webRating != null && (
-        <div className="mb-10 p-6 rounded-xl border-2 border-border bg-card relative overflow-hidden">
-          {/* Subtle background accent glow */}
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-accent/3 pointer-events-none" />
-
-          <div className="relative flex items-center gap-6">
-            <WebRating score={webRating} variant="full" />
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                Web Rating
-              </p>
-              <p className="text-4xl md:text-5xl font-black text-accent tabular-nums leading-none">
-                {webRating}
-                <span className="text-lg font-medium text-muted-foreground ml-0.5">/100</span>
-              </p>
-              <p className="mt-1.5 text-sm font-medium text-foreground/70">
-                {ratingLabel(webRating)}
-              </p>
-            </div>
-          </div>
+        <div className="mb-10 rounded-xl border border-border bg-card/50 relative overflow-hidden">
+          <WebRating score={webRating} variant="full" />
         </div>
       )}
 
