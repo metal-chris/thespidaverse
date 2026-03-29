@@ -4,7 +4,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { getProvider } from "@/lib/providers";
 import { urlFor } from "@/lib/sanity/image";
-import { cn, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { Container } from "@/components/ui/Container";
 import { GlitchText } from "@/components/ui/GlitchText";
 import { WebRating } from "@/components/content/WebRating";
@@ -43,7 +43,7 @@ function formatThemeLabel(theme: string): string {
 
 function getHeroUrl(collection: { heroImage?: SanityImage; heroImageUrl?: string }): string | null {
   if (collection.heroImageUrl) return collection.heroImageUrl;
-  if (collection.heroImage) return urlFor(collection.heroImage).width(600).height(900).url() || null;
+  if (collection.heroImage) return urlFor(collection.heroImage).width(1200).height(800).url() || null;
   return null;
 }
 
@@ -67,125 +67,113 @@ export default async function CollectionPage({ params }: Props) {
   const articles = collection.articles ?? [];
 
   return (
-    <Container className="py-8 max-w-6xl">
-      {/* Breadcrumb */}
-      <nav className="text-sm text-muted-foreground mb-6 flex items-center gap-1.5" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
-        <span className="text-muted-foreground/50">/</span>
-        <Link href="/collections" className="hover:text-foreground transition-colors">Collections</Link>
-        <span className="text-muted-foreground/50">/</span>
-        <span className="text-foreground truncate">{collection.title}</span>
-      </nav>
+    <>
+      {/* ── Hero viewport: nav + breadcrumb + cover = 100vh ── */}
+      <div className="collection-detail-hero">
+        <Container className="pt-6 pb-3 flex-shrink-0 relative z-10">
+          <nav className="text-sm text-muted-foreground flex items-center gap-1.5" aria-label="Breadcrumb">
+            <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+            <span className="text-muted-foreground/50">/</span>
+            <Link href="/collections" className="hover:text-foreground transition-colors">Collections</Link>
+            <span className="text-muted-foreground/50">/</span>
+            <span className="text-foreground truncate">{collection.title}</span>
+          </nav>
+        </Container>
 
-      {/* Back Cover layout */}
-      <div className="collection-back-cover" data-template={template}>
-        {/* ── Left: Mini cover art ── */}
-        <div className="collection-back-cover-art">
-          <div
-            className="collection-cover collection-cover-enter"
-            data-template={template}
-          >
-            <div className="collection-cover-image">
-              {heroUrl ? (
-                <Image
-                  src={heroUrl}
-                  alt={collection.title}
-                  fill
-                  className="object-cover"
-                  priority
-                  sizes="(max-width: 768px) 100vw, 360px"
-                  unoptimized
-                />
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-accent/15 to-accent/5" />
-              )}
-              <div className="collection-cover-gradient" />
+        {/* Hero cover — fills remaining viewport */}
+        <div className="collection-detail-cover" data-template={template}>
+          {heroUrl ? (
+            <Image
+              src={heroUrl}
+              alt={collection.title}
+              fill
+              className="object-cover"
+              priority
+              sizes="100vw"
+              unoptimized
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-accent/15 to-accent/5" />
+          )}
 
-              {/* Overlaid badges on cover */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-                <div className="flex items-center gap-2 mb-1.5">
+          {/* Gradient overlays */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/50 to-transparent" />
+
+          {/* Content anchored at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 z-10">
+            <Container className="pb-6 md:pb-8">
+              <div className="max-w-2xl">
+                <div className="flex items-center gap-2 mb-2">
                   {collection.season && (
-                    <span className="text-[10px] font-semibold text-accent uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-accent uppercase tracking-wider">
                       {collection.season}
                     </span>
                   )}
                   {collection.theme && (
-                    <span className="px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider rounded-md bg-white/10 text-white/80 border border-white/15 backdrop-blur-sm">
+                    <span className="px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-md bg-white/10 text-white/80 border border-white/15 backdrop-blur-sm">
                       {formatThemeLabel(collection.theme)}
                     </span>
                   )}
                 </div>
-                {/* Title on mobile only (desktop shows it in right col) */}
-                <h1 className="md:hidden font-bold text-xl text-white leading-snug">
+
+                <GlitchText className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
                   {collection.title}
-                </h1>
+                </GlitchText>
+
+                {collection.description && (
+                  <p className="text-sm md:text-base text-foreground/70 max-w-xl mt-2 line-clamp-2">
+                    {collection.description}
+                  </p>
+                )}
+
+                <p className="text-xs font-mono text-muted-foreground mt-3">
+                  {articles.length} {articles.length === 1 ? "article" : "articles"}
+                </p>
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Right: Back cover content ── */}
-        <div className="collection-back-cover-content">
-          {/* Title + meta (desktop) */}
-          <div className="hidden md:block mb-6">
-            <div className="flex items-center gap-2 mb-2">
-              {collection.season && (
-                <span className="text-xs font-semibold text-accent uppercase tracking-wider">
-                  {collection.season}
-                </span>
-              )}
-              {collection.theme && (
-                <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-md bg-accent/10 text-accent border border-accent/20">
-                  {formatThemeLabel(collection.theme)}
-                </span>
-              )}
-            </div>
-            <GlitchText className="text-3xl md:text-4xl font-bold">{collection.title}</GlitchText>
-          </div>
-
-          {collection.description && (
-            <p className="text-muted-foreground mb-6 leading-relaxed">
-              {collection.description}
-            </p>
-          )}
-
-          {/* Article list */}
-          {articles.length > 0 ? (
-            <section>
-              <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-                {articlesLabel}
-                <span className="text-[10px] font-mono text-muted-foreground/60">
-                  ({articles.length})
-                </span>
-              </h2>
-
-              <div className="border-t border-border">
-                {articles.map((article, i) => (
-                  <ArticleRow
-                    key={article._id}
-                    article={article}
-                    index={i + 1}
-                    numberPrefix={numberPrefix}
-                  />
-                ))}
-              </div>
-            </section>
-          ) : (
-            <p className="text-center text-muted-foreground py-12 border border-dashed border-border rounded-xl">
-              This collection is being curated. Articles coming soon.
-            </p>
-          )}
-
-          {/* Footer meta */}
-          <div className="mt-8 pt-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
-            <span className="font-mono">
-              {articles.length} {articles.length === 1 ? "article" : "articles"}
-            </span>
-            <span>Curated by Spida Mane</span>
+            </Container>
           </div>
         </div>
       </div>
-    </Container>
+
+      {/* ── Content below the fold ── */}
+      <Container className="py-8 md:py-12 max-w-5xl">
+        {/* Article list */}
+        {articles.length > 0 ? (
+          <section>
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2">
+              {articlesLabel}
+              <span className="text-[10px] font-mono text-muted-foreground/60">
+                ({articles.length})
+              </span>
+            </h2>
+
+            <div className="border-t border-border">
+              {articles.map((article, i) => (
+                <ArticleRow
+                  key={article._id}
+                  article={article}
+                  index={i + 1}
+                  numberPrefix={numberPrefix}
+                />
+              ))}
+            </div>
+          </section>
+        ) : (
+          <p className="text-center text-muted-foreground py-12 border border-dashed border-border rounded-xl">
+            This collection is being curated. Articles coming soon.
+          </p>
+        )}
+
+        {/* Footer meta */}
+        <div className="mt-8 pt-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
+          <span className="font-mono">
+            {articles.length} {articles.length === 1 ? "article" : "articles"}
+          </span>
+          <span>Curated by Spida Mane</span>
+        </div>
+      </Container>
+    </>
   );
 }
 

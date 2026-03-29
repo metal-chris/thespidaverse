@@ -1188,6 +1188,26 @@
 }
 
 /* ========================================
+   Collection Detail — Hero Viewport
+   ======================================== */
+
+/* Nav + breadcrumb + hero cover = 100vh */
+.collection-detail-hero {
+  height: calc(100dvh - 64px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Cover fills remaining space below breadcrumb */
+.collection-detail-cover {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ========================================
    Collection Back Cover (Detail Page)
    ======================================== */
 

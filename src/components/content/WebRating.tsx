@@ -125,16 +125,16 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
   const isCompact = variant !== "full";
 
   /*
-   * Contrast fix: use muted-foreground for web structure (visible on all themes)
-   * instead of border color which is nearly invisible on Miles dark theme.
-   * Full variant gets higher opacity for drama; compact variants stay subtle.
+   * Contrast fix: use a neutral white/grey for web structure so it's
+   * visible on ALL themes (Miles' border color #2A1015 was invisible).
+   * Full variant uses higher opacity for drama.
    */
-  const structureColor = isFull ? "var(--color-muted-foreground)" : "var(--color-border)";
-  const structureOpacity = isFull ? 0.25 : 1;
+  const structureColor = isFull ? "rgba(255,255,255,0.2)" : "var(--color-muted-foreground)";
+  const structureOpacity = 1;
   const strokeW = isCompact ? 0.8 : 0.6;
   const fillStrokeW = isCompact ? 1.2 : 1;
   const fillOpacity = isFull ? 0.35 : 0.25;
-  const bgOpacity = isFull ? 0.06 : 0.08;
+  const bgOpacity = isFull ? 0.04 : 0.08;
 
   const webSvg = (
     <svg
@@ -144,11 +144,11 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
         bursting && "animate-web-burst"
       )}
     >
-      {/* Unfilled web background */}
+      {/* Unfilled web background — neutral white for visibility on all themes */}
       <path
         d={ringPath(40)}
-        fill={structureColor}
-        fillOpacity={bgOpacity}
+        fill="rgba(255,255,255,0.06)"
+        fillOpacity={1}
       />
 
       {/* Spokes */}
@@ -214,8 +214,8 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
               cx={cx}
               cy={cy}
               r={isFilled ? 1.4 : 0.7}
-              fill={isFilled ? "var(--color-accent)" : structureColor}
-              fillOpacity={isFilled ? 0.9 : 0.2}
+              fill={isFilled ? "var(--color-accent)" : "rgba(255,255,255,0.15)"}
+              fillOpacity={1}
             />
           );
         });
