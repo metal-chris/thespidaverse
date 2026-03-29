@@ -9,7 +9,13 @@ export const portableTextComponents: PTComponents = {
   types: {
     image: ({ value }) => {
       if (!value?.asset) return null;
-      const imageUrl = urlFor(value).width(800).url() || value.mockUrl || "";
+      let imageUrl = "";
+      try {
+        imageUrl = urlFor(value).width(800).url() || "";
+      } catch {
+        // Mock data has fake asset refs — fall back to mockUrl
+      }
+      if (!imageUrl) imageUrl = value.mockUrl || "";
       if (!imageUrl) return null;
       return (
         <figure className="my-6">
