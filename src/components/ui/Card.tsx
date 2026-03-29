@@ -115,11 +115,8 @@ export function Card({ article, featured = false }: CardProps) {
 
           {/* Rating badge */}
           {article.webRating != null && (
-            <div className="absolute top-3 right-3 bg-card/80 backdrop-blur-sm rounded-lg p-1.5 flex items-center gap-1.5 shadow-sm">
-              <WebRating score={article.webRating} variant="compact" />
-              <span className="text-xs font-bold text-accent tabular-nums pr-0.5">
-                {article.webRating}
-              </span>
+            <div className="absolute top-3 right-3">
+              <WebRating score={article.webRating} variant="badge" />
             </div>
           )}
 
@@ -210,11 +207,8 @@ export function Card({ article, featured = false }: CardProps) {
 
           {/* Rating badge */}
           {article.webRating != null && (
-            <div className="absolute top-3 right-3 bg-card/80 backdrop-blur-sm rounded-lg p-1.5 flex items-center gap-1.5 shadow-sm">
-              <WebRating score={article.webRating} variant="compact" />
-              <span className="text-xs font-bold text-accent tabular-nums pr-0.5">
-                {article.webRating}
-              </span>
+            <div className="absolute top-3 right-3">
+              <WebRating score={article.webRating} variant="badge" />
             </div>
           )}
 

@@ -242,12 +242,7 @@ function ArticleRow({
 
       {/* Rating */}
       {article.webRating != null && (
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-          <WebRating score={article.webRating} variant="compact" />
-          <span className="text-xs font-bold text-accent tabular-nums">
-            {article.webRating}
-          </span>
-        </div>
+        <WebRating score={article.webRating} variant="inline" className="flex-shrink-0" />
       )}
     </Link>
   );
