@@ -144,13 +144,6 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
         bursting && "animate-web-burst"
       )}
     >
-      {/* Unfilled web background — neutral white for visibility on all themes */}
-      <path
-        d={ringPath(40)}
-        fill="rgba(255,255,255,0.06)"
-        fillOpacity={1}
-      />
-
       {/* Spokes */}
       {Array.from({ length: SPOKES }).map((_, i) => {
         const angle = (Math.PI * 2 * i) / SPOKES - Math.PI / 2;
