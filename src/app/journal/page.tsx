@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getProvider } from "@/lib/providers";
 import { Container } from "@/components/ui/Container";
+import { GlitchText } from "@/components/ui/GlitchText";
 import { JournalTimeline } from "@/components/journal/JournalTimeline";
 
 export const metadata: Metadata = {
@@ -20,7 +21,7 @@ export default async function JournalPage() {
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-2">
           Media Diary
         </p>
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Journal</h1>
+        <GlitchText className="text-3xl md:text-4xl font-bold mb-2">Journal</GlitchText>
         <p className="text-muted-foreground max-w-lg">
           Everything I&rsquo;m consuming &mdash; tracked, rated, and timestamped.
         </p>

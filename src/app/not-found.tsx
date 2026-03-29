@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
+import { buttonClasses } from "@/components/ui/Button";
 
 export default function NotFound() {
   return (
@@ -80,13 +81,13 @@ export default function NotFound() {
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             href="/"
-            className="spidey-sense-hover px-6 py-3 bg-accent text-background font-medium rounded-lg hover:opacity-90 transition-opacity"
+            className={buttonClasses({ variant: "primary", size: "lg", shape: "rounded" })}
           >
             Swing Back Home
           </Link>
           <Link
             href="/search"
-            className="spidey-sense-hover px-6 py-3 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition-colors"
+            className={buttonClasses({ variant: "secondary", size: "lg", shape: "rounded" })}
           >
             Search Instead
           </Link>

@@ -21,7 +21,7 @@ export default async function MoodPage() {
   return (
     <Container className="py-8">
       <header className="mb-8 text-center">
-        <h1 className="text-3xl font-bold mb-2">What&rsquo;s Your Mood?</h1>
+        <h1 className="glitch-text text-3xl font-bold mb-2" data-text="What's Your Mood?">What&rsquo;s Your Mood?</h1>
         <p className="text-muted-foreground max-w-lg mx-auto">
           Pick a vibe. Get recommendations. Every article is tagged by mood, so we can match you with exactly what you&rsquo;re feeling.
         </p>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, createContext, useContext } from "react";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
 // Context for page-level "Reveal All" toggle
@@ -31,13 +32,14 @@ export function SpoilerProvider({ children }: { children: React.ReactNode }) {
 export function RevealAllToggle() {
   const { revealAll, toggleRevealAll } = useContext(SpoilerContext);
   return (
-    <button
+    <Button
+      variant="ghost"
+      size="xs"
       onClick={toggleRevealAll}
-      className="text-xs font-medium px-3 py-1.5 rounded-full border border-border hover:bg-muted transition-colors"
       aria-pressed={revealAll}
     >
       {revealAll ? "Hide All Spoilers" : "Reveal All Spoilers"}
-    </button>
+    </Button>
   );
 }
 
@@ -91,13 +93,15 @@ export function SpoilerBlock({ children, label = "Spoiler" }: SpoilerBlockProps)
       {/* Reveal button overlay */}
       {!isRevealed && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <button
+          <Button
+            variant="primary"
+            size="md"
+            shape="rounded"
             onClick={() => setRevealed(true)}
-            className="spidey-sense-hover px-4 py-2 bg-accent text-background text-sm font-medium rounded-lg hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background"
             aria-label={`Reveal ${label}`}
           >
             Reveal {label}
-          </button>
+          </Button>
         </div>
       )}
     </div>

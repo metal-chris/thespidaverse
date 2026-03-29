@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getProvider } from "@/lib/providers";
 import { Container } from "@/components/ui/Container";
+import { GlitchText } from "@/components/ui/GlitchText";
 import { ArticleGrid } from "@/components/home/ArticleGrid";
 
 export const revalidate = 60;
@@ -40,7 +41,7 @@ export default async function CategoryPage({ params }: Props) {
   return (
     <Container as="section" className="py-8">
       <header className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold">{category.title}</h1>
+        <GlitchText className="text-3xl md:text-4xl font-bold">{category.title}</GlitchText>
         {category.description && (
           <p className="mt-2 text-muted-foreground text-lg">
             {category.description}

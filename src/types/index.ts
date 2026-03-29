@@ -59,15 +59,19 @@ export interface MediaEntry {
   metadata?: Record<string, unknown>;
 }
 
+export type CollectionTemplate = "poster" | "vinyl" | "manga" | "default";
+
 export interface Collection {
   _id: string;
   title: string;
   slug: { current: string };
   description?: string;
   heroImage?: SanityImage;
+  heroImageUrl?: string;
   articles: Article[];
   season?: string;
   theme?: string;
+  featured?: boolean;
 }
 
 export interface MediaDiaryEntry {

@@ -116,14 +116,30 @@ export function GalleryViewer({ initialPiece, pieces }: GalleryViewerProps) {
     return () => window.removeEventListener("keydown", handleEscape);
   }, [router]);
 
-  // Sync film strip position to active index
+  // Sync film strip position — pixel-perfect centering
   useEffect(() => {
-    if (!stripRef.current) return;
-    const el = stripRef.current.querySelector(
-      `[data-piece-id="${activePiece._id}"]`
-    );
-    if (el) {
-      el.scrollIntoView({ behavior: isAnimating ? "smooth" : "auto", block: "center", inline: "center" });
+    const strip = stripRef.current;
+    if (!strip) return;
+    const el = strip.querySelector(`[data-piece-id="${activePiece._id}"]`) as HTMLElement | null;
+    if (!el) return;
+
+    const isDesktop = window.innerWidth >= 768;
+    const behavior = isAnimating ? "smooth" : "auto";
+
+    if (isDesktop) {
+      // Vertical: center the frame in the strip's height
+      const stripH = strip.clientHeight;
+      const elTop = el.offsetTop;
+      const elH = el.offsetHeight;
+      const target = elTop - stripH / 2 + elH / 2;
+      strip.scrollTo({ top: target, behavior });
+    } else {
+      // Horizontal: center the frame in the strip's width
+      const stripW = strip.clientWidth;
+      const elLeft = el.offsetLeft;
+      const elW = el.offsetWidth;
+      const target = elLeft - stripW / 2 + elW / 2;
+      strip.scrollTo({ left: target, behavior });
     }
   }, [activeIndex, activePiece._id, isAnimating]);
 

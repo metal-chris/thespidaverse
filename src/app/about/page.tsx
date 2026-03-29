@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
+import { GlitchText } from "@/components/ui/GlitchText";
 
 export const metadata: Metadata = {
   title: "About",
@@ -13,7 +14,7 @@ export default function AboutPage() {
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-2">
           Who&rsquo;s Behind the Web
         </p>
-        <h1 className="text-3xl md:text-4xl font-bold">About</h1>
+        <GlitchText className="text-3xl md:text-4xl font-bold">About</GlitchText>
       </header>
 
       <div className="space-y-5 text-foreground/90 text-base md:text-lg leading-relaxed">

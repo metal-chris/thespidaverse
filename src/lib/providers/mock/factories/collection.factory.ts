@@ -22,15 +22,18 @@ export function createCollection(
   overrides: Partial<Collection> = {}
 ): Collection {
   const title = overrides.title || faker.lorem.words({ min: 2, max: 5 });
+  const slug = faker.helpers.slugify(title).toLowerCase();
   return {
     _id: faker.string.uuid(),
     title,
-    slug: { current: faker.helpers.slugify(title).toLowerCase() },
+    slug: { current: slug },
     description: faker.lorem.sentences(2),
     heroImage: createSanityImage(title),
+    heroImageUrl: `https://picsum.photos/seed/${slug}/600/900`,
     articles: overrides.articles || [],
     season: faker.helpers.arrayElement(SEASONS),
     theme: faker.helpers.arrayElement(THEMES),
+    featured: false,
     ...overrides,
   };
 }

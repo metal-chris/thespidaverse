@@ -195,14 +195,11 @@ export class MockProvider implements DataProvider {
   async getCollections(): Promise<Collection[]> {
     try {
       const data = await this.getData();
-      // Return collections without expanding articles, just articleCount
+      // Strip full articles but keep a stub array matching the real count
+      // so that callers using c.articles.length get the correct number.
       return data.collections.map((c) => ({
         ...c,
-        articles: [],
-        // The Collection type doesn't have articleCount, but the GROQ
-        // projects it. We strip articles and rely on the caller using
-        // the GROQ-projected "articleCount" field from live data.
-        // For mock, consumers can check c.articles.length.
+        articles: Array.from({ length: c.articles?.length ?? 0 }) as Collection["articles"],
       }));
     } catch {
       return [];

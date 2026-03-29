@@ -840,12 +840,16 @@ export function buildHappyPathScenario(): MockDataset {
       articles: articles.filter((a) => (a.webRating ?? 0) >= 85),
       season: "Winter 2026",
       theme: "best-of",
+      featured: true,
+      heroImageUrl: "https://picsum.photos/seed/best-of-2025/600/900",
     }),
     createCollection({
       title: "Hidden Gems & Underrated Picks",
       description: "Not everything needs to be a 90+ banger. These are the quiet releases, the niche picks, and the titles that deserved way more attention than they got.",
       articles: articles.filter((a) => (a.webRating ?? 50) > 0 && (a.webRating ?? 50) <= 75),
       theme: "underrated",
+      season: "Spring 2026",
+      heroImageUrl: "https://picsum.photos/seed/hidden-gems/600/800",
     }),
     createCollection({
       title: "The Cyberpunk Canon",
@@ -854,6 +858,7 @@ export function buildHappyPathScenario(): MockDataset {
         (a) => a.tags.some((t) => t.title === "cyberpunk") || a.tags.some((t) => t.title === "sci-fi")
       ),
       theme: "essentials",
+      heroImageUrl: "https://picsum.photos/seed/cyberpunk-canon/600/900",
     }),
   ];
 

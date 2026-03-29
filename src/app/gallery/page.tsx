@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getProvider } from "@/lib/providers";
 import { Container } from "@/components/ui/Container";
+import { GlitchText } from "@/components/ui/GlitchText";
 import { GalleryPageClient } from "@/components/gallery/GalleryPageClient";
 import { SubmissionForm } from "@/components/gallery/SubmissionForm";
 
@@ -27,7 +28,7 @@ export default async function GalleryPage() {
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-2">
           Curated
         </p>
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Gallery</h1>
+        <GlitchText className="text-3xl md:text-4xl font-bold mb-2">Gallery</GlitchText>
         <p className="text-muted-foreground max-w-lg">
           The best fan art, posters, and videos from across the Spider-Verse
           and beyond. Every piece links back to the original artist.

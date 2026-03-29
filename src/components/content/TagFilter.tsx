@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { Button } from "@/components/ui/Button";
 import { cn, capitalizeTag } from "@/lib/utils";
 import type { Article, Tag } from "@/types";
 
@@ -47,28 +48,25 @@ export function TagFilter({ articles, allTags, children }: TagFilterProps) {
         {allTags.map((tag) => {
           const isActive = selectedTags.has(tag.slug.current);
           return (
-            <button
+            <Button
               key={tag._id}
+              variant={isActive ? "primary" : "ghost"}
+              size="xs"
               onClick={() => toggleTag(tag.slug.current)}
-              className={cn(
-                "text-xs px-3 py-1.5 rounded-full border transition-colors",
-                isActive
-                  ? "bg-accent text-background border-accent"
-                  : "bg-transparent text-muted-foreground border-border hover:border-accent hover:text-foreground"
-              )}
               aria-pressed={isActive}
             >
               {capitalizeTag(tag.title)}
-            </button>
+            </Button>
           );
         })}
         {selectedTags.size > 0 && (
-          <button
+          <Button
+            variant="text"
+            size="xs"
             onClick={clearAll}
-            className="text-xs px-3 py-1.5 text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear filters
-          </button>
+          </Button>
         )}
       </div>
 

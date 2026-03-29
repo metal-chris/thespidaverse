@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
 type Status = "idle" | "loading" | "success" | "error";
@@ -88,13 +89,15 @@ export function NewsletterSignup({ variant = "inline", className }: NewsletterSi
             disabled={status === "loading"}
             className="flex-1 px-3 py-2 text-sm rounded-md border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent disabled:opacity-50"
           />
-          <button
+          <Button
             type="submit"
+            variant="primary"
+            size="sm"
+            shape="rounded"
             disabled={status === "loading"}
-            className="px-4 py-2 text-sm font-medium bg-accent text-background rounded-md hover:opacity-90 transition-opacity disabled:opacity-50 whitespace-nowrap"
           >
             {status === "loading" ? "..." : "Get Caught Up"}
-          </button>
+          </Button>
         </form>
       )}
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Container } from "@/components/ui/Container";
 import { SpiderWebCanvas } from "@/components/coming-soon/NeuralNetworkCanvas";
+import { GlitchText } from "@/components/ui/GlitchText";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import type { Palette } from "@/components/coming-soon/particle-config";
 
@@ -99,7 +100,11 @@ export function HeroSection() {
           A Pop Culture Web
         </p>
 
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-balance leading-[0.9]">
+        <GlitchText
+          as="h1"
+          dataText="The Spidaverse"
+          className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-balance leading-[0.9]"
+        >
           The{" "}
           <span className="text-accent relative [html[data-theme='venom']_&]:text-white [html[data-theme='peter']_&]:text-[#1E50DC]">
             Spidaverse
@@ -109,7 +114,7 @@ export function HeroSection() {
               aria-hidden="true"
             />
           </span>
-        </h1>
+        </GlitchText>
 
         <p className="mt-6 text-base md:text-lg text-muted-foreground max-w-xl mx-auto text-balance leading-relaxed">
           Movies. TV. Games. Anime. Manga. Music.

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { Button } from "@/components/ui/Button";
 import type { ReactionCounts } from "@/types";
 
 const REACTION_EMOJIS: Record<string, { emoji: string; label: string }> = {
@@ -102,29 +103,24 @@ export function ReactionBar({ slug, className = "" }: ReactionBarProps) {
           const isActive = justReacted === type;
 
           return (
-            <button
+            <Button
               key={type}
+              variant={isActive ? "active" : "ghost"}
+              size="md"
+              isActive={isActive}
               onClick={() => handleReaction(type)}
               disabled={cooldown || !!submitting}
-              className={`
-                inline-flex items-center gap-1.5 px-3 py-2 min-h-[44px] min-w-[44px] justify-center rounded-full border text-sm
-                transition-all duration-200
-                ${isActive
-                  ? "border-accent bg-accent/10 scale-110"
-                  : "border-border bg-card hover:border-accent/50 hover:bg-muted"
-                }
-                disabled:opacity-50 disabled:cursor-not-allowed
-              `}
+              className={isActive ? "scale-110" : ""}
               aria-label={`React with ${label}${count > 0 ? `, ${count} reactions` : ""}`}
               title={label}
             >
-              <span className={`text-base ${submitting === type ? "animate-bounce" : ""}`}>
+              <span className={`text-base leading-none ${submitting === type ? "animate-bounce" : ""}`}>
                 {emoji}
               </span>
               {count > 0 && (
                 <span className="text-xs text-muted-foreground tabular-nums">{count}</span>
               )}
-            </button>
+            </Button>
           );
         })}
       </div>

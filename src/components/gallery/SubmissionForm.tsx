@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
 export function SubmissionForm() {
@@ -57,12 +58,15 @@ export function SubmissionForm() {
         <p className="text-sm text-muted-foreground mt-1">
           We&apos;ll review your submission and add it to the Gallery if it&apos;s a fit. Thanks for contributing!
         </p>
-        <button
+        <Button
+          variant="secondary"
+          size="sm"
+          shape="rounded"
           onClick={() => { setStatus("idle"); setIsOpen(true); }}
-          className="mt-4 px-4 py-2 text-sm rounded-lg bg-muted text-foreground hover:bg-muted/80 transition-colors"
+          className="mt-4"
         >
           Submit Another
-        </button>
+        </Button>
       </div>
     );
   }
@@ -119,19 +123,16 @@ export function SubmissionForm() {
                 </p>
                 <div className="flex gap-2">
                 {(["image", "video"] as const).map((type) => (
-                  <button
+                  <Button
                     key={type}
                     type="button"
+                    variant={pieceType === type ? "primary" : "ghost"}
+                    size="sm"
+                    shape="rounded"
                     onClick={() => setPieceType(type)}
-                    className={cn(
-                      "px-4 py-2 rounded-lg text-sm font-medium transition-all",
-                      pieceType === type
-                        ? "bg-accent text-background"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
-                    )}
                   >
                     {type === "image" ? "Art" : "Video"}
-                  </button>
+                  </Button>
                 ))}
                 </div>
               </div>
@@ -177,13 +178,15 @@ export function SubmissionForm() {
               />
 
               <div className="flex items-center gap-4">
-                <button
+                <Button
                   type="submit"
+                  variant="primary"
+                  size="md"
+                  shape="rounded"
                   disabled={status === "submitting"}
-                  className="px-6 py-2.5 rounded-lg bg-accent text-background font-medium text-sm hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {status === "submitting" ? "Submitting..." : "Submit"}
-                </button>
+                </Button>
 
                 {status === "error" && errorMessage && (
                   <p className="text-sm text-red-500">{errorMessage}</p>

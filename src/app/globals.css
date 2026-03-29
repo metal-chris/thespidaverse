@@ -788,7 +788,7 @@
   display: none;
 }
 
-/* Mobile: horizontal layout — interactive + scrollable */
+/* Mobile: horizontal layout — interactive + scrollable, snap to center */
 .gallery-viewer-strip-scroll {
   overflow-x: auto;
   overflow-y: hidden;
@@ -799,9 +799,14 @@
   pointer-events: auto;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
 }
 
-/* Desktop: vertical layout — scrollable + tappable */
+.gallery-viewer-strip-scroll .film-frame {
+  scroll-snap-align: center;
+}
+
+/* Desktop: vertical layout — scrollable + tappable, snap to center */
 @media (min-width: 768px) {
   .gallery-viewer-strip-scroll {
     overflow-x: hidden;
@@ -809,6 +814,11 @@
     display: block;
     padding: 8px var(--border-w);
     pointer-events: auto;
+    scroll-snap-type: y mandatory;
+  }
+
+  .gallery-viewer-strip-scroll .film-frame {
+    scroll-snap-align: center;
   }
 }
 
@@ -1027,5 +1037,195 @@
 @media (max-width: 767px) {
   .gallery-viewer-strip .film-frame-number {
     font-size: 6px;
+  }
+}
+
+/* ========================================
+   Collection Cover Templates
+   ======================================== */
+
+/* ── Header + Hero share 100vh (minus nav ~64px) ── */
+.collection-hero-viewport {
+  height: calc(100dvh - 64px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Featured collection hero — fills remaining space ── */
+.collection-featured-hero {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: block;
+}
+
+/* Mobile: portrait-biased crop — show center/top of image */
+.collection-featured-hero img {
+  object-position: center 30%;
+}
+
+/* Tablet+: landscape-biased crop — show full width */
+@media (min-width: 768px) {
+  .collection-featured-hero img {
+    object-position: center center;
+  }
+}
+
+/* ── Shared cover card ── */
+.collection-cover {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  transition: all 300ms ease;
+}
+
+.collection-cover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--color-accent-raw, 59 130 246 / 0.3);
+  border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+
+.collection-cover-image {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.collection-cover-image img {
+  transition: transform 500ms ease;
+}
+
+.collection-cover:hover .collection-cover-image img {
+  transform: scale(1.06);
+}
+
+/* Gradient overlay for text readability */
+.collection-cover-gradient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Entrance animation — reuses gallery-tile-appear pattern */
+.collection-cover-enter {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: collection-enter 0.4s ease-out forwards;
+}
+
+@keyframes collection-enter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Unified cover aspect ratio ── */
+.collection-cover-image {
+  aspect-ratio: 3/4;
+}
+
+.collection-cover-gradient {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.7) 20%,
+    rgba(0, 0, 0, 0.3) 45%,
+    rgba(0, 0, 0, 0.05) 70%,
+    transparent 100%
+  );
+}
+
+/* Subtle vignette on all covers */
+.collection-cover-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+/* ========================================
+   Collection Back Cover (Detail Page)
+   ======================================== */
+
+.collection-back-cover {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .collection-back-cover {
+    flex-direction: row;
+    gap: 3rem;
+    align-items: flex-start;
+  }
+}
+
+/* Mini cover on detail page */
+.collection-back-cover-art {
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .collection-back-cover-art {
+    width: 38%;
+    max-width: 360px;
+    position: sticky;
+    top: 80px;
+  }
+}
+
+.collection-back-cover-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Article row on detail page */
+.collection-article-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+  transition: background 200ms ease;
+}
+
+.collection-article-row:hover {
+  background: color-mix(in srgb, var(--color-accent) 5%, transparent);
+}
+
+.collection-article-row:last-child {
+  border-bottom: none;
+}
+
+.collection-article-number {
+  flex-shrink: 0;
+  width: 2rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.75rem;
+  color: var(--color-accent);
+  text-align: right;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .collection-cover-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .collection-cover-image img {
+    transition: none;
+  }
+
+  .collection-cover {
+    transition: none;
   }
 }

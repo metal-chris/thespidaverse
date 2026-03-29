@@ -7,6 +7,7 @@ import { ArtistSpotlight } from "./ArtistSpotlight";
 import { GalleryFilterBar } from "./GalleryFilterBar";
 import { MasonryGrid } from "./MasonryGrid";
 import { GalleryViewer } from "./GalleryViewer";
+import { Button } from "@/components/ui/Button";
 
 const BATCH_SIZE = 16;
 
@@ -87,6 +88,7 @@ export function GalleryPageClient({ initialPieces, spotlight }: GalleryPageClien
       <GalleryFilterBar
         activeType={activeType}
         onTypeChange={setActiveType}
+        pieces={pieces}
       />
 
       {/* Masonry Grid */}
@@ -98,13 +100,15 @@ export function GalleryPageClient({ initialPieces, spotlight }: GalleryPageClien
       {/* Load More */}
       {hasMore && activeType === "all" && (
         <div className="flex justify-center mt-8">
-          <button
+          <Button
+            variant="secondary"
+            size="lg"
+            shape="rounded"
             onClick={handleLoadMore}
             disabled={loading}
-            className="px-6 py-3 rounded-lg bg-card border border-border text-sm font-medium hover:border-accent/30 hover:bg-muted transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Loading..." : "Load More"}
-          </button>
+          </Button>
         </div>
       )}
     </>

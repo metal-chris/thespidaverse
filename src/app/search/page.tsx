@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
+import { GlitchText } from "@/components/ui/GlitchText";
 import { SearchPageClient } from "@/components/search/SearchPageClient";
 import { getProvider } from "@/lib/providers";
 
@@ -19,7 +20,7 @@ export default async function SearchPage() {
 
   return (
     <Container className="py-8">
-      <h1 className="text-3xl font-bold mb-6">Search</h1>
+      <GlitchText className="text-3xl font-bold mb-6">Search</GlitchText>
       <Suspense fallback={<div className="text-muted-foreground">Loading search...</div>}>
         <SearchPageClient
           articles={articles}
