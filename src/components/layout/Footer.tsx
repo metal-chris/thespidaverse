@@ -94,7 +94,7 @@ export function Footer() {
             <p className="text-xs text-muted-foreground">
               &copy; {new Date().getFullYear()}{" "}
               <Link href="/about" className="text-foreground/70 hover:text-accent transition-colors">
-                Spida Mane
+                Spida-Mane
               </Link>
             </p>
             <span className="w-px h-4 bg-border" />

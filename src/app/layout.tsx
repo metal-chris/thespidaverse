@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s | The Spidaverse",
   },
   description:
-    "Movies. TV. Games. Anime. Manga. Music. One web connects them all. A pop culture blog by Spida Mane.",
+    "Movies. TV. Games. Anime. Manga. Music. One web connects them all. A pop culture blog by Spida-Mane.",
   openGraph: {
     type: "website",
     locale: "en_US",

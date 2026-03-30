@@ -172,7 +172,7 @@ export default async function CollectionPage({ params }: Props) {
             {articles.length} {articles.length === 1 ? "article" : "articles"}
           </span>
           <span className="mx-2">·</span>
-          <span>Curated by Spida Mane</span>
+          <span>Curated by Spida-Mane</span>
         </div>
       </Container>
     </>

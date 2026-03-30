@@ -4,7 +4,7 @@ import { GlitchText } from "@/components/ui/GlitchText";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "About The Spidaverse and Spida Mane.",
+  description: "About The Spidaverse and Spida-Mane.",
 };
 
 export default function AboutPage() {

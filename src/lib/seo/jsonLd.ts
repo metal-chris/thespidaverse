@@ -47,7 +47,7 @@ export function blogPostingJsonLd({
     ...(imageUrl && { image: imageUrl }),
     author: {
       "@type": "Person",
-      name: "Spida Mane",
+      name: "Spida-Mane",
       url: `${siteUrl}/about`,
     },
     publisher: {
@@ -91,7 +91,7 @@ export function reviewJsonLd({
     },
     author: {
       "@type": "Person",
-      name: "Spida Mane",
+      name: "Spida-Mane",
     },
   };
 }
