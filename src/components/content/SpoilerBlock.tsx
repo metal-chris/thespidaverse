@@ -85,7 +85,7 @@ export function SpoilerBlock({ children, label = "Spoiler" }: SpoilerBlockProps)
           isRevealed ? "blur-0 opacity-100" : "blur-md opacity-50 select-none"
         )}
         aria-hidden={!isRevealed}
-        inert={!isRevealed ? ("" as unknown as undefined) : undefined}
+        {...(!isRevealed ? { inert: true } : {})}
       >
         {children}
       </div>
