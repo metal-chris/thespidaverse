@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
+import { SpiderWebCanvas } from "@/components/coming-soon/NeuralNetworkCanvas";
+import type { Palette } from "@/components/coming-soon/particle-config";
 
 /**
  * WebRating — Spider-web shaped rating visualization.
@@ -15,10 +17,17 @@ import { cn } from "@/lib/utils";
 
 type WebRatingVariant = "full" | "compact" | "badge" | "inline";
 
+interface CommunityStats {
+  avgScore: number;
+  totalRatings: number;
+}
+
 interface WebRatingProps {
   score: number; // 0–100
   variant?: WebRatingVariant;
   className?: string;
+  /** Community rating stats — shown as teaser line in full variant only */
+  communityStats?: CommunityStats | null;
 }
 
 const RINGS = 5;
@@ -60,7 +69,7 @@ const SIZE_MAP: Record<WebRatingVariant, string> = {
   full: "w-36 h-36 md:w-44 md:h-44",
 };
 
-export function WebRating({ score, variant = "full", className }: WebRatingProps) {
+export function WebRating({ score, variant = "full", className, communityStats }: WebRatingProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isAnimated = variant === "full";
   const isFull = variant === "full";
@@ -70,6 +79,27 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
   const [doneAnimating, setDoneAnimating] = useState(!isAnimated);
   const clampedScore = Math.max(0, Math.min(100, Math.round(score)));
 
+  // Canvas strike trigger (full variant only)
+  const strikeTriggerRef = useRef<((x: number, y: number) => void) | null>(null);
+  const cardRectRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
+
+  const handleRendererReady = useCallback((trigger: (x: number, y: number) => void) => {
+    strikeTriggerRef.current = trigger;
+  }, []);
+
+  // Cache card dimensions for strike calculations
+  useEffect(() => {
+    if (!isFull || !ref.current) return;
+    const update = () => {
+      const rect = ref.current?.getBoundingClientRect();
+      if (rect) cardRectRef.current = { w: rect.width, h: rect.height };
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [isFull]);
+
+  // Intersection observer for scroll-in visibility
   useEffect(() => {
     if (!isAnimated) return;
     const el = ref.current;
@@ -96,6 +126,7 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
     return () => observer.disconnect();
   }, [isAnimated]);
 
+  // Score fill animation + #1 Score Reveal Strike + #6 100% Burst Mode
   useEffect(() => {
     if (!visible || !isAnimated) return;
     const duration = 1200;
@@ -111,30 +142,97 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
         requestAnimationFrame(tick);
       } else {
         setDoneAnimating(true);
-        if (clampedScore === 100) {
-          setBursting(true);
-          setTimeout(() => setBursting(false), 600);
+
+        // #1: Score Reveal Strike — radial bursts scaled by score
+        const trigger = strikeTriggerRef.current;
+        const { w, h } = cardRectRef.current;
+        if (trigger && w > 0) {
+          const cx = w / 2;
+          const cy = h / 2;
+          const r = Math.min(w, h) * 0.2;
+
+          // Determine wave count: <50=1 wave, 50-79=2 waves, 80+=3 waves, 100=3+SVG burst
+          let waves: number;
+          if (clampedScore === 100) {
+            waves = 3;
+            setBursting(true);
+            setTimeout(() => setBursting(false), 600);
+          } else if (clampedScore >= 80) {
+            waves = 3;
+          } else if (clampedScore >= 50) {
+            waves = 2;
+          } else {
+            waves = 1;
+          }
+
+          // Each wave fires 8 omni-directional strikes (full shockwave ring)
+          for (let w = 0; w < waves; w++) {
+            setTimeout(() => {
+              for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2;
+                trigger(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+              }
+            }, w * 600);
+          }
         }
       }
     }
     requestAnimationFrame(tick);
   }, [visible, isAnimated, clampedScore]);
 
+  // #6 continued: 100% scores get periodic strikes
+  useEffect(() => {
+    if (!doneAnimating || clampedScore !== 100) return;
+    const trigger = strikeTriggerRef.current;
+    const { w, h } = cardRectRef.current;
+    if (!trigger || w === 0) return;
+
+    const interval = setInterval(() => {
+      const cx = w / 2;
+      const cy = h / 2;
+      const angle = Math.random() * Math.PI * 2;
+      const r = Math.min(w, h) * 0.25;
+      trigger(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, [doneAnimating, clampedScore]);
+
+  // #5: Scroll Parallax Breathing
+  const [scrollScale, setScrollScale] = useState(1);
+  useEffect(() => {
+    if (!isFull) return;
+    const el = ref.current;
+    if (!el) return;
+
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+
+    const handleScroll = () => {
+      const rect = el.getBoundingClientRect();
+      const viewH = window.innerHeight;
+      // How centered is the card in the viewport? 0 = centered, 1 = at edge
+      const center = rect.top + rect.height / 2;
+      const offset = Math.abs(center - viewH / 2) / (viewH / 2);
+      // Scale: 1.06 when centered, 1.0 when at edges
+      const s = 1 + 0.06 * Math.max(0, 1 - offset);
+      setScrollScale(s);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isFull]);
+
   const displayScore = Math.round(clampedScore * animProgress);
   const fillScore = clampedScore * animProgress;
   const isCompact = variant !== "full";
 
-  /*
-   * Contrast fix: use a neutral white/grey for web structure so it's
-   * visible on ALL themes (Miles' border color #2A1015 was invisible).
-   * Full variant uses higher opacity for drama.
-   */
   const structureColor = isFull ? "rgba(255,255,255,0.2)" : "var(--color-muted-foreground)";
   const structureOpacity = 1;
   const strokeW = isCompact ? 0.8 : 0.6;
   const fillStrokeW = isCompact ? 1.2 : 1;
   const fillOpacity = isFull ? 0.35 : 0.25;
-  const bgOpacity = isFull ? 0.04 : 0.08;
 
   const webSvg = (
     <svg
@@ -288,8 +386,33 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
     );
   }
 
-  /* ── Full: centered composition with score-driven glow ── */
-  const glowIntensity = Math.round((clampedScore / 100) * 20); // 0-20% glow
+  /* ── Full: centered composition with SpiderWebCanvas background ── */
+
+  // #4: Theme detection + transition strike
+  const [palette, setPalette] = useState<Palette>("miles");
+  const prevPaletteRef = useRef<Palette>("miles");
+  const reducedMotion = useRef(false);
+
+  // Sync palette with data-theme attribute
+  useEffect(() => {
+    const readTheme = (): Palette => {
+      const t = document.documentElement.getAttribute("data-theme");
+      return t === "peter" || t === "venom" ? t : "miles";
+    };
+
+    setPalette(readTheme());
+
+    const observer = new MutationObserver(() => {
+      setPalette(readTheme());
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+    reducedMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    return () => observer.disconnect();
+  }, []);
+
+
 
   return (
     <div
@@ -298,32 +421,69 @@ export function WebRating({ score, variant = "full", className }: WebRatingProps
       role="img"
       aria-label={`Rating: ${clampedScore} out of 100`}
     >
-      {/* Score-driven radial glow behind the web */}
+      {/* SpiderWebCanvas — animated background */}
+      <div className="absolute inset-0 rounded-xl overflow-hidden">
+        <SpiderWebCanvas
+          reducedMotion={reducedMotion.current}
+          palette={palette}
+          onRendererReady={handleRendererReady}
+        />
+      </div>
+
+      {/* Vignette overlay */}
       <div
-        className="web-rating-glow"
+        className="absolute inset-0 pointer-events-none rounded-xl"
+        aria-hidden="true"
         style={{
-          opacity: animProgress * 0.8,
-          background: `radial-gradient(circle, color-mix(in srgb, var(--color-accent) ${glowIntensity}%, transparent) 0%, transparent 70%)`,
+          background: "radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,0,0,0.5) 100%)",
         }}
       />
 
-      {/* Web SVG — centered */}
-      <div className={cn("relative z-10", SIZE_MAP.full)}>
-        {webSvg}
-        {/* Score centered inside the web */}
-        <span className="absolute inset-0 flex items-center justify-center text-2xl md:text-3xl font-black text-accent tabular-nums drop-shadow-sm">
-          {displayScore}
-        </span>
-      </div>
-
-      {/* Label below */}
-      <div className="relative z-10 text-center mt-3">
+      {/* Top label */}
+      <div className="absolute top-4 left-0 right-0 z-10 text-center px-4">
         <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">
           Web Rating
         </p>
         <p className="text-sm md:text-base font-bold text-foreground/80 mt-0.5">
           {ratingLabel(displayScore)}
         </p>
+      </div>
+
+      {/* Web SVG — true center, #5 scroll breathing */}
+      <div
+        className={cn("relative z-10 transition-transform duration-300 ease-out", SIZE_MAP.full)}
+        style={{ transform: `scale(${scrollScale})` }}
+      >
+        {webSvg}
+        <span className="absolute inset-0 flex items-center justify-center text-2xl md:text-3xl font-black tabular-nums drop-shadow-sm web-rating-score-number">
+          {displayScore}
+        </span>
+      </div>
+
+      {/* Bottom CTA */}
+      <div className="absolute bottom-5 left-0 right-0 z-10 text-center px-4">
+        {communityStats !== undefined && (
+          communityStats && communityStats.totalRatings > 0 ? (
+            <a
+              href="#engagement"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 transition-colors"
+            >
+              The Web:{" "}
+              <span className="tabular-nums">{communityStats.avgScore}</span>
+              <span className="text-muted-foreground/60">
+                ({communityStats.totalRatings})
+              </span>
+            </a>
+          ) : (
+            <a
+              href="#engagement"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium bg-white/10 text-foreground/70 border border-white/15 hover:bg-white/15 hover:text-foreground transition-colors"
+            >
+              Be the first to rate
+              <span aria-hidden="true">↓</span>
+            </a>
+          )
+        )}
       </div>
     </div>
   );

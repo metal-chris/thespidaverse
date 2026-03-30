@@ -39,6 +39,15 @@ export const articleBySlugQuery = groq`
     webRating,
     moodTags,
     ambientAudioUrl,
+    pollConfig {
+      enableCommunityRating,
+      pollQuestions[] {
+        questionKey,
+        questionText,
+        questionType,
+        options
+      }
+    },
     category->{
       _id, title, slug
     },

@@ -336,6 +336,7 @@ export default async function ArticlePage({ params }: Props) {
           format={article.format}
           hasSpoilerBlocks={!!hasSpoilerBlocks}
           ambientAudioUrl={article.ambientAudioUrl}
+          pollConfig={article.pollConfig}
         />
       </Container>
     </>

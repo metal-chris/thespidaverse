@@ -4,7 +4,7 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { urlFor } from "@/lib/sanity/image";
-import { CollapsibleActions } from "./CollapsibleActions";
+import { CollapsibleActions } from "@/components/ui/CollapsibleActions";
 import { VideoEmbed } from "./VideoEmbed";
 import { useGalleryNavigation } from "@/hooks/useGalleryNavigation";
 import type { GalleryPiece } from "@/types";

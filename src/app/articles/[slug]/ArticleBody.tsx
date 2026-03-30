@@ -1,15 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { PortableText } from "@portabletext/react";
 import type { PortableTextBlock } from "@portabletext/react";
 import { WebRating } from "@/components/content/WebRating";
-import { ShareBar } from "@/components/content/ShareBar";
 import { SpoilerProvider, RevealAllToggle } from "@/components/content/SpoilerBlock";
-import { NewsletterSignup } from "@/components/content/NewsletterSignup";
-import { ReactionBar } from "@/components/reactions/ReactionBar";
-import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { AmbientPlayer } from "@/components/audio/AmbientPlayer";
+import { EngagementSection } from "@/components/engagement/EngagementSection";
 import { portableTextComponents } from "@/components/content/PortableTextComponents";
+import type { PollConfig, WebRatingStats } from "@/types";
 
 interface ArticleBodyProps {
   body: PortableTextBlock[];
@@ -21,8 +20,8 @@ interface ArticleBodyProps {
   format?: string;
   hasSpoilerBlocks: boolean;
   ambientAudioUrl?: string;
+  pollConfig?: PollConfig;
 }
-
 
 export function ArticleBody({
   body,
@@ -30,11 +29,12 @@ export function ArticleBody({
   title,
   slug,
   url,
-  category,
-  format,
   hasSpoilerBlocks,
   ambientAudioUrl,
+  pollConfig,
 }: ArticleBodyProps) {
+  const [communityStats, setCommunityStats] = useState<WebRatingStats | null>(null);
+
   return (
     <SpoilerProvider>
       {/* ── Controls Bar ── */}
@@ -44,10 +44,14 @@ export function ArticleBody({
         </div>
       )}
 
-      {/* ── Web Rating Block ── */}
+      {/* ── Web Rating Block (author score + community teaser) ── */}
       {webRating != null && (
         <div className="mb-10 rounded-xl border border-border bg-card/50 relative overflow-hidden">
-          <WebRating score={webRating} variant="full" />
+          <WebRating
+            score={webRating}
+            variant="full"
+            communityStats={communityStats}
+          />
         </div>
       )}
 
@@ -65,34 +69,15 @@ export function ArticleBody({
         <div className="flex-1 h-px bg-border" />
       </div>
 
-      {/* ── Reactions + Share (combined on tablet+) ── */}
-      <div className="mb-10">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 md:gap-6">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-              What did you think?
-            </p>
-            <ReactionBar slug={slug} />
-          </div>
-          <div className="hidden md:flex md:flex-col md:items-end">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-              Share
-            </p>
-            <ShareBar title={title} url={url} category={category} format={format} />
-          </div>
-        </div>
-      </div>
-
-      {/* ── Bottom Share Bar (mobile only) ── */}
-      <div className="pt-4 border-t-2 border-border md:hidden mb-8">
-        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-          Share
-        </p>
-        <ShareBar title={title} url={url} category={category} format={format} />
-      </div>
-
-      {/* ── Newsletter Signup ── */}
-      <NewsletterSignup variant="inline" className="mt-4" />
+      {/* ── Engagement Block (rating + polls + react/share toolbar) ── */}
+      <EngagementSection
+        slug={slug}
+        title={title}
+        shareUrl={url}
+        authorWebRating={webRating}
+        pollConfig={pollConfig}
+        onCommunityStatsLoaded={setCommunityStats}
+      />
 
       {/* ── Ambient Audio Player ── */}
       {ambientAudioUrl && <AmbientPlayer audioUrl={ambientAudioUrl} title={title} />}

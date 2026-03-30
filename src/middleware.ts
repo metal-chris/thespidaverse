@@ -15,6 +15,7 @@ const BYPASS_PREFIXES = [
   "/spider-cursor",
   "/pagefind",
   "/studio",
+  "/admin",
 ];
 
 const BYPASS_EXTENSIONS = [".svg", ".png", ".jpg", ".ico", ".json", ".xml", ".js", ".css", ".woff", ".woff2"];

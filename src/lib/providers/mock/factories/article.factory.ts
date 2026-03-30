@@ -6,6 +6,7 @@ import type {
   SanityImage,
   Category,
   Tag,
+  PollConfig,
 } from "@/types";
 
 const FORMATS: ArticleFormat[] = [
@@ -225,6 +226,37 @@ function generateMediaLength(mediaType?: MediaType): string | undefined {
   }
 }
 
+const POLL_PRESETS: PollConfig[] = [
+  {
+    enableCommunityRating: true,
+    pollQuestions: [
+      { questionKey: "have_you_watched", questionText: "Have you watched this?", questionType: "yes_no" },
+      { questionKey: "would_recommend", questionText: "Would you recommend it?", questionType: "yes_no" },
+    ],
+  },
+  {
+    enableCommunityRating: true,
+    pollQuestions: [
+      { questionKey: "agree", questionText: "Do you agree with this take?", questionType: "agree_scale" },
+      { questionKey: "hot_take", questionText: "Is this actually a hot take?", questionType: "multiple_choice", options: ["Hot take", "Lukewarm", "Everyone thinks this"] },
+    ],
+  },
+  {
+    enableCommunityRating: true,
+    pollQuestions: [
+      { questionKey: "saturday_vibe", questionText: "Is this a Saturday morning vibe?", questionType: "multiple_choice", options: ["Perfect for it", "More of a late night watch", "Anytime show"] },
+      { questionKey: "have_you_seen", questionText: "Have you seen this?", questionType: "multiple_choice", options: ["Yes", "No", "Adding it to my list"] },
+    ],
+  },
+  {
+    enableCommunityRating: true,
+    pollQuestions: [
+      { questionKey: "changed_perspective", questionText: "Did this change your perspective?", questionType: "agree_scale" },
+      { questionKey: "enjoyment", questionText: "How much did you enjoy this?", questionType: "slider" },
+    ],
+  },
+];
+
 export function createArticle(overrides: Partial<Article> = {}): Article {
   const title = overrides.title || faker.lorem.words({ min: 3, max: 10 });
   const mediaType =
@@ -256,6 +288,7 @@ export function createArticle(overrides: Partial<Article> = {}): Article {
     readingTime: faker.number.int({ min: 3, max: 20 }),
     mediaLength: generateMediaLength(mediaType),
     mediaType,
+    pollConfig: faker.helpers.arrayElement(POLL_PRESETS),
     ...overrides,
   };
 }

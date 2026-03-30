@@ -1,17 +1,9 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/server";
+import { hashIP, getClientIP } from "@/lib/engagement/fingerprint";
 
 const REACTION_TYPES = ["fire", "love", "mindblown", "cool", "trash"] as const;
 type ReactionType = (typeof REACTION_TYPES)[number];
-
-// Hash IP address for privacy
-async function hashIP(ip: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(ip);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
 
 export async function GET(
   _request: Request,
@@ -77,8 +69,7 @@ export async function POST(
     }
 
     // Get and hash IP address
-    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    const ipHash = await hashIP(ip);
+    const ipHash = await hashIP(getClientIP(request));
 
     // Check rate limit using Supabase function
     const { data: canReactData, error: rateLimitError } = await supabaseAdmin.rpc('can_react', {

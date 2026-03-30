@@ -45,6 +45,7 @@ export interface Article {
   mediaLength?: string;
   ambientAudioUrl?: string;
   mediaType?: MediaType;
+  pollConfig?: PollConfig;
 }
 
 export interface MediaEntry {
@@ -120,6 +121,41 @@ export interface CurrentlyConsuming {
     useSpotifyLive?: boolean;
   };
 }
+
+// ── Engagement / Polls ──
+
+export type PollQuestionType =
+  | "yes_no"
+  | "agree_scale"
+  | "multiple_choice"
+  | "slider";
+
+export interface PollQuestion {
+  questionKey: string;
+  questionText: string;
+  questionType: PollQuestionType;
+  options?: string[];
+}
+
+export interface PollConfig {
+  enableCommunityRating: boolean;
+  pollQuestions?: PollQuestion[];
+}
+
+export interface WebRatingStats {
+  avgScore: number;
+  totalRatings: number;
+  distribution: Record<string, number>;
+}
+
+export type PollResults = Record<string, Record<string, number>>;
+
+export interface EngagementResults {
+  webRating: WebRatingStats;
+  polls: PollResults;
+}
+
+// ── Reactions ──
 
 export interface ReactionCounts {
   fire: number;

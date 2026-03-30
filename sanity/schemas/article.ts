@@ -219,6 +219,90 @@ export default defineType({
       type: "array",
       of: [{ type: "reference", to: [{ type: "media" }] }],
     }),
+    defineField({
+      name: "pollConfig",
+      title: "Poll Configuration",
+      type: "object",
+      group: "engagement",
+      fields: [
+        defineField({
+          name: "enableCommunityRating",
+          title: "Enable Community Web Rating",
+          type: "boolean",
+          initialValue: true,
+          description:
+            "Show the 1-100 community rating slider on this post",
+        }),
+        defineField({
+          name: "pollQuestions",
+          title: "Poll Questions",
+          type: "array",
+          of: [
+            {
+              type: "object",
+              fields: [
+                defineField({
+                  name: "questionKey",
+                  title: "Question Key",
+                  type: "string",
+                  description:
+                    'Machine-readable key (e.g. "have_you_watched")',
+                  validation: (rule) => rule.required(),
+                }),
+                defineField({
+                  name: "questionText",
+                  title: "Question Text",
+                  type: "string",
+                  description:
+                    'What the reader sees (e.g. "Have you watched this?")',
+                  validation: (rule) => rule.required(),
+                }),
+                defineField({
+                  name: "questionType",
+                  title: "Question Type",
+                  type: "string",
+                  options: {
+                    list: [
+                      { title: "Yes / No", value: "yes_no" },
+                      {
+                        title: "Agree / Disagree / Middle",
+                        value: "agree_scale",
+                      },
+                      { title: "Multiple Choice", value: "multiple_choice" },
+                      { title: "Slider (1–10)", value: "slider" },
+                    ],
+                    layout: "radio",
+                  },
+                  initialValue: "yes_no",
+                  validation: (rule) => rule.required(),
+                }),
+                defineField({
+                  name: "options",
+                  title: "Options",
+                  type: "array",
+                  of: [{ type: "string" }],
+                  description: "Custom answer options (for multiple choice)",
+                  hidden: ({ parent }) =>
+                    parent?.questionType !== "multiple_choice",
+                }),
+              ],
+              preview: {
+                select: { text: "questionText", type: "questionType" },
+                prepare({ text, type }) {
+                  return {
+                    title: text || "Untitled question",
+                    subtitle: type,
+                  };
+                },
+              },
+            },
+          ],
+          validation: (rule) => rule.max(3),
+          description:
+            "Add up to 3 quick questions for this post. Keep it lightweight.",
+        }),
+      ],
+    }),
   ],
   preview: {
     select: {

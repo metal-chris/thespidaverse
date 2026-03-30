@@ -199,7 +199,7 @@ export function CollapsibleActions({ slug, title, shareUrl, originalUrl }: Colla
   const totalReactions = Object.values(reactions).reduce((a, b) => a + b, 0);
 
   return (
-    <div ref={containerRef} className="flex items-center gap-1.5 mt-3 overflow-visible relative">
+    <div ref={containerRef} className="flex items-center justify-center gap-1.5 mt-3 overflow-visible relative">
       {/* ── React toggle ── */}
       <Tooltip label="React" flash={null}>
         <Button
