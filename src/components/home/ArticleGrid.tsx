@@ -1,21 +1,99 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { cn } from "@/lib/utils";
 import type { Article } from "@/types";
 
-const PAGE_SIZE_OPTIONS = [6, 12, 24] as const;
+const FIRST_PAGE_SIZE = 8; // 2 featured + 6 grid
+const REST_PAGE_SIZE = 8; // 2-column grid, 4 rows
 
 interface ArticleGridProps {
   articles: Article[];
 }
 
+/** Auto-rotating carousel for 2 featured articles. */
+function FeaturedCarousel({ articles }: { articles: Article[] }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setActiveIndex((i) => (i + 1) % articles.length);
+    }, 6000);
+  }, [articles.length]);
+
+  useEffect(() => {
+    if (articles.length <= 1) return;
+    startTimer();
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [articles.length, startTimer]);
+
+  const goTo = useCallback(
+    (index: number) => {
+      setActiveIndex(index);
+      startTimer(); // Reset timer on manual navigation
+    },
+    [startTimer]
+  );
+
+  if (articles.length === 0) return null;
+
+  return (
+    <div className="relative">
+      {/* Cards — crossfade */}
+      <div className="relative">
+        {articles.map((article, i) => (
+          <div
+            key={article._id}
+            className={cn(
+              "transition-all duration-500 ease-in-out",
+              i === activeIndex
+                ? "opacity-100 relative"
+                : "opacity-0 absolute inset-0 pointer-events-none"
+            )}
+            aria-hidden={i !== activeIndex}
+          >
+            <Card article={article} featured={true} />
+          </div>
+        ))}
+      </div>
+
+      {/* Indicators */}
+      {articles.length > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-3">
+          {articles.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              aria-label={`Show featured article ${i + 1}`}
+              className={cn(
+                "h-1.5 rounded-full transition-all duration-300",
+                i === activeIndex
+                  ? "w-6 bg-accent"
+                  : "w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/50"
+              )}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ArticleGrid({ articles }: ArticleGridProps) {
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState<number>(PAGE_SIZE_OPTIONS[0]);
-  const [showAll, setShowAll] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  const goToPage = useCallback((p: number) => {
+    setPage(p);
+    sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
 
   // Reset to page 1 when articles change (e.g. tag filter)
   const articleKey = articles.map((a) => a._id).join(",");
@@ -25,40 +103,52 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
     setPage(1);
   }
 
-  const totalPages = Math.ceil(articles.length / perPage);
+  const isFirstPage = page === 1;
 
-  const visibleArticles = useMemo(() => {
-    if (showAll) return articles;
-    const start = (page - 1) * perPage;
-    return articles.slice(start, start + perPage);
-  }, [articles, page, perPage, showAll]);
+  const { featured, grid, totalPages } = useMemo(() => {
+    if (isFirstPage) {
+      const feat = articles.slice(0, 2);
+      const g = articles.slice(2, FIRST_PAGE_SIZE);
+      const remaining = Math.max(0, articles.length - FIRST_PAGE_SIZE);
+      const restPages = Math.ceil(remaining / REST_PAGE_SIZE);
+      return { featured: feat, grid: g, totalPages: 1 + restPages };
+    } else {
+      const offset = FIRST_PAGE_SIZE + (page - 2) * REST_PAGE_SIZE;
+      const g = articles.slice(offset, offset + REST_PAGE_SIZE);
+      const remaining = Math.max(0, articles.length - FIRST_PAGE_SIZE);
+      const restPages = Math.ceil(remaining / REST_PAGE_SIZE);
+      return { featured: [], grid: g, totalPages: 1 + restPages };
+    }
+  }, [articles, page, isFirstPage]);
 
   if (articles.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
         <p className="text-lg">No articles yet.</p>
         <p className="text-sm mt-1">
-          Head to <a href="/studio" className="text-accent underline">/studio</a> to create your first post.
+          Head to{" "}
+          <a href="/studio" className="text-accent underline">
+            /studio
+          </a>{" "}
+          to create your first post.
         </p>
       </div>
     );
   }
 
-  const [featured, ...rest] = visibleArticles;
-
   return (
-    <div className="space-y-6">
-      {/* Featured article — full width */}
-      {featured && (
+    <div ref={sectionRef} className="space-y-6 scroll-mt-24">
+      {/* Featured carousel (page 1 only) */}
+      {isFirstPage && featured.length > 0 && (
         <ScrollReveal>
-          <Card article={featured} featured={true} />
+          <FeaturedCarousel articles={featured} />
         </ScrollReveal>
       )}
 
-      {/* Remaining articles — uniform grid */}
-      {rest.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {rest.map((article, i) => (
+      {/* Article grid — 2 columns */}
+      {grid.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {grid.map((article, i) => (
             <ScrollReveal key={article._id} delay={i * 60}>
               <Card article={article} featured={false} />
             </ScrollReveal>
@@ -66,91 +156,69 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
         </div>
       )}
 
-      {/* Pagination controls */}
-      {articles.length > PAGE_SIZE_OPTIONS[0] && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-border/50">
-          {/* Per-page selector */}
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-4 pt-4 border-t border-border/50">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Show</span>
-            {PAGE_SIZE_OPTIONS.map((n) => (
-              <Button
-                key={n}
-                variant={!showAll && perPage === n ? "active" : "ghost"}
-                size="xs"
-                shape="rounded"
-                onClick={() => {
-                  setShowAll(false);
-                  setPerPage(n);
-                  setPage(1);
-                }}
-              >
-                {n}
-              </Button>
-            ))}
             <Button
-              variant={showAll ? "active" : "ghost"}
+              variant="ghost"
               size="xs"
               shape="rounded"
-              onClick={() => {
-                setShowAll(true);
-                setPage(1);
-              }}
+              disabled={page <= 1}
+              onClick={() => goToPage(Math.max(1, page - 1))}
+              aria-label="Previous page"
             >
-              All
+              <svg
+                viewBox="0 0 16 16"
+                className="w-3.5 h-3.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M10 12L6 8l4-4" />
+              </svg>
+            </Button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <Button
+                key={p}
+                variant={p === page ? "active" : "ghost"}
+                size="xs"
+                shape="rounded"
+                onClick={() => goToPage(p)}
+                aria-label={`Page ${p}`}
+                aria-current={p === page ? "page" : undefined}
+              >
+                {p}
+              </Button>
+            ))}
+
+            <Button
+              variant="ghost"
+              size="xs"
+              shape="rounded"
+              disabled={page >= totalPages}
+              onClick={() => goToPage(Math.min(totalPages, page + 1))}
+              aria-label="Next page"
+            >
+              <svg
+                viewBox="0 0 16 16"
+                className="w-3.5 h-3.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M6 4l4 4-4 4" />
+              </svg>
             </Button>
           </div>
 
-          {/* Page navigation */}
-          {!showAll && totalPages > 1 && (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="xs"
-                shape="rounded"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                aria-label="Previous page"
-              >
-                <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M10 12L6 8l4-4" />
-                </svg>
-              </Button>
-
-              {/* Page numbers */}
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <Button
-                  key={p}
-                  variant={p === page ? "active" : "ghost"}
-                  size="xs"
-                  shape="rounded"
-                  onClick={() => setPage(p)}
-                  aria-label={`Page ${p}`}
-                  aria-current={p === page ? "page" : undefined}
-                >
-                  {p}
-                </Button>
-              ))}
-
-              <Button
-                variant="ghost"
-                size="xs"
-                shape="rounded"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                aria-label="Next page"
-              >
-                <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M6 4l4 4-4 4" />
-                </svg>
-              </Button>
-            </div>
-          )}
-
-          {/* Article count */}
           <span className="text-xs text-muted-foreground tabular-nums">
-            {showAll
-              ? `${articles.length} articles`
-              : `${(page - 1) * perPage + 1}–${Math.min(page * perPage, articles.length)} of ${articles.length}`}
+            {articles.length} articles
           </span>
         </div>
       )}
