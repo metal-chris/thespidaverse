@@ -6,6 +6,7 @@ interface GlitchTextProps {
   dataText?: string;
   as?: "h1" | "h2" | "h3" | "h4" | "span" | "p";
   className?: string;
+  style?: React.CSSProperties;
 }
 
 /**
@@ -17,10 +18,10 @@ interface GlitchTextProps {
  * Accepts plain strings or JSX children. If children are JSX,
  * pass dataText with the plain-text equivalent for the pseudo copies.
  */
-export function GlitchText({ children, dataText, as: Tag = "h1", className = "" }: GlitchTextProps) {
+export function GlitchText({ children, dataText, as: Tag = "h1", className = "", style }: GlitchTextProps) {
   const text = dataText ?? (typeof children === "string" ? children : "");
   return (
-    <Tag className={`glitch-text ${className}`} data-text={text}>
+    <Tag className={`glitch-text ${className}`} data-text={text} style={style}>
       {children}
     </Tag>
   );

@@ -5,9 +5,15 @@ import { Container } from "@/components/ui/Container";
 import { SpiderWebCanvas } from "@/components/coming-soon/NeuralNetworkCanvas";
 import { GlitchText } from "@/components/ui/GlitchText";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { ArrowDown } from "lucide-react";
 import type { Palette } from "@/components/coming-soon/particle-config";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+export function HeroSection({ className = "", children }: HeroSectionProps) {
   const { theme } = useTheme();
   const palette: Palette = theme; // miles | peter | venom — same type
 
@@ -44,7 +50,7 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative py-20 md:py-32 overflow-hidden">
+    <section className={`relative flex flex-col overflow-hidden ${className}`}>
       {/* Layer 1: Radial vignette */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -93,17 +99,22 @@ export function HeroSection() {
       {/* Layer 4: Interactive spider web canvas */}
       <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} />
 
-      {/* Content — above all background layers */}
+      {/* Content — above all background layers, centered in remaining space */}
+      <div className="flex-1 flex items-center justify-center">
       <Container className="relative z-10 text-center">
         {/* Mono tagline above heading */}
-        <p className="font-mono text-xs md:text-sm uppercase tracking-[0.25em] text-accent mb-4">
+        <p
+          className="font-mono text-xs md:text-sm uppercase tracking-[0.25em] text-accent mb-4 opacity-0 animate-hero-fade-in"
+          style={{ animationDelay: "0.1s" }}
+        >
           A Pop Culture Web
         </p>
 
         <GlitchText
           as="h1"
           dataText="The Spidaverse"
-          className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-balance leading-[0.9]"
+          className="font-black tracking-tight text-balance leading-[0.9] opacity-0 animate-hero-fade-in"
+          style={{ fontSize: "clamp(3rem, 5vw + 1.5rem, 7rem)", animationDelay: "0.25s" }}
         >
           The{" "}
           <span className="text-accent relative [html[data-theme='venom']_&]:text-white [html[data-theme='peter']_&]:text-[#1E50DC]">
@@ -116,26 +127,37 @@ export function HeroSection() {
           </span>
         </GlitchText>
 
-        <p className="mt-6 text-base md:text-lg text-muted-foreground max-w-xl mx-auto text-balance leading-relaxed">
+        <p
+          className="mt-6 text-base md:text-lg text-muted-foreground max-w-xl mx-auto text-balance leading-relaxed opacity-0 animate-hero-fade-in"
+          style={{ animationDelay: "0.45s" }}
+        >
           Movies. TV. Games. Anime. Manga. Music.
           <br />
           <span className="text-foreground font-medium">One web connects them all.</span>
         </p>
 
-        {/* Category pills */}
-        <div className="mt-8 flex flex-wrap justify-center gap-2">
-          {["Movies & TV", "Video Games", "Anime & Manga", "Music"].map(
-            (cat) => (
-              <span
-                key={cat}
-                className="px-3 py-1 text-xs font-medium rounded-full border border-border text-muted-foreground bg-card/50 backdrop-blur-sm"
-              >
-                {cat}
-              </span>
-            )
-          )}
+        {/* Scroll indicator */}
+        <div
+          className="mt-12 flex justify-center opacity-0 animate-hero-fade-in"
+          style={{ animationDelay: "0.7s" }}
+        >
+          <button
+            className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-accent/30 text-accent/70 bg-accent/5 backdrop-blur-sm hover:text-accent hover:border-accent/50 hover:bg-accent/10 transition-all duration-200 animate-bounce-slow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            onClick={() => {
+              const main = document.getElementById("main-content");
+              const hero = main?.querySelector("section:nth-child(2)");
+              hero?.scrollIntoView({ behavior: "smooth" });
+            }}
+            aria-label="Scroll to content"
+          >
+            <ArrowDown className="w-4 h-4" strokeWidth={2} />
+          </button>
         </div>
       </Container>
+      </div>
+
+      {/* Children (e.g. CategoryGrid) anchored at bottom */}
+      {children}
     </section>
   );
 }

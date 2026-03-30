@@ -97,7 +97,7 @@ export function Card({ article, featured = false }: CardProps) {
         )}
       >
         {/* Full-bleed image */}
-        <div className="relative aspect-[16/9] overflow-hidden">
+        <div className="relative aspect-[21/9] overflow-hidden">
           {imageUrl ? (
             <Image
               src={imageUrl}

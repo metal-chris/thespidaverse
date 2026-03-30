@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Home, User, PenLine, LayoutGrid, Share2, Image, type LucideIcon } from "lucide-react";
 
-const links = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/journal", label: "Journal" },
-  { href: "/collections", label: "Collections" },
-  { href: "/the-web", label: "Web" },
-  { href: "/gallery", label: "Gallery" },
+const links: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/", label: "Home", icon: Home },
+  { href: "/about", label: "About", icon: User },
+  { href: "/journal", label: "Journal", icon: PenLine },
+  { href: "/collections", label: "Collections", icon: LayoutGrid },
+  { href: "/the-web", label: "Web", icon: Share2 },
+  { href: "/gallery", label: "Gallery", icon: Image },
 ];
 
 export function Nav({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
@@ -29,6 +30,7 @@ export function Nav({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () 
             ? pathname === "/"
             : pathname.startsWith(link.href);
 
+        const Icon = link.icon;
         return (
           <Link
             key={link.href}
@@ -36,11 +38,13 @@ export function Nav({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () 
             onClick={onNavigate}
             className={cn(
               "relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200",
+              mobile && "flex items-center gap-3",
               isActive
                 ? "text-accent"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
+            {mobile && <Icon className="w-4 h-4 flex-shrink-0" />}
             {link.label}
             {/* Active underline indicator */}
             {isActive && !mobile && (

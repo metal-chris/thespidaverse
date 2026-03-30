@@ -9,6 +9,28 @@ const MEDIA_ICONS: Record<string, string> = {
   listening: "🎧",
 };
 
+/** Capitalize known abbreviations/terms for display */
+const SUBTITLE_MAP: Record<string, string> = {
+  tv: "TV",
+  ps5: "PS5",
+  ps4: "PS4",
+  pc: "PC",
+  xbox: "Xbox",
+  switch: "Switch",
+  manga: "Manga",
+  anime: "Anime",
+  movie: "Movie",
+  music: "Music",
+  podcast: "Podcast",
+};
+
+function capitalizeSubtitle(value: string): string {
+  const lower = value.toLowerCase();
+  if (SUBTITLE_MAP[lower]) return SUBTITLE_MAP[lower];
+  // Title-case fallback: "some thing" → "Some Thing"
+  return value.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 interface ConsumingItemProps {
   label: string;
   title: string;
@@ -30,7 +52,7 @@ function ConsumingItem({ label, title, imageUrl, subtitle, progress }: Consuming
           {MEDIA_ICONS[label] || ""} {label.charAt(0).toUpperCase() + label.slice(1)}
         </p>
         <p className="text-sm font-medium truncate">{title}</p>
-        {subtitle && <p className="text-xs text-muted-foreground truncate">{subtitle}</p>}
+        {subtitle && <p className="text-xs text-muted-foreground truncate">{capitalizeSubtitle(subtitle)}</p>}
         {progress && <p className="text-xs text-accent">{progress}</p>}
       </div>
     </div>
@@ -46,11 +68,18 @@ export function CurrentlyConsumingWidget({ data, className = "" }: CurrentlyCons
   const hasAny = data?.watching || data?.playing || data?.reading || data?.listening;
 
   return (
-    <section className={className} aria-label="Currently consuming">
-      <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+    <section
+      className={`relative rounded-xl border border-border/60 p-4 md:p-6 overflow-hidden ${className}`}
+      aria-label="Currently consuming"
+    >
+      {/* Glassmorphism background */}
+      <div className="absolute inset-0 bg-card/40 backdrop-blur-sm" aria-hidden="true" />
+      <div className="absolute -top-20 -right-20 w-48 h-48 rounded-full bg-accent/5 blur-3xl" aria-hidden="true" />
+
+      <h2 className="relative text-lg font-bold mb-4 flex items-center gap-2">
         <span className="text-accent">///</span> Currently Consuming
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-3">
         {data?.watching?.title && (
           <ConsumingItem
             label="watching"
@@ -93,7 +122,7 @@ export function CurrentlyConsumingWidget({ data, className = "" }: CurrentlyCons
         )}
       </div>
       {!hasAny && (
-        <p className="text-sm text-muted-foreground italic">Nothing tracked right now. Check back later!</p>
+        <p className="relative text-sm text-muted-foreground italic">Nothing tracked right now. Check back later!</p>
       )}
     </section>
   );
