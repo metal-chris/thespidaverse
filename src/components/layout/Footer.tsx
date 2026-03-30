@@ -48,7 +48,7 @@ export function Footer() {
   const { transitionsEnabled, toggleTransitions } = useTransition();
 
   return (
-    <footer className="border-t border-border mt-16 bg-card/30">
+    <footer className="border-t border-border mt-8 bg-card/30">
       <Container className="py-6">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Left: brand + socials */}

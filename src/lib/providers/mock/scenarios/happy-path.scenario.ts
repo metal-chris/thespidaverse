@@ -834,6 +834,7 @@ export function buildHappyPathScenario(): MockDataset {
   // ─── Collections ─────────────────────────────────────────────────────
 
   const collections: Collection[] = [
+    // poster template → "Credits"
     createCollection({
       title: "Best of 2025",
       description: "The cream of the crop. Every piece of media that earned a Web Rating of 85 or higher this year — the stuff I will still be thinking about next December.",
@@ -843,14 +844,7 @@ export function buildHappyPathScenario(): MockDataset {
       featured: true,
       heroImageUrl: "https://picsum.photos/seed/best-of-2025/600/900",
     }),
-    createCollection({
-      title: "Hidden Gems & Underrated Picks",
-      description: "Not everything needs to be a 90+ banger. These are the quiet releases, the niche picks, and the titles that deserved way more attention than they got.",
-      articles: articles.filter((a) => (a.webRating ?? 50) > 0 && (a.webRating ?? 50) <= 75),
-      theme: "underrated",
-      season: "Spring 2026",
-      heroImageUrl: "https://picsum.photos/seed/hidden-gems/600/800",
-    }),
+    // poster template → "Credits"
     createCollection({
       title: "The Cyberpunk Canon",
       description: "Every essential cyberpunk experience across games, anime, film, and music. If neon-lit dystopias are your thing, start here.",
@@ -859,6 +853,48 @@ export function buildHappyPathScenario(): MockDataset {
       ),
       theme: "essentials",
       heroImageUrl: "https://picsum.photos/seed/cyberpunk-canon/600/900",
+    }),
+    // poster template → "Credits"
+    createCollection({
+      title: "Summer 2025 Standouts",
+      description: "The movies, shows, games, and albums that defined the season. Blockbusters, sleeper hits, and everything in between.",
+      articles: articles.filter((a) => (a.webRating ?? 0) >= 60).slice(0, 8),
+      season: "Summer 2025",
+      theme: "seasonal-picks",
+      heroImageUrl: "https://picsum.photos/seed/summer-standouts/600/900",
+    }),
+    // manga template → "Chapters"
+    createCollection({
+      title: "Hidden Gems & Underrated Picks",
+      description: "Not everything needs to be a 90+ banger. These are the quiet releases, the niche picks, and the titles that deserved way more attention than they got.",
+      articles: articles.filter((a) => (a.webRating ?? 50) > 0 && (a.webRating ?? 50) <= 75),
+      theme: "underrated",
+      season: "Spring 2026",
+      heroImageUrl: "https://picsum.photos/seed/hidden-gems/600/800",
+    }),
+    // vinyl template → "Tracklist"
+    createCollection({
+      title: "Guilty Pleasures I Won't Apologize For",
+      description: "The stuff I know isn't 'peak' but I genuinely don't care. Every comfort rewatch, every popcorn flick, every album I play on repeat when nobody's watching.",
+      articles: articles.filter((a) => (a.webRating ?? 50) >= 30 && (a.webRating ?? 50) <= 70).slice(0, 6),
+      theme: "guilty-pleasures",
+      heroImageUrl: "https://picsum.photos/seed/guilty-pleasures/600/600",
+    }),
+    // vinyl template → "Tracklist"
+    createCollection({
+      title: "Deep Cuts & B-Sides",
+      description: "The things you probably haven't heard of yet. Obscure anime, indie games, underground albums, and the kind of movies that only play at 11pm on a Tuesday.",
+      articles: articles.filter((a) => a.tags.some((t) => t.title === "indie" || t.title === "retro")).slice(0, 5),
+      theme: "deep-cuts",
+      heroImageUrl: "https://picsum.photos/seed/deep-cuts/600/600",
+    }),
+    // default template → "Articles" (no theme = default)
+    createCollection({
+      title: "Comfort Zone Rotation",
+      description: "No theme, no rules. Just the stuff I keep coming back to when I need to decompress. The media equivalent of a warm blanket.",
+      articles: articles.slice(0, 4),
+      theme: undefined,
+      heroImageUrl: "https://picsum.photos/seed/comfort-zone/600/800",
     }),
   ];
 

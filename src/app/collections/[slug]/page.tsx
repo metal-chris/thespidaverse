@@ -70,7 +70,7 @@ export default async function CollectionPage({ params }: Props) {
     <>
       {/* ── Hero viewport: nav + breadcrumb + cover = 100vh ── */}
       <div className="collection-detail-hero">
-        <Container className="pt-6 pb-3 flex-shrink-0 relative z-10">
+        <Container className="pt-3 pb-3 flex-shrink-0 relative z-10">
           <nav className="text-sm text-muted-foreground flex items-center gap-1.5" aria-label="Breadcrumb">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <span className="text-muted-foreground/50">/</span>
@@ -137,7 +137,7 @@ export default async function CollectionPage({ params }: Props) {
       </div>
 
       {/* ── Content below the fold ── */}
-      <Container className="py-8 md:py-12 max-w-5xl">
+      <Container className="pt-8 pb-0 md:pt-12 md:pb-0 max-w-5xl">
         {/* Article list */}
         {articles.length > 0 ? (
           <section>
@@ -166,7 +166,7 @@ export default async function CollectionPage({ params }: Props) {
         )}
 
         {/* Footer meta */}
-        <div className="mt-8 pt-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
+        <div className="mt-4 pt-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
           <span className="font-mono">
             {articles.length} {articles.length === 1 ? "article" : "articles"}
           </span>

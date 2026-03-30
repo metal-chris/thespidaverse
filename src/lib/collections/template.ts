@@ -41,7 +41,7 @@ export function getArticlesLabel(template: CollectionTemplate): string {
 
 const NUMBER_PREFIXES: Record<CollectionTemplate, string> = {
   poster: "",
-  vinyl: "Track",
+  vinyl: "♪",
   manga: "Ch.",
   default: "",
 };

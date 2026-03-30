@@ -32,7 +32,7 @@ export function createCollection(
     heroImageUrl: `https://picsum.photos/seed/${slug}/600/900`,
     articles: overrides.articles || [],
     season: faker.helpers.arrayElement(SEASONS),
-    theme: faker.helpers.arrayElement(THEMES),
+    theme: "theme" in overrides ? overrides.theme : faker.helpers.arrayElement(THEMES),
     featured: false,
     ...overrides,
   };
