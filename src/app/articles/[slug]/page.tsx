@@ -245,7 +245,7 @@ export default async function ArticlePage({ params }: Props) {
             )}
 
             {/* Metadata row with icons and dot separators */}
-            <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm text-white/80 mb-6 md:mb-8">
+            <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm text-white/80 mb-3">
               <span className="inline-flex items-center gap-1.5">
                 <svg viewBox="0 0 16 16" className="w-3 h-3 md:w-3.5 md:h-3.5" fill="currentColor" aria-hidden="true">
                   <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm.5 4.5v4l3 1.5-.5 1-3.5-1.75V4.5h1z" />
