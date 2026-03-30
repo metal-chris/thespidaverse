@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Button } from "@/components/ui/Button";
 import { cn, capitalizeTag } from "@/lib/utils";
+import { FilterDropdown } from "./FilterDropdown";
 import type { Article, Tag } from "@/types";
 
 interface TagFilterProps {
@@ -44,30 +44,13 @@ export function TagFilter({ articles, allTags, children }: TagFilterProps) {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-2 mb-6" role="group" aria-label="Filter by tags">
-        {allTags.map((tag) => {
-          const isActive = selectedTags.has(tag.slug.current);
-          return (
-            <Button
-              key={tag._id}
-              variant={isActive ? "primary" : "ghost"}
-              size="xs"
-              onClick={() => toggleTag(tag.slug.current)}
-              aria-pressed={isActive}
-            >
-              {capitalizeTag(tag.title)}
-            </Button>
-          );
-        })}
-        {selectedTags.size > 0 && (
-          <Button
-            variant="text"
-            size="xs"
-            onClick={clearAll}
-          >
-            Clear filters
-          </Button>
-        )}
+      <div className="mb-6">
+        <FilterDropdown
+          allTags={allTags}
+          selectedTags={selectedTags}
+          onToggleTag={toggleTag}
+          onClear={clearAll}
+        />
       </div>
 
       {filteredArticles.length === 0 ? (
