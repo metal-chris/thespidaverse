@@ -105,15 +105,17 @@ export function GalleryTile({ piece, onClick }: GalleryTileProps) {
         </div>
       )}
 
-      {/* Slide-up hover bar — title + artist + franchise */}
+      {/* Franchise badge — top-left, always visible */}
+      <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+        <span className={`px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-md ${franchiseStyle.bg} ${franchiseStyle.text}`}>
+          {FRANCHISE_LABELS[piece.franchise] || piece.franchise}
+        </span>
+      </div>
+
+      {/* Slide-up hover bar — title + artist */}
       <div className="absolute bottom-0 inset-x-0 px-2.5 py-2 bg-black/50 backdrop-blur-sm translate-y-full group-hover:translate-y-0 transition-transform duration-300">
         <p className="text-white text-xs font-bold truncate">{piece.title}</p>
-        <div className="flex items-center justify-between gap-2 mt-0.5">
-          <p className="text-white/70 text-[11px] truncate min-w-0">by {piece.artistName}</p>
-          <span className={`flex-shrink-0 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-md ${franchiseStyle.bg} ${franchiseStyle.text}`}>
-            {FRANCHISE_LABELS[piece.franchise] || piece.franchise}
-          </span>
-        </div>
+        <p className="text-white/70 text-[11px] truncate mt-0.5">by {piece.artistName}</p>
       </div>
     </button>
   );
