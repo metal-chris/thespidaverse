@@ -50,7 +50,7 @@ function useColumnCount(): number {
   useEffect(() => {
     function update() {
       const w = window.innerWidth;
-      if (w < 640) setCols(1);
+      if (w < 640) setCols(2);
       else if (w < 1024) setCols(2);
       else if (w < 1280) setCols(3);
       else setCols(4);

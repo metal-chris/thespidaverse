@@ -34,7 +34,7 @@ export default async function HomePage() {
         </Container>
       </ScrollReveal>
 
-      {/* Latest articles — most visual weight */}
+      {/* Latest articles */}
       <Container as="section" className="pt-4 pb-20">
         <ScrollReveal>
           <div className="flex items-baseline justify-between mb-8">

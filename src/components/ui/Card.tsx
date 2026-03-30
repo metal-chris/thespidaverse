@@ -96,8 +96,8 @@ export function Card({ article, featured = false }: CardProps) {
           "hover:border-accent/40"
         )}
       >
-        {/* Full-bleed image */}
-        <div className="relative aspect-[21/9] overflow-hidden">
+        {/* Full-bleed image — taller on mobile, cinematic on desktop */}
+        <div className="relative aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] overflow-hidden">
           {imageUrl ? (
             <Image
               src={imageUrl}

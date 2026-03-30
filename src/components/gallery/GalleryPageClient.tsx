@@ -3,7 +3,6 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import type { GalleryPiece } from "@/types";
-import { ArtistSpotlight } from "./ArtistSpotlight";
 import { GalleryFilterBar } from "./GalleryFilterBar";
 import { MasonryGrid } from "./MasonryGrid";
 import { GalleryViewer } from "./GalleryViewer";
@@ -74,16 +73,9 @@ export function GalleryPageClient({ initialPieces, spotlight }: GalleryPageClien
   }
 
   // ── Grid mode: masonry gallery ──
+  // Spotlight is rendered separately in the viewport section above
   return (
     <>
-      {/* Artist Spotlight */}
-      {spotlight && (
-        <ArtistSpotlight
-          piece={spotlight}
-          onClick={() => handlePieceClick(spotlight)}
-        />
-      )}
-
       {/* Filters */}
       <GalleryFilterBar
         activeType={activeType}

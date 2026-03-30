@@ -22,46 +22,53 @@ export function ArtistSpotlight({ piece, onClick }: ArtistSpotlightProps) {
   return (
     <button
       onClick={onClick}
-      className="group relative w-full rounded-xl overflow-hidden border border-border bg-card mb-8 cursor-pointer text-left"
+      className="collection-featured-hero group cursor-pointer text-left"
       aria-label={`Artist Spotlight: ${piece.title} by ${piece.artistName}`}
     >
       {imageUrl ? (
-        <div className="relative aspect-[21/9] sm:aspect-[3/1] overflow-hidden">
-          <Image
-            src={imageUrl}
-            alt={piece.image?.alt || piece.videoThumbnail?.alt || piece.title}
-            fill
-            className="object-cover group-hover:scale-[1.03] transition-transform duration-700"
-            sizes="100vw"
-            priority
-            unoptimized
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-        </div>
+        <Image
+          src={imageUrl}
+          alt={piece.image?.alt || piece.videoThumbnail?.alt || piece.title}
+          fill
+          className="object-cover group-hover:scale-[1.03] transition-transform duration-700"
+          sizes="100vw"
+          priority
+          unoptimized
+        />
       ) : (
-        <div className="aspect-[21/9] sm:aspect-[3/1] bg-gradient-to-br from-accent/10 to-accent/5" />
+        <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-accent/5" />
       )}
 
-      {/* Content overlay */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-        <span className="inline-block px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] rounded-md bg-accent text-background mb-2">
-          Artist Spotlight
-        </span>
-        <h3 className="text-white text-lg sm:text-2xl font-bold">{piece.title}</h3>
-        <p className="text-white/80 text-sm mt-1">
-          by{" "}
-          <span className="text-white font-medium">{piece.artistName}</span>
-        </p>
-        {piece.description && (
-          <p className="text-white/60 text-sm mt-1.5 line-clamp-2 max-w-lg">
-            {piece.description}
-          </p>
-        )}
+      {/* Gradient overlays */}
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/50 to-transparent" />
+
+      {/* Content — anchored to bottom-left */}
+      <div className="absolute bottom-0 left-0 right-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 pb-4 md:pb-6">
+          <div className="max-w-2xl">
+            <span className="inline-block px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] rounded-md bg-accent text-background mb-2">
+              Artist Spotlight
+            </span>
+            <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2 leading-tight group-hover:text-accent transition-colors">
+              {piece.title}
+            </h3>
+            <p className="text-foreground/80 text-sm mt-1">
+              by{" "}
+              <span className="text-foreground font-medium">{piece.artistName}</span>
+            </p>
+            {piece.description && (
+              <p className="text-foreground/60 text-sm mt-1.5 line-clamp-2 max-w-lg">
+                {piece.description}
+              </p>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Video play indicator */}
       {piece.pieceType === "video" && (
-        <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/50 backdrop-blur-sm">
+        <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/50 backdrop-blur-sm z-10">
           <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-white" fill="currentColor">
             <path d="M8 5v14l11-7z" />
           </svg>
