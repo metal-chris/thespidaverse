@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <Container as="section" className="py-8 md:py-12 max-w-3xl">
-      <header className="mb-8">
+    <Container as="section" className="pt-4 pb-8 md:pt-6 md:pb-12 max-w-3xl">
+      <header className="mb-8 text-center">
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-2">
           Who&rsquo;s Behind the Web
         </p>
