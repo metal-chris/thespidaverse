@@ -380,15 +380,16 @@ export function WebRating({ score, variant = "full", className, communityStats }
       <div
         ref={ref}
         className={cn(
-          "inline-flex items-center gap-1.5 px-2 py-1 rounded-lg",
-          "bg-card/80 backdrop-blur-sm shadow-sm border border-border/50",
+          "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg",
+          "bg-black/75 backdrop-blur-md shadow-lg shadow-black/30",
+          "border border-white/10",
           className
         )}
         role="img"
         aria-label={`Rating: ${clampedScore} out of 100`}
       >
         <div className={SIZE_MAP.badge}>{webSvg}</div>
-        <span className="text-xs font-bold text-accent tabular-nums">{displayScore}</span>
+        <span className="text-xs font-bold text-white tabular-nums">{displayScore}</span>
       </div>
     );
   }

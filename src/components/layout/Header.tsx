@@ -13,7 +13,7 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-background/90 backdrop-blur-lg">
       <ScrollProgress />
       <Container className="flex items-center justify-between h-16 relative">
         {/* Logo */}
