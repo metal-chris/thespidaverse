@@ -169,6 +169,26 @@ export default async function ArticlePage({ params }: Props) {
         />
       )}
 
+      {/* ── Breadcrumb (above hero, like collections) ── */}
+      <Container className="pt-3 pb-3">
+        <nav className="text-sm text-muted-foreground flex items-center gap-1.5" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+          <span className="text-muted-foreground/50">/</span>
+          {article.category && (
+            <>
+              <Link
+                href={`/category/${article.category.slug.current}`}
+                className="hover:text-foreground transition-colors"
+              >
+                {article.category.title}
+              </Link>
+              <span className="text-muted-foreground/50">/</span>
+            </>
+          )}
+          <span className="text-foreground truncate">{article.title}</span>
+        </nav>
+      </Container>
+
       {/* ── Hero Image (full-bleed with overlay text) ── */}
       {heroUrl ? (
         <div className="relative w-full h-[100vh] overflow-hidden">
@@ -186,26 +206,6 @@ export default async function ArticlePage({ params }: Props) {
 
           {/* Content positioned at bottom of hero */}
           <Container className="absolute bottom-0 left-0 right-0 pb-8 md:pb-12">
-            {/* Breadcrumb */}
-            <nav className="text-[10px] md:text-xs text-white/80 mb-3 md:mb-4" aria-label="Breadcrumb">
-              <Link href="/" className="hover:text-white transition-colors">
-                Home
-              </Link>
-              {" / "}
-              {article.category && (
-                <>
-                  <Link
-                    href={`/category/${article.category.slug.current}`}
-                    className="hover:text-white transition-colors"
-                  >
-                    {article.category.title}
-                  </Link>
-                  {" / "}
-                </>
-              )}
-              <span className="text-white">{article.title}</span>
-            </nav>
-
             {/* Pills row: category + media type + format */}
             <div className="flex flex-wrap items-center gap-2 mb-3 md:mb-4">
               {article.category && (
@@ -298,29 +298,7 @@ export default async function ArticlePage({ params }: Props) {
             </div>
           </Container>
         </div>
-      ) : (
-        /* No hero: just breadcrumb in container */
-        <Container as="div" className="pt-8 max-w-4xl">
-          <nav className="text-sm text-muted-foreground mb-6" aria-label="Breadcrumb">
-            <Link href="/" className="hover:text-foreground transition-colors">
-              Home
-            </Link>
-            {" / "}
-            {article.category && (
-              <>
-                <Link
-                  href={`/category/${article.category.slug.current}`}
-                  className="hover:text-foreground transition-colors"
-                >
-                  {article.category.title}
-                </Link>
-                {" / "}
-              </>
-            )}
-            <span className="text-foreground">{article.title}</span>
-          </nav>
-        </Container>
-      )}
+      ) : null}
 
       {/* ── Article Content ── */}
       <Container as="article" className="pt-8 md:pt-12 pb-8 max-w-4xl">

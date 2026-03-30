@@ -151,28 +151,52 @@ export function WebRating({ score, variant = "full", className, communityStats }
           const cy = h / 2;
           const r = Math.min(w, h) * 0.2;
 
-          // Determine wave count: <50=1 wave, 50-79=2 waves, 80+=3 waves, 100=3+SVG burst
-          let waves: number;
           if (clampedScore === 100) {
-            waves = 3;
+            // Perfect score sequence:
+            // 4 mini 4-strike bursts → 1 full 8-strike radial burst → sustain
             setBursting(true);
             setTimeout(() => setBursting(false), 600);
-          } else if (clampedScore >= 80) {
-            waves = 3;
-          } else if (clampedScore >= 50) {
-            waves = 2;
-          } else {
-            waves = 1;
-          }
 
-          // Each wave fires 8 omni-directional strikes (full shockwave ring)
-          for (let w = 0; w < waves; w++) {
+            // 4 mini bursts (random rotation each)
+            for (let w = 0; w < 4; w++) {
+              setTimeout(() => {
+                const offset = (w / 4) * Math.PI * 0.5; // stagger rotation
+                for (let i = 0; i < 4; i++) {
+                  const angle = offset + (i / 4) * Math.PI * 2;
+                  trigger(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+                }
+              }, w * 600);
+            }
+
+            // Final full radial burst after the 4 minis + SVG burst rays encore
             setTimeout(() => {
+              setBursting(true);
+              setTimeout(() => setBursting(false), 600);
               for (let i = 0; i < 8; i++) {
                 const angle = (i / 8) * Math.PI * 2;
                 trigger(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
               }
-            }, w * 600);
+            }, 4 * 600);
+
+          } else {
+            // Non-100 scores: omni-directional shockwave rings
+            let waves: number;
+            if (clampedScore >= 80) {
+              waves = 3;
+            } else if (clampedScore >= 50) {
+              waves = 2;
+            } else {
+              waves = 1;
+            }
+
+            for (let w = 0; w < waves; w++) {
+              setTimeout(() => {
+                for (let i = 0; i < 8; i++) {
+                  const angle = (i / 8) * Math.PI * 2;
+                  trigger(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+                }
+              }, w * 600);
+            }
           }
         }
       }
@@ -180,22 +204,34 @@ export function WebRating({ score, variant = "full", className, communityStats }
     requestAnimationFrame(tick);
   }, [visible, isAnimated, clampedScore]);
 
-  // #6 continued: 100% scores get periodic strikes
+  // #6 continued: 100% scores get periodic mini-bursts (web stays alive)
+  const sustainIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   useEffect(() => {
     if (!doneAnimating || clampedScore !== 100) return;
     const trigger = strikeTriggerRef.current;
     const { w, h } = cardRectRef.current;
     if (!trigger || w === 0) return;
 
-    const interval = setInterval(() => {
-      const cx = w / 2;
-      const cy = h / 2;
-      const angle = Math.random() * Math.PI * 2;
-      const r = Math.min(w, h) * 0.25;
-      trigger(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+    const cx = w / 2;
+    const cy = h / 2;
+    const r = Math.min(w, h) * 0.25;
+
+    // Wait for the initial sequence to finish (4×600 + 600 = 3s) before sustaining
+    const delay = setTimeout(() => {
+      sustainIntervalRef.current = setInterval(() => {
+        // 4-strike mini-burst at random rotation
+        const offset = Math.random() * Math.PI * 2;
+        for (let i = 0; i < 4; i++) {
+          const angle = offset + (i / 4) * Math.PI * 2;
+          trigger(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+        }
+      }, 3000);
     }, 3500);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(delay);
+      if (sustainIntervalRef.current) clearInterval(sustainIntervalRef.current);
+    };
   }, [doneAnimating, clampedScore]);
 
   // #5: Scroll Parallax Breathing
