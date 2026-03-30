@@ -275,7 +275,7 @@ export default async function ArticlePage({ params }: Props) {
 
             {/* Tags */}
             {article.tags && article.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 md:gap-2 mb-6 md:mb-8">
+              <div className="flex flex-wrap gap-1.5 md:gap-2 mb-8 md:mb-10">
                 {article.tags.map((tag) => (
                   <Link
                     key={tag._id}
