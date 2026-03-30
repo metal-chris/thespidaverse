@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { getProvider } from "@/lib/providers";
 import { urlFor } from "@/lib/sanity/image";
 import { Container } from "@/components/ui/Container";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { capitalizeTag, cn, formatDate, formatMediaType } from "@/lib/utils";
 import { blogPostingJsonLd, breadcrumbJsonLd, reviewJsonLd } from "@/lib/seo/jsonLd";
 import { ArticleBody } from "./ArticleBody";
@@ -171,22 +172,15 @@ export default async function ArticlePage({ params }: Props) {
 
       {/* ── Breadcrumb (above hero, like collections) ── */}
       <Container className="pt-3 pb-3">
-        <nav className="text-sm text-muted-foreground flex items-center gap-1.5" aria-label="Breadcrumb">
-          <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
-          <span className="text-muted-foreground/50">/</span>
-          {article.category && (
-            <>
-              <Link
-                href={`/category/${article.category.slug.current}`}
-                className="hover:text-foreground transition-colors"
-              >
-                {article.category.title}
-              </Link>
-              <span className="text-muted-foreground/50">/</span>
-            </>
-          )}
-          <span className="text-foreground truncate">{article.title}</span>
-        </nav>
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            ...(article.category
+              ? [{ label: article.category.title, href: `/category/${article.category.slug.current}` }]
+              : []),
+            { label: article.title },
+          ]}
+        />
       </Container>
 
       {/* ── Hero Image (full-bleed with overlay text) ── */}

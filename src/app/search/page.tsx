@@ -20,7 +20,15 @@ export default async function SearchPage() {
 
   return (
     <Container className="py-8">
-      <GlitchText className="text-3xl font-bold mb-6">Search</GlitchText>
+      <header className="text-center mb-8">
+        <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-2">
+          Explore
+        </p>
+        <GlitchText className="text-3xl md:text-4xl font-bold mb-2">Search</GlitchText>
+        <p className="text-muted-foreground max-w-lg mx-auto">
+          Find articles by keyword, category, format, or mood.
+        </p>
+      </header>
       <Suspense fallback={<div className="text-muted-foreground">Loading search...</div>}>
         <SearchPageClient
           articles={articles}

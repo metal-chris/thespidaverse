@@ -6,6 +6,7 @@ import { getProvider } from "@/lib/providers";
 import { urlFor } from "@/lib/sanity/image";
 import { formatDate } from "@/lib/utils";
 import { Container } from "@/components/ui/Container";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { GlitchText } from "@/components/ui/GlitchText";
 import { WebRating } from "@/components/content/WebRating";
 import {
@@ -71,13 +72,13 @@ export default async function CollectionPage({ params }: Props) {
       {/* ── Hero viewport: nav + breadcrumb + cover = 100vh ── */}
       <div className="collection-detail-hero">
         <Container className="pt-3 pb-3 flex-shrink-0 relative z-10">
-          <nav className="text-sm text-muted-foreground flex items-center gap-1.5" aria-label="Breadcrumb">
-            <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
-            <span className="text-muted-foreground/50">/</span>
-            <Link href="/collections" className="hover:text-foreground transition-colors">Collections</Link>
-            <span className="text-muted-foreground/50">/</span>
-            <span className="text-foreground truncate">{collection.title}</span>
-          </nav>
+          <Breadcrumb
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Collections", href: "/collections" },
+              { label: collection.title },
+            ]}
+          />
         </Container>
 
         {/* Hero cover — fills remaining viewport */}
@@ -166,10 +167,11 @@ export default async function CollectionPage({ params }: Props) {
         )}
 
         {/* Footer meta */}
-        <div className="mt-4 pt-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
+        <div className="mt-6 pt-4 border-t border-border text-center text-xs text-muted-foreground">
           <span className="font-mono">
             {articles.length} {articles.length === 1 ? "article" : "articles"}
           </span>
+          <span className="mx-2">·</span>
           <span>Curated by Spida Mane</span>
         </div>
       </Container>
