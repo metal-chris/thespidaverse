@@ -28,9 +28,9 @@ export function buildStressScenario(): MockDataset {
 
   // --- 8 categories ---
   const categories: Category[] = [
-    createCategory({ title: "Movies & TV" }),
+    createCategory({ title: "Movies" }),
     createCategory({ title: "Video Games" }),
-    createCategory({ title: "Anime & Manga" }),
+    createCategory({ title: "Anime" }),
     createCategory({ title: "Music" }),
     createCategory({ title: "Comics" }),
     createCategory({ title: "Streaming" }),

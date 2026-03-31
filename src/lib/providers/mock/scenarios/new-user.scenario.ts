@@ -17,7 +17,7 @@ import type { MockDataset } from "../seed";
 export function buildNewUserScenario(): MockDataset {
   faker.seed(1);
 
-  const category = createCategory({ title: "Movies & TV" });
+  const category = createCategory({ title: "Movies" });
   const tag = createTag({ title: "action" });
   const moods = ["fun", "intense"];
 
