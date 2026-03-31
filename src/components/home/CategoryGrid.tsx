@@ -114,7 +114,7 @@ export function CategoryGrid() {
           const PIcon = primary.icon;
           const SIcon = secondary.icon;
           return (
-            <div key={primary.title} className="flex flex-col gap-2">
+            <div key={primary.title} className="flex flex-col gap-1">
               <Link
                 href={primary.href}
                 className={`group relative rounded-xl border border-border bg-card p-4 transition-all duration-300 hover:shadow-lg hover:shadow-accent/5 hover:-translate-y-0.5 ${primary.borderHover} overflow-hidden flex flex-col items-center justify-center text-center`}
@@ -149,7 +149,7 @@ export function CategoryGrid() {
       </div>
 
       {/* Desktop: two-tier layout (4 primary row + 4 secondary row) */}
-      <div className="hidden md:flex md:flex-col md:gap-3">
+      <div className="hidden md:flex md:flex-col md:gap-1.5">
         <div className="grid grid-cols-4 gap-3">
           {primaryCategories.map((cat) => {
             const Icon = cat.icon;

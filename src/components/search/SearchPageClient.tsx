@@ -13,10 +13,18 @@ interface SearchPageClientProps {
 }
 
 const FORMATS = [
-  { value: "essay", label: "Essay" },
-  { value: "short-take", label: "Short Take" },
-  { value: "ranked-list", label: "Ranked List" },
-  { value: "roundup", label: "Roundup" },
+  { value: "first-bite", label: "First Bite" },
+  { value: "the-full-web", label: "The Full Web" },
+  { value: "spin-the-block", label: "Spin the Block" },
+  { value: "the-sinister-six", label: "The Sinister Six" },
+  { value: "the-gauntlet", label: "The Gauntlet" },
+  { value: "versus", label: "Versus" },
+  { value: "the-daily-bugle", label: "The Daily Bugle" },
+  { value: "spida-sense", label: "Spida Sense" },
+  { value: "the-web-sling", label: "The Web Sling" },
+  { value: "state-of-the-game", label: "State of the Game" },
+  { value: "the-rotation", label: "The Rotation" },
+  { value: "one-year-later", label: "One Year Later" },
 ];
 
 export function SearchPageClient({ articles, categories, tags }: SearchPageClientProps) {
