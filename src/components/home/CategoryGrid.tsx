@@ -99,56 +99,102 @@ const secondaryCategories: CategoryDef[] = [
   },
 ];
 
+// Paired columns: primary[i] stacks on top of secondary[i]
+const pairs = primaryCategories.map((primary, i) => ({
+  primary,
+  secondary: secondaryCategories[i],
+}));
+
 export function CategoryGrid() {
   return (
-    <div className="space-y-3">
-      {/* Primary categories — centered icon + label */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {primaryCategories.map((cat) => {
-          const Icon = cat.icon;
+    <>
+      {/* Mobile: 2-column grid, each column = primary stacked on secondary */}
+      <div className="grid grid-cols-2 gap-3 md:hidden">
+        {pairs.map(({ primary, secondary }) => {
+          const PIcon = primary.icon;
+          const SIcon = secondary.icon;
           return (
-            <Link
-              key={cat.title}
-              href={cat.href}
-              className={`group relative rounded-xl border border-border bg-card p-4 md:p-5 transition-all duration-300 hover:shadow-lg hover:shadow-accent/5 hover:-translate-y-0.5 ${cat.borderHover} overflow-hidden flex flex-col items-center justify-center text-center`}
-            >
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-60 group-hover:opacity-100 transition-opacity duration-300`}
-                aria-hidden="true"
-              />
-              <div className="relative flex flex-col items-center gap-2">
-                <Icon className={`w-7 h-7 ${cat.iconColor}`} strokeWidth={1.5} />
-                <h3 className={`font-bold text-card-foreground text-sm ${cat.titleHover} transition-colors`}>
-                  {cat.title}
-                </h3>
-              </div>
-            </Link>
+            <div key={primary.title} className="flex flex-col gap-2">
+              <Link
+                href={primary.href}
+                className={`group relative rounded-xl border border-border bg-card p-4 transition-all duration-300 hover:shadow-lg hover:shadow-accent/5 hover:-translate-y-0.5 ${primary.borderHover} overflow-hidden flex flex-col items-center justify-center text-center`}
+              >
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${primary.color} opacity-60 group-hover:opacity-100 transition-opacity duration-300`}
+                  aria-hidden="true"
+                />
+                <div className="relative flex flex-col items-center gap-2">
+                  <PIcon className={`w-7 h-7 ${primary.iconColor}`} strokeWidth={1.5} />
+                  <h3 className={`font-bold text-card-foreground text-sm ${primary.titleHover} transition-colors`}>
+                    {primary.title}
+                  </h3>
+                </div>
+              </Link>
+              <Link
+                href={secondary.href}
+                className={`group relative rounded-lg border border-border bg-card px-4 py-2.5 transition-all duration-300 hover:shadow-md hover:shadow-accent/5 ${secondary.borderHover} overflow-hidden flex items-center justify-center gap-2.5`}
+              >
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${secondary.color} opacity-40 group-hover:opacity-80 transition-opacity duration-300`}
+                  aria-hidden="true"
+                />
+                <SIcon className={`relative w-4 h-4 ${secondary.iconColor} shrink-0`} strokeWidth={1.5} />
+                <span className={`relative text-xs font-semibold text-card-foreground ${secondary.titleHover} transition-colors`}>
+                  {secondary.title}
+                </span>
+              </Link>
+            </div>
           );
         })}
       </div>
 
-      {/* Secondary categories — left-aligned icon + label with proper spacing */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-        {secondaryCategories.map((cat) => {
-          const Icon = cat.icon;
-          return (
-            <Link
-              key={cat.title}
-              href={cat.href}
-              className={`group relative rounded-lg border border-border bg-card px-4 py-2.5 transition-all duration-300 hover:shadow-md hover:shadow-accent/5 ${cat.borderHover} overflow-hidden flex items-center justify-center gap-2.5`}
-            >
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-40 group-hover:opacity-80 transition-opacity duration-300`}
-                aria-hidden="true"
-              />
-              <Icon className={`relative w-4 h-4 ${cat.iconColor} shrink-0`} strokeWidth={1.5} />
-              <span className={`relative text-xs font-semibold text-card-foreground ${cat.titleHover} transition-colors`}>
-                {cat.title}
-              </span>
-            </Link>
-          );
-        })}
+      {/* Desktop: two-tier layout (4 primary row + 4 secondary row) */}
+      <div className="hidden md:flex md:flex-col md:gap-3">
+        <div className="grid grid-cols-4 gap-3">
+          {primaryCategories.map((cat) => {
+            const Icon = cat.icon;
+            return (
+              <Link
+                key={cat.title}
+                href={cat.href}
+                className={`group relative rounded-xl border border-border bg-card p-5 transition-all duration-300 hover:shadow-lg hover:shadow-accent/5 hover:-translate-y-0.5 ${cat.borderHover} overflow-hidden flex flex-col items-center justify-center text-center`}
+              >
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-60 group-hover:opacity-100 transition-opacity duration-300`}
+                  aria-hidden="true"
+                />
+                <div className="relative flex flex-col items-center gap-2">
+                  <Icon className={`w-7 h-7 ${cat.iconColor}`} strokeWidth={1.5} />
+                  <h3 className={`font-bold text-card-foreground text-sm ${cat.titleHover} transition-colors`}>
+                    {cat.title}
+                  </h3>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+        <div className="grid grid-cols-4 gap-2">
+          {secondaryCategories.map((cat) => {
+            const Icon = cat.icon;
+            return (
+              <Link
+                key={cat.title}
+                href={cat.href}
+                className={`group relative rounded-lg border border-border bg-card px-4 py-2.5 transition-all duration-300 hover:shadow-md hover:shadow-accent/5 ${cat.borderHover} overflow-hidden flex items-center justify-center gap-2.5`}
+              >
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-40 group-hover:opacity-80 transition-opacity duration-300`}
+                  aria-hidden="true"
+                />
+                <Icon className={`relative w-4 h-4 ${cat.iconColor} shrink-0`} strokeWidth={1.5} />
+                <span className={`relative text-xs font-semibold text-card-foreground ${cat.titleHover} transition-colors`}>
+                  {cat.title}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
