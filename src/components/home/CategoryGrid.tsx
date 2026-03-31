@@ -145,13 +145,13 @@ export function CategoryGrid() {
         ))}
       </div>
 
-      {/* Secondary categories — compact pills */}
-      <div className="grid grid-cols-4 gap-2">
+      {/* Secondary categories — compact pills, 2x2 on mobile, 4 on desktop */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {secondaryCategories.map((cat) => (
           <Link
             key={cat.title}
             href={cat.href}
-            className={`group relative rounded-lg border border-border bg-card px-3 py-2.5 transition-all duration-300 hover:shadow-md hover:shadow-accent/5 ${cat.borderHover} overflow-hidden flex items-center gap-2`}
+            className={`group relative rounded-lg border border-border bg-card px-3 py-2.5 transition-all duration-300 hover:shadow-md hover:shadow-accent/5 ${cat.borderHover} overflow-hidden flex items-center justify-center gap-2`}
           >
             <div
               className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-40 group-hover:opacity-80 transition-opacity duration-300`}
