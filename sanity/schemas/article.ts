@@ -250,7 +250,6 @@ export default defineType({
       name: "pollConfig",
       title: "Poll Configuration",
       type: "object",
-      group: "engagement",
       fields: [
         defineField({
           name: "enableCommunityRating",

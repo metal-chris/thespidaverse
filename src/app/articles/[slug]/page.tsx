@@ -24,10 +24,10 @@ const categoryColors: Record<string, string> = {
   Movies: "bg-red-500/15 text-red-500 border-red-500/25",
   TV: "bg-orange-500/15 text-orange-400 border-orange-500/25",
   "Video Games": "bg-blue-500/15 text-blue-500 border-blue-500/25",
-  Anime: "bg-purple-500/15 text-purple-500 border-purple-500/25",
+  Anime: "bg-amber-500/15 text-amber-400 border-amber-500/25",
   Manga: "bg-pink-500/15 text-pink-400 border-pink-500/25",
   Music: "bg-emerald-500/15 text-emerald-500 border-emerald-500/25",
-  Culture: "bg-amber-500/15 text-amber-400 border-amber-500/25",
+  Culture: "bg-purple-500/15 text-purple-500 border-purple-500/25",
   Tech: "bg-cyan-500/15 text-cyan-400 border-cyan-500/25",
 };
 const defaultCategoryColor = "bg-accent/10 text-accent border-accent/20";

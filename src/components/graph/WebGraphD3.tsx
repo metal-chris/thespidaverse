@@ -64,10 +64,14 @@ type HierarchyNode = d3Hierarchy.HierarchyPointNode<TreeDatum> & {
 // Constants
 // ---------------------------------------------------------------------------
 const CATEGORY_COLORS: Record<string, string> = {
-  "Movies & TV": "#E82334",
-  "Video Games": "#1E50DC",
-  "Anime & Manga": "#9333EA",
+  Movies: "#EF4444",
+  TV: "#F97316",
+  "Video Games": "#3B82F6",
+  Anime: "#F59E0B",
+  Manga: "#EC4899",
   Music: "#10B981",
+  Culture: "#A855F7",
+  Tech: "#06B6D4",
 };
 
 const ROOT_COLOR = "#6B7280";
