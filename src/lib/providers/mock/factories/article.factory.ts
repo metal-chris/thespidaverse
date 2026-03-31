@@ -10,10 +10,18 @@ import type {
 } from "@/types";
 
 const FORMATS: ArticleFormat[] = [
-  "essay",
-  "short-take",
-  "ranked-list",
-  "roundup",
+  "first-bite",
+  "the-full-web",
+  "spin-the-block",
+  "the-sinister-six",
+  "the-gauntlet",
+  "versus",
+  "the-daily-bugle",
+  "spida-sense",
+  "the-web-sling",
+  "state-of-the-game",
+  "the-rotation",
+  "one-year-later",
 ];
 const MEDIA_TYPES: MediaType[] = [
   "movie",
@@ -53,10 +61,14 @@ function createCategory(overrides: Partial<Category> = {}): Category {
   const title =
     overrides.title ||
     faker.helpers.arrayElement([
-      "Movies & TV",
+      "Movies",
+      "TV",
       "Video Games",
-      "Anime & Manga",
+      "Anime",
+      "Manga",
       "Music",
+      "Culture",
+      "Tech",
     ]);
   return {
     _id: faker.string.uuid(),

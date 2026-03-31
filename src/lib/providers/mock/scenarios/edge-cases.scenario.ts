@@ -64,7 +64,7 @@ export function buildEdgeCasesScenario(): MockDataset {
       category,
       tags: [createTag({ title: "anime" })],
       moodTags: ["dark", "intense", "emotional"],
-      format: "essay",
+      format: "the-full-web",
       mediaType: "anime",
       webRating: 88,
     }),
@@ -124,7 +124,7 @@ export function buildEdgeCasesScenario(): MockDataset {
       title: "Quick Thought",
       category,
       tags: [tag],
-      format: "short-take",
+      format: "first-bite",
       readingTime: 1,
       body: [
         {

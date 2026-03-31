@@ -24,15 +24,42 @@ export default defineType({
       type: "string",
       options: {
         list: [
-          { title: "Essay", value: "essay" },
-          { title: "Short Take", value: "short-take" },
-          { title: "Ranked List", value: "ranked-list" },
-          { title: "Roundup", value: "roundup" },
+          { title: "First Bite", value: "first-bite" },
+          { title: "The Full Web", value: "the-full-web" },
+          { title: "Spin the Block", value: "spin-the-block" },
+          { title: "The Sinister Six", value: "the-sinister-six" },
+          { title: "The Gauntlet", value: "the-gauntlet" },
+          { title: "Versus", value: "versus" },
+          { title: "The Daily Bugle", value: "the-daily-bugle" },
+          { title: "Spida Sense", value: "spida-sense" },
+          { title: "The Web Sling", value: "the-web-sling" },
+          { title: "State of the Game", value: "state-of-the-game" },
+          { title: "The Rotation", value: "the-rotation" },
+          { title: "One Year Later", value: "one-year-later" },
         ],
-        layout: "radio",
+        layout: "dropdown",
       },
-      initialValue: "essay",
+      initialValue: "first-bite",
       validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "series",
+      title: "Series / Column",
+      type: "string",
+      options: {
+        list: [
+          { title: "Cartoons & Cereal", value: "cartoons-and-cereal" },
+        ],
+      },
+      description:
+        "Recurring column this post belongs to (e.g. Cartoons & Cereal for Saturday anime/manga posts)",
+    }),
+    defineField({
+      name: "publishedAt",
+      title: "Published At",
+      type: "datetime",
+      description:
+        "Override publish date (for backdating backlog content). Falls back to _createdAt if empty.",
     }),
     defineField({
       name: "excerpt",
@@ -308,17 +335,25 @@ export default defineType({
     select: {
       title: "title",
       format: "format",
+      series: "series",
       media: "heroImage",
     },
-    prepare({ title, format, media }) {
+    prepare({ title, format, series, media }) {
+      const parts = [format?.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())];
+      if (series) parts.push(series.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()));
       return {
         title,
-        subtitle: format ? format.charAt(0).toUpperCase() + format.slice(1) : "",
+        subtitle: parts.filter(Boolean).join(" · "),
         media,
       };
     },
   },
   orderings: [
+    {
+      title: "Published (Newest)",
+      name: "publishedDesc",
+      by: [{ field: "publishedAt", direction: "desc" }],
+    },
     {
       title: "Created (Newest)",
       name: "createdDesc",

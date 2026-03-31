@@ -12,18 +12,30 @@ interface CardProps {
 
 /* ── Format badge labels ── */
 const formatBadge: Record<string, string> = {
-  essay: "Essay",
-  "short-take": "Short Take",
-  "ranked-list": "Ranked List",
-  roundup: "Roundup",
+  "first-bite": "First Bite",
+  "the-full-web": "The Full Web",
+  "spin-the-block": "Spin the Block",
+  "the-sinister-six": "The Sinister Six",
+  "the-gauntlet": "The Gauntlet",
+  "versus": "Versus",
+  "the-daily-bugle": "The Daily Bugle",
+  "spida-sense": "Spida Sense",
+  "the-web-sling": "The Web Sling",
+  "state-of-the-game": "State of the Game",
+  "the-rotation": "The Rotation",
+  "one-year-later": "One Year Later",
 };
 
 /* ── Category → color map (bg + text for pill, works in both themes) ── */
 const categoryColors: Record<string, string> = {
-  "Movies & TV": "bg-red-500/15 text-red-500 border-red-500/25",
+  Movies: "bg-red-500/15 text-red-500 border-red-500/25",
+  TV: "bg-orange-500/15 text-orange-400 border-orange-500/25",
   "Video Games": "bg-blue-500/15 text-blue-500 border-blue-500/25",
-  "Anime & Manga": "bg-purple-500/15 text-purple-500 border-purple-500/25",
+  Anime: "bg-purple-500/15 text-purple-500 border-purple-500/25",
+  Manga: "bg-pink-500/15 text-pink-400 border-pink-500/25",
   Music: "bg-emerald-500/15 text-emerald-500 border-emerald-500/25",
+  Culture: "bg-amber-500/15 text-amber-400 border-amber-500/25",
+  Tech: "bg-cyan-500/15 text-cyan-400 border-cyan-500/25",
 };
 const defaultCategoryColor = "bg-accent/10 text-accent border-accent/20";
 
@@ -165,7 +177,7 @@ export function Card({ article, featured = false }: CardProps) {
                 </>
               )}
               <time dateTime={article._createdAt} className="tabular-nums">
-                {formatDate(article._createdAt)}
+                {formatDate(article.publishedAt || article._createdAt)}
               </time>
               <span className="w-1 h-1 rounded-full bg-white/30" aria-hidden="true" />
               {article.readingTime && <span>{article.readingTime} min read</span>}
@@ -268,7 +280,7 @@ export function Card({ article, featured = false }: CardProps) {
             </>
           )}
           <time dateTime={article._createdAt} className="tabular-nums">
-            {formatDate(article._createdAt)}
+            {formatDate(article.publishedAt || article._createdAt)}
           </time>
           {article.readingTime && (
             <>

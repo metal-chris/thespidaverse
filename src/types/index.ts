@@ -1,6 +1,20 @@
 import type { PortableTextBlock } from "@portabletext/react";
 
-export type ArticleFormat = "essay" | "short-take" | "ranked-list" | "roundup";
+export type ArticleFormat =
+  | "first-bite"
+  | "the-full-web"
+  | "spin-the-block"
+  | "the-sinister-six"
+  | "the-gauntlet"
+  | "versus"
+  | "the-daily-bugle"
+  | "spida-sense"
+  | "the-web-sling"
+  | "state-of-the-game"
+  | "the-rotation"
+  | "one-year-later";
+
+export type ArticleSeries = "cartoons-and-cereal";
 
 export type MediaType = "movie" | "tv" | "game" | "anime" | "manga" | "music";
 
@@ -33,6 +47,8 @@ export interface Article {
   title: string;
   slug: { current: string };
   format: ArticleFormat;
+  series?: ArticleSeries;
+  publishedAt?: string;
   excerpt?: string;
   body: PortableTextBlock[];
   category: Category;

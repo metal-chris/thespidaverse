@@ -21,10 +21,14 @@ interface Props {
 
 /* ── Category → color map (matches Card.tsx) ── */
 const categoryColors: Record<string, string> = {
-  "Movies & TV": "bg-red-500/15 text-red-500 border-red-500/25",
+  Movies: "bg-red-500/15 text-red-500 border-red-500/25",
+  TV: "bg-orange-500/15 text-orange-400 border-orange-500/25",
   "Video Games": "bg-blue-500/15 text-blue-500 border-blue-500/25",
-  "Anime & Manga": "bg-purple-500/15 text-purple-500 border-purple-500/25",
+  Anime: "bg-purple-500/15 text-purple-500 border-purple-500/25",
+  Manga: "bg-pink-500/15 text-pink-400 border-pink-500/25",
   Music: "bg-emerald-500/15 text-emerald-500 border-emerald-500/25",
+  Culture: "bg-amber-500/15 text-amber-400 border-amber-500/25",
+  Tech: "bg-cyan-500/15 text-cyan-400 border-cyan-500/25",
 };
 const defaultCategoryColor = "bg-accent/10 text-accent border-accent/20";
 
@@ -75,10 +79,18 @@ const mediaLabel: Record<MediaType, string> = {
 
 /* ── Format badge labels ── */
 const formatBadge: Record<string, string> = {
-  essay: "Essay",
-  "short-take": "Short Take",
-  "ranked-list": "Ranked List",
-  roundup: "Roundup",
+  "first-bite": "First Bite",
+  "the-full-web": "The Full Web",
+  "spin-the-block": "Spin the Block",
+  "the-sinister-six": "The Sinister Six",
+  "the-gauntlet": "The Gauntlet",
+  "versus": "Versus",
+  "the-daily-bugle": "The Daily Bugle",
+  "spida-sense": "Spida Sense",
+  "the-web-sling": "The Web Sling",
+  "state-of-the-game": "State of the Game",
+  "the-rotation": "The Rotation",
+  "one-year-later": "One Year Later",
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -175,9 +187,7 @@ export default async function ArticlePage({ params }: Props) {
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
-            ...(article.category
-              ? [{ label: article.category.title, href: `/category/${article.category.slug.current}` }]
-              : []),
+            { label: "Journal", href: "/journal" },
             { label: article.title },
           ]}
         />
@@ -244,8 +254,8 @@ export default async function ArticlePage({ params }: Props) {
                 <svg viewBox="0 0 16 16" className="w-3 h-3 md:w-3.5 md:h-3.5" fill="currentColor" aria-hidden="true">
                   <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm.5 4.5v4l3 1.5-.5 1-3.5-1.75V4.5h1z" />
                 </svg>
-                <time dateTime={article._createdAt} className="tabular-nums">
-                  {formatDate(article._createdAt)}
+                <time dateTime={article.publishedAt || article._createdAt} className="tabular-nums">
+                  {formatDate(article.publishedAt || article._createdAt)}
                 </time>
               </span>
               {article.readingTime && (

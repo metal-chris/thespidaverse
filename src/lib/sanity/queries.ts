@@ -1,12 +1,14 @@
 import { groq } from "next-sanity";
 
 export const articlesQuery = groq`
-  *[_type == "article"] | order(_createdAt desc) {
+  *[_type == "article"] | order(coalesce(publishedAt, _createdAt) desc) {
     _id,
     _createdAt,
+    publishedAt,
     title,
     slug,
     format,
+    series,
     excerpt,
     heroImage,
     readingTime,
@@ -27,9 +29,11 @@ export const articleBySlugQuery = groq`
     _id,
     _createdAt,
     _updatedAt,
+    publishedAt,
     title,
     slug,
     format,
+    series,
     excerpt,
     body,
     heroImage,
