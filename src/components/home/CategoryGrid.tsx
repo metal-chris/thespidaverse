@@ -135,7 +135,7 @@ export function CategoryGrid() {
             <Link
               key={cat.title}
               href={cat.href}
-              className={`group relative rounded-lg border border-border bg-card px-4 py-2.5 transition-all duration-300 hover:shadow-md hover:shadow-accent/5 ${cat.borderHover} overflow-hidden flex items-center gap-2.5`}
+              className={`group relative rounded-lg border border-border bg-card px-4 py-2.5 transition-all duration-300 hover:shadow-md hover:shadow-accent/5 ${cat.borderHover} overflow-hidden flex items-center justify-center gap-2.5`}
             >
               <div
                 className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-40 group-hover:opacity-80 transition-opacity duration-300`}
