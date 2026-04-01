@@ -21,21 +21,23 @@ export function FilterDropdown({ allTags, articles, selectedTags, onToggleTag, o
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Sort tags by usage count, show top N
-  const sortedTags = useMemo(() => {
-    if (!articles || articles.length === 0) return allTags.slice(0, MAX_VISIBLE_TAGS);
-
+  // Count tag usage and sort by frequency
+  const tagCounts = useMemo(() => {
     const counts = new Map<string, number>();
+    if (!articles) return counts;
     for (const article of articles) {
       for (const tag of article.tags ?? []) {
         counts.set(tag.slug.current, (counts.get(tag.slug.current) || 0) + 1);
       }
     }
+    return counts;
+  }, [articles]);
 
+  const sortedTags = useMemo(() => {
     return [...allTags]
-      .sort((a, b) => (counts.get(b.slug.current) || 0) - (counts.get(a.slug.current) || 0))
+      .sort((a, b) => (tagCounts.get(b.slug.current) || 0) - (tagCounts.get(a.slug.current) || 0))
       .slice(0, MAX_VISIBLE_TAGS);
-  }, [allTags, articles]);
+  }, [allTags, tagCounts]);
 
   const hasMoreTags = allTags.length > MAX_VISIBLE_TAGS;
 
@@ -99,21 +101,19 @@ export function FilterDropdown({ allTags, articles, selectedTags, onToggleTag, o
         </Button>
       )}
 
-      {/* Dropdown panel */}
+      {/* Dropdown panel — 3 rows × 5 columns grid */}
       {open && (
-        <div className="absolute left-0 top-full mt-2 z-50 w-64 max-h-72 overflow-y-auto rounded-xl border border-border bg-card/95 backdrop-blur-md shadow-xl shadow-black/20 p-2">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-2 pt-1 pb-2">
-            Tags
-          </p>
-          <div className="space-y-0.5">
-            {sortedTags.map((tag) => {
+        <div className="absolute left-0 top-full mt-2 z-50 rounded-xl border border-border bg-card/95 backdrop-blur-md shadow-xl shadow-black/20 p-3 w-[min(90vw,640px)]">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-1">
+            {sortedTags.map((tag, i) => {
               const isActive = selectedTags.has(tag.slug.current);
+              const count = tagCounts.get(tag.slug.current) || 0;
               return (
                 <button
                   key={tag._id}
                   onClick={() => onToggleTag(tag.slug.current)}
                   className={cn(
-                    "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
+                    "flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs transition-colors text-left",
                     isActive
                       ? "bg-accent/15 text-accent font-medium"
                       : "text-foreground/80 hover:bg-muted/50"
@@ -121,8 +121,13 @@ export function FilterDropdown({ allTags, articles, selectedTags, onToggleTag, o
                   role="option"
                   aria-selected={isActive}
                 >
-                  <span>{capitalizeTag(tag.title)}</span>
-                  {isActive && <Check className="w-3.5 h-3.5 text-accent" />}
+                  <span className="text-muted-foreground/50 tabular-nums text-[10px] w-4 text-right shrink-0">
+                    {i + 1}.
+                  </span>
+                  <span className="truncate">{capitalizeTag(tag.title)}</span>
+                  <span className="text-muted-foreground/40 tabular-nums text-[10px] shrink-0">
+                    ({count})
+                  </span>
                 </button>
               );
             })}
@@ -130,7 +135,7 @@ export function FilterDropdown({ allTags, articles, selectedTags, onToggleTag, o
           {hasMoreTags && (
             <Link
               href="/search"
-              className="block text-center text-xs text-muted-foreground hover:text-accent transition-colors pt-2 pb-1 border-t border-border mt-2"
+              className="block text-center text-xs text-muted-foreground hover:text-accent transition-colors pt-2 mt-2 border-t border-border"
               onClick={() => setOpen(false)}
             >
               All tags →
