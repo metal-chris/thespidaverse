@@ -33,13 +33,13 @@ export function PhilosophyConsole() {
         <p className="text-sm text-muted-foreground leading-relaxed mb-4">
           Every piece of media gets a <strong className="text-foreground">Web Rating</strong> out of 100, visualized as a spider web that fills based on the score. Not because I want to debate whether something deserves an 87 or a 91, but because sometimes you need to put a number on how much something <em>mattered</em> to you.
         </p>
-        {beliefs.map((belief) => (
+        {beliefs.map((belief, i) => (
           <div
             key={belief.title}
             className="rounded-lg border border-border/50 bg-card/30 px-4 py-3"
           >
             <h4 className="text-xs font-bold text-accent uppercase tracking-wider mb-1">
-              {belief.title}
+              {String(i + 1).padStart(2, "0")} &mdash; {belief.title}
             </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {belief.text}

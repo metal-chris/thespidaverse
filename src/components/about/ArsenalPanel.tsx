@@ -2,9 +2,25 @@
 
 import { cn } from "@/lib/utils";
 
+/* ─── Web-Shooters: Content Formats ─── */
+const formats = [
+  { name: "First Bite", tagline: "Quick-fire gut reactions" },
+  { name: "The Full Web", tagline: "Deep review, every strand examined" },
+  { name: "Spin the Block", tagline: "Ranked lists" },
+  { name: "The Sinister Six", tagline: "Top 6 picks" },
+  { name: "The Gauntlet", tagline: "Series marathon, sleep not guaranteed" },
+  { name: "Versus", tagline: "Head-to-head showdowns" },
+  { name: "The Daily Bugle", tagline: "News and hot takes" },
+  { name: "Spida Sense", tagline: "Predictions and forecasts" },
+  { name: "The Rotation", tagline: "Monthly roundup" },
+  { name: "State of the Game", tagline: "Industry check-in" },
+];
+
+/* ─── Suit Tech: Platforms ─── */
 const platforms = [
   {
     name: "YouTube",
+    tagline: "Primary broadcast frequency",
     handle: "@daspida-mane",
     href: "https://www.youtube.com/@daspida-mane",
     color: "text-red-500 border-red-500/30 hover:border-red-500/60 hover:bg-red-500/5",
@@ -16,6 +32,7 @@ const platforms = [
   },
   {
     name: "Twitch",
+    tagline: "Live ops channel",
     handle: "spidaman3",
     href: "https://www.twitch.tv/spidaman3",
     color: "text-purple-500 border-purple-500/30 hover:border-purple-500/60 hover:bg-purple-500/5",
@@ -27,6 +44,7 @@ const platforms = [
   },
   {
     name: "Instagram",
+    tagline: "Field recon and visual logs",
     handle: "spida.world",
     href: "https://instagram.com/spida.world",
     color: "text-pink-500 border-pink-500/30 hover:border-pink-500/60 hover:bg-pink-500/5",
@@ -38,6 +56,7 @@ const platforms = [
   },
   {
     name: "Discord",
+    tagline: "Encrypted team comms",
     handle: "spida.mane",
     href: "#",
     color: "text-indigo-400 border-indigo-400/30 hover:border-indigo-400/60 hover:bg-indigo-400/5",
@@ -50,67 +69,102 @@ const platforms = [
   },
 ];
 
-const formats = [
-  { name: "First Bite", desc: "Quick impressions" },
-  { name: "The Full Web", desc: "Deep review" },
-  { name: "Spin the Block", desc: "Ranked list" },
-  { name: "The Sinister Six", desc: "Top 6 picks" },
-  { name: "The Gauntlet", desc: "Series marathon" },
-  { name: "Versus", desc: "Head to head" },
-  { name: "The Daily Bugle", desc: "News & takes" },
-  { name: "Spida Sense", desc: "Predictions" },
-  { name: "The Rotation", desc: "Monthly roundup" },
-  { name: "State of the Game", desc: "Industry check-in" },
+/* ─── Gadgets: Site Mechanics ─── */
+const gadgets = [
+  { name: "The Web Rating", tagline: "Proprietary 0\u2013100 scoring system" },
+  { name: "Category Badges", tagline: "Tagging system for the multiverse catalog" },
+  { name: "The Spida Sense Poll", tagline: "Community-driven predictions" },
 ];
+
+function GearCategory({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground/60 mb-3">
+        {label}
+      </p>
+      {children}
+    </div>
+  );
+}
 
 export function ArsenalPanel() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-      {/* Platforms */}
-      <div>
-        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground/60 mb-3">
-          Platforms
-        </p>
-        <div className="space-y-2">
+    <div className="space-y-6">
+      {/* Web-Shooters — Content Formats */}
+      <GearCategory label="Web-Shooters">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {formats.map((f) => (
+            <div
+              key={f.name}
+              className="flex items-baseline gap-2 px-3 py-2 rounded-lg border border-border/50 bg-card/30"
+            >
+              <span className="text-xs font-bold text-card-foreground whitespace-nowrap">
+                {f.name}
+              </span>
+              <span className="text-[10px] text-muted-foreground leading-tight">
+                {f.tagline}
+              </span>
+            </div>
+          ))}
+        </div>
+      </GearCategory>
+
+      {/* Suit Tech — Platforms (inline) */}
+      <GearCategory label="Suit Tech">
+        <div className="flex flex-wrap gap-2">
           {platforms.map((p) => (
             <a
               key={p.name}
               href={p.href}
-              onClick={p.onClick ? (e) => { e.preventDefault(); p.onClick(); } : undefined}
+              onClick={
+                p.onClick
+                  ? (e) => {
+                      e.preventDefault();
+                      p.onClick();
+                    }
+                  : undefined
+              }
               target={p.onClick ? undefined : "_blank"}
               rel={p.onClick ? undefined : "noopener noreferrer"}
+              aria-label={p.onClick ? `${p.name}: ${p.handle} (click to copy)` : p.name}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg border bg-card/50 transition-all duration-200",
+                "inline-flex items-center gap-2 px-3 py-2 rounded-lg border bg-card/50 transition-all duration-200",
                 p.color
               )}
             >
               {p.icon}
-              <div>
-                <span className="text-sm font-semibold text-card-foreground">{p.name}</span>
-                <span className="block text-[10px] text-muted-foreground">{p.handle}</span>
-              </div>
+              <span className="text-sm font-semibold text-card-foreground">
+                {p.name}
+              </span>
             </a>
           ))}
         </div>
-      </div>
+      </GearCategory>
 
-      {/* Article Formats */}
-      <div>
-        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground/60 mb-3">
-          Article Formats
-        </p>
-        <div className="flex flex-wrap gap-1.5">
-          {formats.map((f) => (
+      {/* Gadgets — Site Mechanics */}
+      <GearCategory label="Gadgets">
+        <div className="flex flex-wrap gap-2">
+          {gadgets.map((g) => (
             <div
-              key={f.name}
-              className="px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-card border border-border text-muted-foreground"
-              title={f.desc}
+              key={g.name}
+              className="flex items-baseline gap-2 px-3 py-2 rounded-lg border border-border/50 bg-card/30"
             >
-              {f.name}
+              <span className="text-xs font-bold text-card-foreground whitespace-nowrap">
+                {g.name}
+              </span>
+              <span className="text-[10px] text-muted-foreground leading-tight">
+                {g.tagline}
+              </span>
             </div>
           ))}
         </div>
-      </div>
+      </GearCategory>
     </div>
   );
 }

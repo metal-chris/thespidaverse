@@ -37,21 +37,21 @@ export default async function AboutPage() {
 
       {/* Abilities — category stat grid */}
       <ScrollReveal delay={120}>
-        <DossierSection title="Abilities">
+        <DossierSection title="Skills">
           <AbilitiesMatrix />
         </DossierSection>
       </ScrollReveal>
 
       {/* Arsenal — platforms + article formats */}
       <ScrollReveal delay={180}>
-        <DossierSection title="Arsenal">
+        <DossierSection title="Gear Loadout">
           <ArsenalPanel />
         </DossierSection>
       </ScrollReveal>
 
       {/* Philosophy — WebRating demo + core beliefs */}
       <ScrollReveal delay={240}>
-        <DossierSection title="Philosophy">
+        <DossierSection title="Principles">
           <PhilosophyConsole />
         </DossierSection>
       </ScrollReveal>
