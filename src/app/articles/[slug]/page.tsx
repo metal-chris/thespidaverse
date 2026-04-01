@@ -8,6 +8,8 @@ import { Container } from "@/components/ui/Container";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { capitalizeTag, cn, formatDate, formatMediaType } from "@/lib/utils";
 import { blogPostingJsonLd, breadcrumbJsonLd, reviewJsonLd } from "@/lib/seo/jsonLd";
+import { CategoryPlaceholder } from "@/components/ui/CategoryPlaceholder";
+import { getCategoryConfig } from "@/lib/categories";
 import { ArticleBody } from "./ArticleBody";
 import type { MediaType } from "@/types";
 
@@ -19,18 +21,7 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-/* ── Category → color map (matches Card.tsx) ── */
-const categoryColors: Record<string, string> = {
-  Movies: "bg-red-500/15 text-red-500 border-red-500/25",
-  TV: "bg-orange-500/15 text-orange-400 border-orange-500/25",
-  "Video Games": "bg-blue-500/15 text-blue-500 border-blue-500/25",
-  Anime: "bg-amber-500/15 text-amber-400 border-amber-500/25",
-  Manga: "bg-pink-500/15 text-pink-400 border-pink-500/25",
-  Music: "bg-emerald-500/15 text-emerald-500 border-emerald-500/25",
-  Culture: "bg-purple-500/15 text-purple-500 border-purple-500/25",
-  Tech: "bg-cyan-500/15 text-cyan-400 border-cyan-500/25",
-};
-const defaultCategoryColor = "bg-accent/10 text-accent border-accent/20";
+/* ── Category pill color (from shared config) ── */
 
 /* ── Media type icons (16×16 inline SVG) ── */
 const mediaIcons: Record<MediaType, React.ReactNode> = {
@@ -135,7 +126,7 @@ export default async function ArticlePage({ params }: Props) {
   );
 
   const catColor =
-    categoryColors[article.category?.title] || defaultCategoryColor;
+    getCategoryConfig(article.category?.title).pill;
 
   // JSON-LD structured data
   const jsonLdBlogPosting = blogPostingJsonLd({
@@ -212,23 +203,22 @@ export default async function ArticlePage({ params }: Props) {
           <Container className="absolute bottom-0 left-0 right-0 pb-8 md:pb-12">
             {/* Pills row: category + media type + format */}
             <div className="flex flex-wrap items-center gap-2 mb-3 md:mb-4">
-              {article.category && (
-                <Link
-                  href={`/category/${article.category.slug.current}`}
-                  className={cn(
-                    "inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full border transition-colors hover:opacity-80 backdrop-blur-sm",
-                    catColor
-                  )}
-                >
-                  {article.category.title}
-                </Link>
-              )}
-              {article.mediaType && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full border border-white/30 bg-white/20 text-white backdrop-blur-sm">
-                  {mediaIcons[article.mediaType]}
-                  {mediaLabel[article.mediaType]}
-                </span>
-              )}
+              {article.category && (() => {
+                const catConfig = getCategoryConfig(article.category.title);
+                const CatIcon = catConfig.icon;
+                return (
+                  <Link
+                    href={`/category/${article.category.slug.current}`}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full border transition-colors hover:opacity-80 backdrop-blur-sm",
+                      catColor
+                    )}
+                  >
+                    <CatIcon className="w-3 h-3" strokeWidth={2} />
+                    {article.category.title}
+                  </Link>
+                );
+              })()}
               {article.format && (
                 <span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-full bg-white/20 text-white border border-white/30 backdrop-blur-sm">
                   {formatBadge[article.format] || article.format}
@@ -302,7 +292,105 @@ export default async function ArticlePage({ params }: Props) {
             </div>
           </Container>
         </div>
-      ) : null}
+      ) : (
+        /* ── Placeholder Hero (category pattern, no image) ── */
+        <div className="relative w-full h-[60vh] overflow-hidden">
+          <CategoryPlaceholder
+            category={article.category?.title}
+            className="absolute inset-0"
+            overlay={false}
+            iconVisible={false}
+            intensity="medium"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+
+          <Container className="absolute bottom-0 left-0 right-0 pb-8 md:pb-12">
+            <div className="flex flex-wrap items-center gap-2 mb-3 md:mb-4">
+              {article.category && (() => {
+                const catConfig = getCategoryConfig(article.category.title);
+                const CatIcon = catConfig.icon;
+                return (
+                  <Link
+                    href={`/category/${article.category.slug.current}`}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full border transition-colors hover:opacity-80 backdrop-blur-sm",
+                      catColor
+                    )}
+                  >
+                    <CatIcon className="w-3 h-3" strokeWidth={2} />
+                    {article.category.title}
+                  </Link>
+                );
+              })()}
+              {article.format && (
+                <span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-full bg-white/20 text-white border border-white/30 backdrop-blur-sm">
+                  {formatBadge[article.format] || article.format}
+                </span>
+              )}
+            </div>
+
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-white text-balance leading-tight mb-2 md:mb-3">
+              {article.title}
+            </h1>
+
+            {article.excerpt && (
+              <p className="text-sm md:text-base text-white/90 leading-relaxed max-w-2xl mb-3 md:mb-4">
+                {article.excerpt}
+              </p>
+            )}
+
+            <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xs md:text-sm text-white/80 mb-3">
+              <span className="inline-flex items-center gap-1.5">
+                <svg viewBox="0 0 16 16" className="w-3 h-3 md:w-3.5 md:h-3.5" fill="currentColor" aria-hidden="true">
+                  <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm.5 4.5v4l3 1.5-.5 1-3.5-1.75V4.5h1z" />
+                </svg>
+                <time dateTime={article.publishedAt || article._createdAt} className="tabular-nums">
+                  {formatDate(article.publishedAt || article._createdAt)}
+                </time>
+              </span>
+              {article.readingTime && (
+                <>
+                  <span className="w-1 h-1 rounded-full bg-white/50" aria-hidden="true" />
+                  <span className="inline-flex items-center gap-1.5">
+                    <svg viewBox="0 0 16 16" className="w-3 h-3 md:w-3.5 md:h-3.5" fill="currentColor" aria-hidden="true">
+                      <path d="M2 2a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V2zm2 0v12h8V2H4zm2 2h4v1H6V4zm0 3h4v1H6V7zm0 3h3v1H6v-1z" />
+                    </svg>
+                    {article.readingTime} min read
+                  </span>
+                </>
+              )}
+              {article.mediaLength && (
+                <>
+                  <span className="w-1 h-1 rounded-full bg-white/50" aria-hidden="true" />
+                  <span>{article.mediaLength}</span>
+                </>
+              )}
+            </div>
+
+            {article.tags && article.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 md:gap-2 mb-8 md:mb-10">
+                {article.tags.map((tag) => (
+                  <Link
+                    key={tag._id}
+                    href={`/tags/${tag.slug.current}`}
+                    className="text-[10px] md:text-xs bg-white/10 text-white/80 px-2 py-0.5 md:py-1 rounded-full hover:text-white hover:bg-white/20 transition-colors border border-white/20 backdrop-blur-sm"
+                  >
+                    #{capitalizeTag(tag.title)}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="flex-1 h-[2px] bg-white/20" />
+              <svg viewBox="0 0 24 24" className="w-4 h-4 md:w-5 md:h-5 text-white/30" fill="currentColor" aria-hidden="true">
+                <path d="M12 2L2 12l10 10 10-10L12 2zm0 3.83L18.17 12 12 18.17 5.83 12 12 5.83z" />
+              </svg>
+              <div className="flex-1 h-[2px] bg-white/20" />
+            </div>
+          </Container>
+        </div>
+      )}
 
       {/* ── Article Content ── */}
       <Container as="article" className="pt-8 md:pt-12 pb-8 max-w-4xl">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "@/lib/sanity/image";
 import { getCollectionTemplate } from "@/lib/collections/template";
+import { CategoryPlaceholder } from "@/components/ui/CategoryPlaceholder";
 import type { Collection, CollectionTemplate } from "@/types";
 
 interface CollectionCoverProps {
@@ -80,9 +81,7 @@ export function CollectionCover({ collection, featured = false, index = 0 }: Col
             unoptimized
           />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/15 to-accent/5 flex items-center justify-center">
-            <TemplateIcon template={template} />
-          </div>
+          <CategoryPlaceholder className="absolute inset-0" />
         )}
 
         {/* Gradient overlay */}

@@ -66,20 +66,25 @@ function FeaturedCarousel({ articles }: { articles: Article[] }) {
 
       {/* Indicators */}
       {articles.length > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-3">
-          {articles.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i)}
-              aria-label={`Show featured article ${i + 1}`}
-              className={cn(
-                "h-1.5 rounded-full transition-all duration-300",
-                i === activeIndex
-                  ? "w-6 bg-accent"
-                  : "w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/50"
-              )}
-            />
-          ))}
+        <div className="flex items-center justify-center gap-2 mt-4">
+          {articles.map((_, i) => {
+            const roman = ["I", "II", "III", "IV", "V"][i] || `${i + 1}`;
+            return (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                aria-label={`Show featured article ${i + 1}`}
+                className={cn(
+                  "inline-flex items-center justify-center rounded-full text-[10px] font-bold tracking-wider transition-all duration-300 border",
+                  i === activeIndex
+                    ? "w-8 h-8 bg-accent text-background border-accent"
+                    : "w-8 h-8 bg-transparent text-muted-foreground border-muted-foreground/40 hover:border-accent/50 hover:text-foreground"
+                )}
+              >
+                {roman}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

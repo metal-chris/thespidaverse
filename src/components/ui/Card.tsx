@@ -3,6 +3,8 @@ import Image from "next/image";
 import { cn, formatDate } from "@/lib/utils";
 import { urlFor } from "@/lib/sanity/image";
 import { WebRating } from "@/components/content/WebRating";
+import { CategoryPlaceholder } from "@/components/ui/CategoryPlaceholder";
+import { getCategoryConfig } from "@/lib/categories";
 import type { Article, MediaType } from "@/types";
 
 interface CardProps {
@@ -26,18 +28,7 @@ const formatBadge: Record<string, string> = {
   "one-year-later": "One Year Later",
 };
 
-/* ── Category → color map (bg + text for pill, works in both themes) ── */
-const categoryColors: Record<string, string> = {
-  Movies: "bg-red-500/15 text-red-500 border-red-500/25",
-  TV: "bg-orange-500/15 text-orange-400 border-orange-500/25",
-  "Video Games": "bg-blue-500/15 text-blue-500 border-blue-500/25",
-  Anime: "bg-amber-500/15 text-amber-400 border-amber-500/25",
-  Manga: "bg-pink-500/15 text-pink-400 border-pink-500/25",
-  Music: "bg-emerald-500/15 text-emerald-500 border-emerald-500/25",
-  Culture: "bg-purple-500/15 text-purple-500 border-purple-500/25",
-  Tech: "bg-cyan-500/15 text-cyan-400 border-cyan-500/25",
-};
-const defaultCategoryColor = "bg-accent/10 text-accent border-accent/20";
+/* ── Category pill color (from shared config) ── */
 
 /* ── Media type → inline SVG icon (16×16) ── */
 const mediaIcons: Record<MediaType, React.ReactNode> = {
@@ -95,7 +86,7 @@ export function Card({ article, featured = false }: CardProps) {
   const imageUrl = article.heroImageUrl || sanityUrl || null;
 
   const catColor =
-    categoryColors[article.category?.title] || defaultCategoryColor;
+    getCategoryConfig(article.category?.title).pill;
 
   /* ── Featured card: image with text overlaid ── */
   if (featured) {
@@ -119,11 +110,13 @@ export function Card({ article, featured = false }: CardProps) {
               sizes="(max-width: 768px) 100vw, 66vw"
             />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-accent/15 to-accent/5" />
+            <CategoryPlaceholder category={article.category?.title} className="absolute inset-0" intensity="bold" />
           )}
 
-          {/* Gradient overlay — stronger at bottom for text */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
+          {/* Gradient overlay for real images (placeholder handles its own) */}
+          {imageUrl && (
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
+          )}
 
           {/* Rating badge */}
           {article.webRating != null && (
@@ -148,7 +141,7 @@ export function Card({ article, featured = false }: CardProps) {
               <span
                 className={cn(
                   "inline-flex items-center px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider rounded-full border backdrop-blur-sm mb-2",
-                  "bg-white/15 text-white/90 border-white/20"
+                  catColor
                 )}
               >
                 {article.category.title}
@@ -234,14 +227,7 @@ export function Card({ article, featured = false }: CardProps) {
           )}
         </div>
       ) : (
-        /* Fallback: accent gradient placeholder */
-        <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-accent/10 to-accent/5">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <svg viewBox="0 0 48 48" className="w-12 h-12 text-accent/20" fill="currentColor">
-              <path d="M24 4L4 24l20 20 20-20L24 4zm0 6.83L37.17 24 24 37.17 10.83 24 24 10.83z" />
-            </svg>
-          </div>
-        </div>
+        <CategoryPlaceholder category={article.category?.title} className="aspect-[16/10]" intensity="medium" />
       )}
 
       {/* Text content */}
