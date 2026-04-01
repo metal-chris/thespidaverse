@@ -160,15 +160,6 @@ export function Card({ article, featured = false }: CardProps) {
 
             {/* Meta row */}
             <div className="mt-3 flex items-center gap-2 text-[11px] text-white/70">
-              {article.mediaType && (
-                <>
-                  <span className="flex items-center gap-1 text-white/75">
-                    {mediaIcons[article.mediaType]}
-                    {mediaLabel[article.mediaType]}
-                  </span>
-                  <span className="w-1 h-1 rounded-full bg-white/50" aria-hidden="true" />
-                </>
-              )}
               <time dateTime={article._createdAt} className="tabular-nums">
                 {formatDate(article.publishedAt || article._createdAt)}
               </time>
@@ -232,17 +223,22 @@ export function Card({ article, featured = false }: CardProps) {
 
       {/* Text content */}
       <div className="p-4">
-        {/* Category pill */}
-        {article.category && (
-          <span
-            className={cn(
-              "inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full border",
-              catColor
-            )}
-          >
-            {article.category.title}
-          </span>
-        )}
+        {/* Category pill with Lucide icon */}
+        {article.category && (() => {
+          const catConfig = getCategoryConfig(article.category.title);
+          const CatIcon = catConfig.icon;
+          return (
+            <span
+              className={cn(
+                "inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full border",
+                catColor
+              )}
+            >
+              <CatIcon className="w-3 h-3" strokeWidth={2} />
+              {article.category.title}
+            </span>
+          );
+        })()}
 
         <h3 className="mt-2 font-bold text-base text-card-foreground group-hover:text-accent transition-colors leading-snug">
           {article.title}
@@ -254,17 +250,8 @@ export function Card({ article, featured = false }: CardProps) {
           </p>
         )}
 
-        {/* Meta row with media type icon */}
+        {/* Meta row */}
         <div className="mt-3 flex items-center gap-2 text-[11px] text-muted-foreground">
-          {article.mediaType && (
-            <>
-              <span className="flex items-center gap-1 text-muted-foreground/80">
-                {mediaIcons[article.mediaType]}
-                {mediaLabel[article.mediaType]}
-              </span>
-              <span className="w-1 h-1 rounded-full bg-border" aria-hidden="true" />
-            </>
-          )}
           <time dateTime={article._createdAt} className="tabular-nums">
             {formatDate(article.publishedAt || article._createdAt)}
           </time>
