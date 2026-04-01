@@ -45,7 +45,7 @@ export function ArticleBody({
       )}
 
       {/* ── Web Rating Block (author score + community teaser) ── */}
-      {webRating != null && (
+      {webRating != null && webRating > 0 && (
         <div className="mb-10 rounded-xl border border-border bg-card/50 relative overflow-hidden">
           <WebRating
             score={webRating}

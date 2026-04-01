@@ -34,7 +34,7 @@ export function EngagementSection({
   const [loading, setLoading] = useState(true);
 
   const showRating =
-    pollConfig?.enableCommunityRating !== false && authorWebRating != null;
+    pollConfig?.enableCommunityRating !== false && authorWebRating != null && authorWebRating > 0;
   const questions = pollConfig?.pollQuestions ?? [];
   const hasEngagement = showRating || questions.length > 0;
 
