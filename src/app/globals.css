@@ -200,6 +200,13 @@
   to { transform: rotate(360deg); }
 }
 
+/* Utility — simple fade in */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+
 /* Theme transition — stroke draw animation */
 @keyframes tendril-draw {
   0% {
@@ -537,24 +544,56 @@
 }
 
 /* ========================================
-   404 Page — Dimension Glitch Animations
+   404 Page — Spot's Dimension Animations
    ======================================== */
-@keyframes dimension-glitch {
-  0%, 100% { transform: translate(0, 0); }
-  20% { transform: translate(-2px, 1px); }
-  40% { transform: translate(2px, -1px); }
-  60% { transform: translate(-1px, -1px); }
-  80% { transform: translate(1px, 1px); }
+
+/* Four unique drift paths so spots move organically */
+@keyframes spot-drift-1 {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(30px, -20px); }
+  50%  { transform: translate(10px, 25px); }
+  75%  { transform: translate(-20px, 10px); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes spot-drift-2 {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-25px, 15px); }
+  50%  { transform: translate(15px, -30px); }
+  75%  { transform: translate(20px, 20px); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes spot-drift-3 {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(20px, 25px); }
+  50%  { transform: translate(-30px, -10px); }
+  75%  { transform: translate(10px, -25px); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes spot-drift-4 {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-15px, -30px); }
+  50%  { transform: translate(25px, 15px); }
+  75%  { transform: translate(-10px, 20px); }
+  100% { transform: translate(0, 0); }
 }
 
-@keyframes portal-drift {
-  0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.08; }
-  50% { transform: rotate(3deg) scale(1.05); opacity: 0.12; }
+/* Gentle breathing pulse for select spots */
+@keyframes spot-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.08); }
 }
 
-@keyframes grid-scroll {
-  0% { background-position: 0 0; }
-  100% { background-position: 40px 40px; }
+/* Accent-colored ring glow on "portal" spots */
+@keyframes spot-glow {
+  0%, 100% { box-shadow: 0 0 15px 4px rgba(var(--spot-glow-rgb, 232,35,52), 0.08); }
+  50%      { box-shadow: 0 0 25px 8px rgba(var(--spot-glow-rgb, 232,35,52), 0.18); }
+}
+
+/* Reduced motion: no animation */
+@media (prefers-reduced-motion: reduce) {
+  .spot-void [data-spot] {
+    animation: none !important;
+  }
 }
 
 /* ========================================

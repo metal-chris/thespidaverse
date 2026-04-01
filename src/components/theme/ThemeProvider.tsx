@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
-import { SymbioteOverlay } from "./SymbioteOverlay";
+import { TransitionOverlay } from "@/components/transitions/TransitionOverlay";
 
 type Theme = "miles" | "peter" | "venom";
 type TransitionDirection = "to-venom" | "to-miles" | "to-peter";
@@ -107,7 +107,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, toggleRef }}>
       {children}
       {mounted && transition && (
-        <SymbioteOverlay
+        <TransitionOverlay
           direction={transition.direction}
           origin={transition.origin}
           quick={transition.quick}
