@@ -65,9 +65,10 @@ export const articleBySlugQuery = groq`
 `;
 
 export const articlesByCategoryQuery = groq`
-  *[_type == "article" && category->slug.current == $category] | order(_createdAt desc) {
+  *[_type == "article" && category->slug.current == $category] | order(coalesce(publishedAt, _createdAt) desc) {
     _id,
     _createdAt,
+    publishedAt,
     title,
     slug,
     format,
@@ -86,9 +87,10 @@ export const articlesByCategoryQuery = groq`
 `;
 
 export const articlesByTagQuery = groq`
-  *[_type == "article" && $tag in tags[]->slug.current] | order(_createdAt desc) {
+  *[_type == "article" && $tag in tags[]->slug.current] | order(coalesce(publishedAt, _createdAt) desc) {
     _id,
     _createdAt,
+    publishedAt,
     title,
     slug,
     format,
@@ -188,6 +190,7 @@ export const collectionBySlugQuery = groq`
     articles[]->{
       _id,
       _createdAt,
+      publishedAt,
       title,
       slug,
       format,
@@ -204,9 +207,10 @@ export const collectionBySlugQuery = groq`
 
 // Mood-based articles
 export const articlesByMoodQuery = groq`
-  *[_type == "article" && $mood in moodTags] | order(_createdAt desc) {
+  *[_type == "article" && $mood in moodTags] | order(coalesce(publishedAt, _createdAt) desc) {
     _id,
     _createdAt,
+    publishedAt,
     title,
     slug,
     format,
@@ -271,9 +275,10 @@ export const gallerySpotlightQuery = groq`
 
 // Graph data — articles with relationships (for /the-web)
 export const graphDataQuery = groq`
-  *[_type == "article"] | order(_createdAt desc) {
+  *[_type == "article"] | order(coalesce(publishedAt, _createdAt) desc) {
     _id,
     _createdAt,
+    publishedAt,
     title,
     slug,
     mediaType,
