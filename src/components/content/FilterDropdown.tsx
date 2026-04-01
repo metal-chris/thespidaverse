@@ -7,7 +7,7 @@ import { cn, capitalizeTag } from "@/lib/utils";
 import { SlidersHorizontal, X, Check } from "lucide-react";
 import type { Article, Tag } from "@/types";
 
-const MAX_VISIBLE_TAGS = 15;
+const MAX_VISIBLE_TAGS = 10;
 
 interface FilterDropdownProps {
   allTags: Tag[];
@@ -104,7 +104,7 @@ export function FilterDropdown({ allTags, articles, selectedTags, onToggleTag, o
       {/* Dropdown panel — 3 rows × 5 columns grid */}
       {open && (
         <div className="absolute left-0 top-full mt-2 z-50 rounded-xl border border-border bg-card/95 backdrop-blur-md shadow-xl shadow-black/20 p-3 w-[min(90vw,640px)]">
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-1">
+          <div className="grid grid-cols-2 gap-1">
             {sortedTags.map((tag, i) => {
               const isActive = selectedTags.has(tag.slug.current);
               const count = tagCounts.get(tag.slug.current) || 0;
