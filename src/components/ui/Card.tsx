@@ -136,17 +136,22 @@ export function Card({ article, featured = false }: CardProps) {
 
           {/* Overlaid text content */}
           <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
-            {/* Category pill */}
-            {article.category && (
-              <span
-                className={cn(
-                  "inline-flex items-center px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider rounded-full border backdrop-blur-sm mb-2",
-                  catColor
-                )}
-              >
-                {article.category.title}
-              </span>
-            )}
+            {/* Category pill with Lucide icon */}
+            {article.category && (() => {
+              const catConfig = getCategoryConfig(article.category.title);
+              const CatIcon = catConfig.icon;
+              return (
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider rounded-full border backdrop-blur-sm mb-2",
+                    catColor
+                  )}
+                >
+                  <CatIcon className="w-3 h-3" strokeWidth={2} />
+                  {article.category.title}
+                </span>
+              );
+            })()}
 
             <h3 className="font-bold text-lg md:text-xl text-white leading-snug group-hover:text-accent transition-colors">
               {article.title}
