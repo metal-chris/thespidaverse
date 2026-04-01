@@ -5,15 +5,13 @@ const COOKIE_NAME = "spidaverse-access";
 const COOKIE_VALUE = "granted";
 
 export async function POST(request: Request) {
-  if (!PASSCODE) {
-    return NextResponse.json({ error: "Not configured" }, { status: 404 });
-  }
-
   try {
     const body = await request.json();
     const { passcode } = body;
 
-    if (passcode !== PASSCODE) {
+    // Allow "leap-of-faith" as a public bypass alongside the private passcode
+    const isLeap = passcode === "leap-of-faith";
+    if (!isLeap && (!PASSCODE || passcode !== PASSCODE)) {
       return NextResponse.json({ error: "Invalid passcode" }, { status: 401 });
     }
 

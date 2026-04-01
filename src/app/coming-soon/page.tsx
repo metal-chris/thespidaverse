@@ -2,17 +2,16 @@ import type { Metadata } from "next";
 import { ComingSoonPage } from "@/components/coming-soon/ComingSoonPage";
 
 export const metadata: Metadata = {
-  title: "Coming Soon",
+  title: "The Spidaverse",
   description:
-    "The Spidaverse is coming soon. Be the first to explore the web. Sign up for early access.",
+    "The Spidaverse — the web is ready. Are you? Pop culture, reviews, and community from Spida-Mane.",
   openGraph: {
-    title: "Coming Soon | The Spidaverse",
+    title: "The Spidaverse",
     description:
-      "The Spidaverse is coming soon. Be the first to explore the web.",
+      "The web is ready. Are you?",
   },
 };
 
 export default function Page() {
-  const earlyAccessEnabled = !!process.env.EARLY_ACCESS_PASSCODE;
-  return <ComingSoonPage earlyAccessEnabled={earlyAccessEnabled} />;
+  return <ComingSoonPage />;
 }

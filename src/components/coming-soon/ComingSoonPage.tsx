@@ -5,11 +5,7 @@ import { SpiderWebCanvas } from "./NeuralNetworkCanvas";
 import { ComingSoonContent } from "./ComingSoonContent";
 import type { Palette } from "./particle-config";
 
-interface ComingSoonPageProps {
-  earlyAccessEnabled?: boolean;
-}
-
-export function ComingSoonPage({ earlyAccessEnabled = false }: ComingSoonPageProps) {
+export function ComingSoonPage() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [palette, setPaletteState] = useState<Palette>("miles");
   const [accessGranted, setAccessGranted] = useState(false);
@@ -153,7 +149,7 @@ export function ComingSoonPage({ earlyAccessEnabled = false }: ComingSoonPagePro
       <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} onRendererReady={handleRendererReady} />
 
       {/* Content overlay */}
-      <ComingSoonContent palette={palette} onTogglePalette={() => setPalette(p => p === "miles" ? "peter" : p === "peter" ? "venom" : "miles")} earlyAccessEnabled={earlyAccessEnabled} onAccessGranted={handleAccessGranted} />
+      <ComingSoonContent palette={palette} onTogglePalette={() => setPalette(p => p === "miles" ? "peter" : p === "peter" ? "venom" : "miles")} onAccessGranted={handleAccessGranted} />
 
       {/* Portal wipe overlay — covers screen before redirect */}
       {accessGranted && (
