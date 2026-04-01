@@ -47,6 +47,7 @@ export function TagFilter({ articles, allTags, children }: TagFilterProps) {
       <div className="mb-6">
         <FilterDropdown
           allTags={allTags}
+          articles={articles}
           selectedTags={selectedTags}
           onToggleTag={toggleTag}
           onClear={clearAll}

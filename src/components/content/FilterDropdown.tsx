@@ -1,21 +1,43 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { cn, capitalizeTag } from "@/lib/utils";
 import { SlidersHorizontal, X, Check } from "lucide-react";
-import type { Tag } from "@/types";
+import type { Article, Tag } from "@/types";
+
+const MAX_VISIBLE_TAGS = 15;
 
 interface FilterDropdownProps {
   allTags: Tag[];
+  articles?: Article[];
   selectedTags: Set<string>;
   onToggleTag: (slug: string) => void;
   onClear: () => void;
 }
 
-export function FilterDropdown({ allTags, selectedTags, onToggleTag, onClear }: FilterDropdownProps) {
+export function FilterDropdown({ allTags, articles, selectedTags, onToggleTag, onClear }: FilterDropdownProps) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Sort tags by usage count, show top N
+  const sortedTags = useMemo(() => {
+    if (!articles || articles.length === 0) return allTags.slice(0, MAX_VISIBLE_TAGS);
+
+    const counts = new Map<string, number>();
+    for (const article of articles) {
+      for (const tag of article.tags ?? []) {
+        counts.set(tag.slug.current, (counts.get(tag.slug.current) || 0) + 1);
+      }
+    }
+
+    return [...allTags]
+      .sort((a, b) => (counts.get(b.slug.current) || 0) - (counts.get(a.slug.current) || 0))
+      .slice(0, MAX_VISIBLE_TAGS);
+  }, [allTags, articles]);
+
+  const hasMoreTags = allTags.length > MAX_VISIBLE_TAGS;
 
   // Close on outside click
   useEffect(() => {
@@ -84,7 +106,7 @@ export function FilterDropdown({ allTags, selectedTags, onToggleTag, onClear }: 
             Tags
           </p>
           <div className="space-y-0.5">
-            {allTags.map((tag) => {
+            {sortedTags.map((tag) => {
               const isActive = selectedTags.has(tag.slug.current);
               return (
                 <button
@@ -105,6 +127,15 @@ export function FilterDropdown({ allTags, selectedTags, onToggleTag, onClear }: 
               );
             })}
           </div>
+          {hasMoreTags && (
+            <Link
+              href="/search"
+              className="block text-center text-xs text-muted-foreground hover:text-accent transition-colors pt-2 pb-1 border-t border-border mt-2"
+              onClick={() => setOpen(false)}
+            >
+              All tags →
+            </Link>
+          )}
         </div>
       )}
     </div>

@@ -56,7 +56,7 @@ export function ArticleBody({
       )}
 
       {/* ── Article Body ── */}
-      <div className="article-prose prose prose-lg prose-invert max-w-none prose-headings:text-foreground prose-headings:font-bold prose-p:text-foreground/90 prose-a:text-accent prose-a:underline prose-a:decoration-accent/30 hover:prose-a:decoration-accent prose-strong:text-foreground prose-blockquote:border-l-2 prose-blockquote:border-accent prose-blockquote:text-muted-foreground prose-blockquote:not-italic prose-blockquote:pl-4 prose-img:rounded-lg prose-hr:border-border prose-li:text-foreground/90 prose-code:text-accent">
+      <div className="article-prose prose prose-lg prose-invert max-w-none prose-headings:text-accent prose-headings:font-bold prose-p:text-foreground/90 prose-a:text-accent prose-a:underline prose-a:decoration-accent/30 hover:prose-a:decoration-accent prose-strong:text-accent prose-blockquote:border-l-2 prose-blockquote:border-accent prose-blockquote:text-muted-foreground prose-blockquote:not-italic prose-blockquote:pl-4 prose-img:rounded-lg prose-hr:border-border prose-li:text-foreground/90 prose-code:text-accent">
         <PortableText value={body} components={portableTextComponents} />
       </div>
 
