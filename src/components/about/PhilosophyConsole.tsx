@@ -5,15 +5,15 @@ import { WebRating } from "@/components/content/WebRating";
 const beliefs = [
   {
     title: "Constructive Criticism",
-    text: "Writing like I'm talking to a friend. Puts you onto something new, or respectfully challenges your perspective without making you feel like an idiot for disagreeing.",
+    text: "I write like I'm putting a friend onto something. Honest, but never just to be loud.",
   },
   {
     title: "Repeat Engagement",
-    text: "I approach media like food \u2014 with respect for everything I consume. Some of it's comfort food, some challenges you. It all deserves to be engaged with thoughtfully.",
+    text: "Not everything needs to be a masterpiece to be worth your time. Some things are comfort, some things challenge you. I try to meet all of it where it is.",
   },
   {
     title: "The Web Is Yours Too",
-    text: "This isn't just my web. Spider-Man was never about one person. It's about the idea that anyone can wear the mask. That's what this space is.",
+    text: "This isn't a one-person operation. If something resonates, if you disagree, if you want to put me onto something I missed, that's the whole point.",
   },
 ];
 
