@@ -36,6 +36,7 @@ export default defineType({
       name: "image",
       title: "Image",
       type: "image",
+      description: "Single image — or use the Images array below for carousels",
       options: { hotspot: true },
       fields: [
         defineField({
@@ -47,11 +48,32 @@ export default defineType({
       hidden: ({ document }) => document?.pieceType === "video",
       validation: (rule) =>
         rule.custom((value, context) => {
-          if (context.document?.pieceType === "image" && !value) {
-            return "Image is required for image pieces";
+          const doc = context.document;
+          if (doc?.pieceType === "image" && !value && !(doc?.images as unknown[])?.length) {
+            return "Provide either a single image or an images array";
           }
           return true;
         }),
+    }),
+    defineField({
+      name: "images",
+      title: "Images (Carousel)",
+      type: "array",
+      description: "Multiple images for carousel posts. If set, this takes priority over the single image field.",
+      of: [
+        {
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            defineField({
+              name: "alt",
+              title: "Alt Text",
+              type: "string",
+            }),
+          ],
+        },
+      ],
+      hidden: ({ document }) => document?.pieceType === "video",
     }),
     defineField({
       name: "videoUrl",

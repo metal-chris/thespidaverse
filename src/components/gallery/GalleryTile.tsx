@@ -28,11 +28,56 @@ interface GalleryTileProps {
   onClick: () => void;
 }
 
+function getYouTubeId(url: string): string | null {
+  const shorts = url.match(/\/shorts\/([a-zA-Z0-9_-]+)/);
+  if (shorts) return shorts[1];
+  const watch = url.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+  if (watch) return watch[1];
+  const short = url.match(/youtu\.be\/([a-zA-Z0-9_-]+)/);
+  if (short) return short[1];
+  return null;
+}
+
+function getInstagramEmbedUrl(url: string): string | null {
+  const match = url.match(/instagram\.com\/(p|reel)\/([a-zA-Z0-9_-]+)/);
+  return match ? `https://www.instagram.com/${match[1]}/${match[2]}/embed/` : null;
+}
+
+function safeUrl(url: string | undefined | null): string {
+  if (!url || url.length < 10) return "";
+  return url;
+}
+
 function getImageUrl(piece: GalleryPiece): string {
   if (piece.pieceType === "image") {
-    return piece.imageUrl || (piece.image ? urlFor(piece.image).width(600).url() : "") || "";
+    const firstImage = piece.images?.[0] || piece.image;
+    return safeUrl(piece.imageUrl) || (firstImage ? safeUrl(urlFor(firstImage).width(600).url()) : "") || "";
   }
-  return piece.videoThumbnailUrl || (piece.videoThumbnail ? urlFor(piece.videoThumbnail).width(600).url() : "") || "";
+  // Video thumbnail: Sanity thumbnail → YouTube auto-thumbnail → empty
+  if (piece.videoThumbnailUrl) return safeUrl(piece.videoThumbnailUrl);
+  if (piece.videoThumbnail) return safeUrl(urlFor(piece.videoThumbnail).width(600).url());
+  // YouTube auto-thumbnail
+  if (piece.videoUrl) {
+    const ytId = getYouTubeId(piece.videoUrl);
+    if (ytId) return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+  }
+  return "";
+}
+
+/** Check if piece should use an embed preview instead of an image */
+function getEmbedPreviewUrl(piece: GalleryPiece): string | null {
+  // Only for pieces with no image at all
+  const hasImage = getImageUrl(piece);
+  if (hasImage) return null;
+
+  const url = piece.videoUrl || piece.originalUrl || "";
+  return getInstagramEmbedUrl(url);
+}
+
+function getCarouselCount(piece: GalleryPiece): number {
+  if (piece.images?.length) return piece.images.length;
+  if (piece.imageUrls?.length) return piece.imageUrls.length;
+  return 0;
 }
 
 /** Extract aspect ratio from URL params for CLS prevention */
@@ -47,13 +92,17 @@ function getAspectFromUrl(url: string): string | undefined {
 
 export function GalleryTile({ piece, onClick }: GalleryTileProps) {
   const imageUrl = getImageUrl(piece);
+  const embedPreviewUrl = getEmbedPreviewUrl(piece);
   const altText = piece.image?.alt || piece.videoThumbnail?.alt || piece.title;
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
-  const showPlaceholder = !imageUrl || imgError;
+  const hasImage = imageUrl && !imgError;
+  const hasEmbed = !hasImage && !!embedPreviewUrl;
+  const showPlaceholder = !hasImage && !hasEmbed;
   const aspect = imageUrl ? getAspectFromUrl(imageUrl) : undefined;
   const franchiseStyle = FRANCHISE_STYLES[piece.franchise] || FRANCHISE_STYLES.other;
+  const carouselCount = getCarouselCount(piece);
 
   return (
     <button
@@ -61,9 +110,8 @@ export function GalleryTile({ piece, onClick }: GalleryTileProps) {
       className="group relative w-full rounded-xl overflow-hidden border border-border bg-card transition-[box-shadow,border-color] duration-300 hover:shadow-lg hover:shadow-accent/5 hover:border-accent/30 cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       aria-label={`View "${piece.title}" by ${piece.artistName}`}
     >
-      {!showPlaceholder ? (
+      {hasImage ? (
         <div className="relative" style={aspect ? { aspectRatio: aspect } : undefined}>
-          {/* Skeleton shimmer — shown while image loads */}
           {!imgLoaded && (
             <div className="absolute inset-0 bg-muted animate-pulse" />
           )}
@@ -83,6 +131,22 @@ export function GalleryTile({ piece, onClick }: GalleryTileProps) {
             onError={() => setImgError(true)}
           />
         </div>
+      ) : hasEmbed ? (
+        <div className="relative aspect-square overflow-hidden bg-neutral-100">
+          <iframe
+            src={embedPreviewUrl!}
+            className="absolute top-0 left-0 border-none pointer-events-none"
+            style={{
+              width: "400%",
+              height: "400%",
+              transform: "scale(0.25)",
+              transformOrigin: "top left",
+            }}
+            tabIndex={-1}
+            loading="lazy"
+            title={`Preview: ${piece.title}`}
+          />
+        </div>
       ) : (
         <div className="aspect-square bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center">
           <svg viewBox="0 0 24 24" className="w-10 h-10 text-accent/20" fill="currentColor">
@@ -93,6 +157,19 @@ export function GalleryTile({ piece, onClick }: GalleryTileProps) {
 
       {/* Hover overlay — lighter on top, darker at bottom */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/10 to-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+      {/* Carousel indicator — top-right */}
+      {carouselCount > 1 && (
+        <div className="absolute top-2 right-2 pointer-events-none">
+          <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold rounded-md bg-black/60 text-white backdrop-blur-sm">
+            <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2}>
+              <rect x="2" y="2" width="20" height="20" rx="2" />
+              <rect x="6" y="6" width="20" height="20" rx="2" opacity="0.5" />
+            </svg>
+            {carouselCount}
+          </span>
+        </div>
+      )}
 
       {/* Video play icon overlay */}
       {piece.pieceType === "video" && (

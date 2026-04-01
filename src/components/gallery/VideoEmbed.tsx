@@ -36,6 +36,12 @@ function getTikTokId(url: string): string | null {
   return match ? match[1] : null;
 }
 
+function getInstagramPath(url: string): string | null {
+  // Match /p/SHORTCODE/ or /reel/SHORTCODE/
+  const match = url.match(/instagram\.com\/(p|reel)\/([a-zA-Z0-9_-]+)/);
+  return match ? `${match[1]}/${match[2]}` : null;
+}
+
 export function VideoEmbed({ videoUrl, videoPlatform, className = "" }: VideoEmbedProps) {
   const platform = videoPlatform || detectPlatform(videoUrl);
 
@@ -72,8 +78,25 @@ export function VideoEmbed({ videoUrl, videoPlatform, className = "" }: VideoEmb
     );
   }
 
-  // Instagram or unknown — fallback to link
-  return <FallbackLink url={videoUrl} label={platform === "instagram" ? "Watch on Instagram" : "Watch Video"} />;
+  if (platform === "instagram") {
+    const igPath = getInstagramPath(videoUrl);
+    if (!igPath) return <FallbackLink url={videoUrl} label="Watch on Instagram" />;
+
+    return (
+      <div className={`aspect-[9/16] max-h-[70vh] w-auto mx-auto ${className}`}>
+        <iframe
+          src={`https://www.instagram.com/${igPath}/embed/`}
+          className="w-full h-full rounded-lg bg-neutral-900"
+          allowFullScreen
+          title="Instagram embed"
+          style={{ border: "none", overflow: "hidden" }}
+        />
+      </div>
+    );
+  }
+
+  // Unknown platform — fallback to link
+  return <FallbackLink url={videoUrl} label="Watch Video" />;
 }
 
 function FallbackLink({ url, label }: { url: string; label: string }) {

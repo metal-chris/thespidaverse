@@ -218,7 +218,9 @@ export interface GalleryPiece {
   slug: { current: string };
   pieceType: GalleryPieceType;
   image?: SanityImage;
+  images?: SanityImage[];
   imageUrl?: string;
+  imageUrls?: string[];
   videoUrl?: string;
   videoPlatform?: VideoPlatform;
   videoThumbnail?: SanityImage;

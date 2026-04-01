@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import type { GalleryPiece } from "@/types";
 import { GalleryFilterBar } from "./GalleryFilterBar";
 import { MasonryGrid } from "./MasonryGrid";
-import { GalleryViewer } from "./GalleryViewer";
+import { GalleryModal } from "./GalleryModal";
 import { Button } from "@/components/ui/Button";
 
 const BATCH_SIZE = 16;
@@ -62,18 +62,6 @@ export function GalleryPageClient({ initialPieces, spotlight }: GalleryPageClien
     router.push(`/gallery?piece=${piece.slug.current}`, { scroll: false });
   }, [router]);
 
-  // ── Viewer mode: full-page film strip viewer ──
-  if (viewerPiece) {
-    return (
-      <GalleryViewer
-        initialPiece={viewerPiece}
-        pieces={filteredPieces}
-      />
-    );
-  }
-
-  // ── Grid mode: masonry gallery ──
-  // Spotlight is rendered separately in the viewport section above
   return (
     <>
       {/* Filters */}
@@ -102,6 +90,16 @@ export function GalleryPageClient({ initialPieces, spotlight }: GalleryPageClien
             {loading ? "Loading..." : "Load More"}
           </Button>
         </div>
+      )}
+
+      {/* Modal overlay — grid stays rendered underneath */}
+      {viewerPiece && (
+        <GalleryModal
+          piece={viewerPiece}
+          pieces={filteredPieces}
+          onClose={() => router.push("/gallery", { scroll: false })}
+          onNavigate={(p) => router.push(`/gallery?piece=${p.slug.current}`, { scroll: false })}
+        />
       )}
     </>
   );
