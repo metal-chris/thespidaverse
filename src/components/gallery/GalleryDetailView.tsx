@@ -370,8 +370,8 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
           <div className="px-4 pb-4">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <h2 className="text-sm font-bold truncate">{activePiece.title}</h2>
-                <p className="text-xs text-muted-foreground truncate">
+                <h2 className="text-sm font-bold">{activePiece.title}</h2>
+                <p className="text-xs text-muted-foreground">
                   by {activePiece.artistName}
                 </p>
               </div>
