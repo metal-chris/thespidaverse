@@ -749,6 +749,7 @@
   .gallery-viewer-sidebar {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     width: 320px;
     flex-shrink: 0;
     overflow-y: auto;
