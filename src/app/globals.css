@@ -732,7 +732,7 @@
   .gallery-viewer-center {
     flex-direction: row;
     justify-content: center;
-    align-items: stretch;
+    align-items: center;
   }
 }
 
@@ -751,6 +751,7 @@
 
 @media (min-width: 768px) {
   .gallery-viewer-media {
+    flex: 0 1 auto;
     max-width: 900px;
   }
 }
