@@ -110,6 +110,7 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
   // Carousel state (within multi-image pieces)
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [iframeHeight, setIframeHeight] = useState(480);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -120,7 +121,30 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
   useEffect(() => {
     setCarouselIndex(0);
     setIframeLoaded(false);
+    setIframeHeight(480);
   }, [activePiece._id]);
+
+  // Auto-size Instagram embed via its postMessage resize events
+  const igIframeRef = useRef<HTMLIFrameElement>(null);
+  useEffect(() => {
+    if (!isInstagramSource(activePiece)) return;
+    const handleMessage = (e: MessageEvent) => {
+      if (typeof e.data === "string") {
+        try {
+          const data = JSON.parse(e.data);
+          if (data.type === "MEASURE" && data.details?.height) {
+            setIframeHeight(data.details.height);
+          }
+        } catch { /* ignore non-JSON messages */ }
+      }
+      // Instagram also sends {type: "resize", height: N} in some cases
+      if (e.data?.type === "resize" && typeof e.data.height === "number") {
+        setIframeHeight(e.data.height);
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [activePiece]);
 
   // Share URL (built client-side)
   const [shareUrl, setShareUrl] = useState(`/gallery?piece=${activePiece.slug.current}`);
@@ -238,12 +262,22 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
                   </div>
                 )}
                 <iframe
+                  ref={igIframeRef}
                   src={igEmbedUrl}
                   className="w-full rounded-lg"
-                  style={{ border: "none", minHeight: 480, height: iframeLoaded ? 800 : 480 }}
+                  style={{ border: "none", height: iframeHeight }}
                   allowFullScreen
                   title={`Instagram: ${activePiece.title}`}
-                  onLoad={() => setIframeLoaded(true)}
+                  onLoad={() => {
+                    setIframeLoaded(true);
+                    // Fallback: measure content height after a delay if postMessage doesn't fire
+                    setTimeout(() => {
+                      try {
+                        const h = igIframeRef.current?.contentDocument?.documentElement?.scrollHeight;
+                        if (h && h > 100) setIframeHeight(h);
+                      } catch { /* cross-origin, use postMessage instead */ }
+                    }, 1500);
+                  }}
                 />
               </div>
             )}

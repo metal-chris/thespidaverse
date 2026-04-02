@@ -191,10 +191,10 @@ export function CollapsibleActions({ slug, title, shareUrl, originalUrl }: Colla
     setOpenPanel((prev) => (prev === panel ? null : panel));
   };
 
-  // The icon for the react button — shows selected reaction or default heart
+  // The icon for the react button — shows selected reaction or neutral thinking face
   const reactIcon = selectedReaction
-    ? REACTIONS.find((r) => r.type === selectedReaction)?.emoji || "❤️"
-    : "❤️";
+    ? REACTIONS.find((r) => r.type === selectedReaction)?.emoji || "🤔"
+    : "🤔";
 
   const totalReactions = Object.values(reactions).reduce((a, b) => a + b, 0);
 
