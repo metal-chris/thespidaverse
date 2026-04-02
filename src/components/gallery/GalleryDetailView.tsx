@@ -302,7 +302,8 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
                   alt={currentImage.alt}
                   width={currentImage.dims.width}
                   height={currentImage.dims.height}
-                  className="max-h-full max-w-full object-contain rounded-lg"
+                  className="object-contain rounded-lg"
+                  style={{ maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto" }}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 800px"
                   priority
                   unoptimized
