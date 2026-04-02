@@ -32,6 +32,10 @@ export const deskStructure = (S: StructureBuilder) =>
         .title("Media Library")
         .schemaType("media")
         .child(S.documentTypeList("media").title("Media")),
+      S.listItem()
+        .title("Gallery")
+        .schemaType("galleryPiece")
+        .child(S.documentTypeList("galleryPiece").title("Gallery")),
       S.divider(),
       S.listItem()
         .title("Categories")
