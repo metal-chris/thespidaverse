@@ -208,7 +208,7 @@ export interface GraphEdge {
 // --- Gallery ---
 
 export type GalleryPieceType = "image" | "video";
-export type GalleryFranchise = "spider-verse" | "venom" | "anime" | "games" | "music" | "other";
+export type GalleryFranchise = "spider-verse" | "venom" | "anime" | "manga" | "games" | "movies" | "tv" | "music" | "culture" | "other";
 export type VideoPlatform = "youtube" | "tiktok" | "instagram";
 
 export interface GalleryPiece {

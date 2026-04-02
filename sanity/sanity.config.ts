@@ -10,6 +10,7 @@ const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 export default defineConfig({
   name: "thespidaverse",
   title: "The Spidaverse",
+  basePath: "/studio",
   projectId,
   dataset,
   plugins: [

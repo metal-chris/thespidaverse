@@ -9,8 +9,12 @@ const FRANCHISE_STYLES: Record<string, { bg: string; text: string }> = {
   "spider-verse": { bg: "bg-red-500/80", text: "text-white" },
   venom: { bg: "bg-neutral-700/80", text: "text-white" },
   anime: { bg: "bg-pink-500/80", text: "text-white" },
+  manga: { bg: "bg-rose-400/80", text: "text-white" },
   games: { bg: "bg-blue-500/80", text: "text-white" },
+  movies: { bg: "bg-amber-500/80", text: "text-white" },
+  tv: { bg: "bg-emerald-500/80", text: "text-white" },
   music: { bg: "bg-purple-500/80", text: "text-white" },
+  culture: { bg: "bg-teal-500/80", text: "text-white" },
   other: { bg: "bg-accent/80", text: "text-white" },
 };
 
@@ -18,8 +22,12 @@ const FRANCHISE_LABELS: Record<string, string> = {
   "spider-verse": "Spider-Verse",
   venom: "Venom",
   anime: "Anime",
+  manga: "Manga",
   games: "Games",
+  movies: "Movies",
+  tv: "TV",
   music: "Music",
+  culture: "Culture",
   other: "Other",
 };
 
