@@ -13,9 +13,10 @@ const BATCH_SIZE = 16;
 interface GalleryPageClientProps {
   initialPieces: GalleryPiece[];
   spotlight: GalleryPiece | null;
+  totalCount: number;
 }
 
-export function GalleryPageClient({ initialPieces, spotlight }: GalleryPageClientProps) {
+export function GalleryPageClient({ initialPieces, spotlight, totalCount }: GalleryPageClientProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -79,6 +80,7 @@ export function GalleryPageClient({ initialPieces, spotlight }: GalleryPageClien
         activeType={activeType}
         onTypeChange={setActiveType}
         pieces={pieces}
+        totalCount={totalCount}
       />
 
       <MasonryGrid

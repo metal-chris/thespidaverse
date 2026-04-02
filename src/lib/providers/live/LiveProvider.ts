@@ -352,6 +352,15 @@ export class LiveProvider implements DataProvider {
     }
   }
 
+  async getGalleryCount(): Promise<number> {
+    try {
+      const { galleryCountQuery } = await import("@/lib/sanity/queries");
+      return await sanityFetch<number>(galleryCountQuery, undefined, 0);
+    } catch {
+      return 0;
+    }
+  }
+
   async getGallerySpotlight(): Promise<GalleryPiece | null> {
     try {
       return await sanityFetch<GalleryPiece | null>(

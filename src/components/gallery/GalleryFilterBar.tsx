@@ -14,19 +14,21 @@ interface GalleryFilterBarProps {
   activeType: string;
   onTypeChange: (type: string) => void;
   pieces: GalleryPiece[];
+  totalCount?: number;
 }
 
 export function GalleryFilterBar({
   activeType,
   onTypeChange,
   pieces,
+  totalCount,
 }: GalleryFilterBarProps) {
   return (
     <div className="flex items-center gap-2 mb-6">
       {TYPE_OPTIONS.map((option) => {
         const count =
           option.value === "all"
-            ? pieces.length
+            ? (totalCount ?? pieces.length)
             : pieces.filter((p) => p.pieceType === option.value).length;
         const isActive = activeType === option.value;
 

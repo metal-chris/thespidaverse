@@ -153,6 +153,7 @@ export interface DataProvider {
 
   // Gallery
   getGalleryPieces(filters?: GalleryFilters): Promise<GalleryPiece[]>;
+  getGalleryCount(): Promise<number>;
   getGallerySpotlight(): Promise<GalleryPiece | null>;
 
   // External metadata (Phase 3)

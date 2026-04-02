@@ -15,8 +15,12 @@ const FRANCHISE_LABELS: Record<string, string> = {
   "spider-verse": "Spider-Verse",
   venom: "Venom",
   anime: "Anime",
+  manga: "Manga",
   games: "Games",
+  movies: "Movies",
+  tv: "TV",
   music: "Music",
+  culture: "Culture",
   other: "Other",
 };
 
@@ -246,6 +250,8 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
 
       {/* ── Three-panel layout ── */}
       <div className="gallery-viewer-content">
+        {/* ── Media + Sidebar group (centered on desktop) ── */}
+        <div className="gallery-viewer-center">
         {/* ── Media area — image/embed fills this ── */}
         <div className="gallery-viewer-media">
           <div
@@ -291,14 +297,15 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
 
             {/* Sanity image (with carousel) */}
             {isImage && currentImage && (
-              <div className="relative max-h-full max-w-full flex items-center justify-center">
+              <div className="relative flex items-center justify-center" style={{ maxWidth: "min(100%, 1200px)", maxHeight: "80vh" }}>
                 <Image
                   key={currentImage.url}
                   src={currentImage.url}
                   alt={currentImage.alt}
                   width={currentImage.dims.width}
                   height={currentImage.dims.height}
-                  className="max-h-full max-w-full object-contain rounded-lg"
+                  className="object-contain rounded-lg"
+                  style={{ maxWidth: "100%", maxHeight: "80vh", width: "auto", height: "auto" }}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 800px"
                   priority
                   unoptimized
@@ -449,6 +456,7 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
             />
           </div>
         </div>
+        </div>{/* end gallery-viewer-center */}
 
         {/* ── Film Strip ── */}
         <div

@@ -253,6 +253,10 @@ export const galleryPiecesQuery = groq`
   }
 `;
 
+export const galleryCountQuery = groq`
+  count(*[_type == "galleryPiece"])
+`;
+
 export const gallerySpotlightQuery = groq`
   *[_type == "galleryPiece" && isSpotlight == true] | order(publishedAt desc)[0] {
     _id,

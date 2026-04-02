@@ -18,9 +18,10 @@ export const revalidate = 60;
 export default async function GalleryPage() {
   const provider = getProvider();
 
-  const [pieces, spotlight] = await Promise.all([
+  const [pieces, spotlight, totalCount] = await Promise.all([
     provider.getGalleryPieces({ limit: 16 }),
     provider.getGallerySpotlight(),
+    provider.getGalleryCount(),
   ]);
 
   return (
@@ -50,7 +51,7 @@ export default async function GalleryPage() {
       {/* Filters + Grid + Load More — below the fold */}
       <Container className="pb-12">
         <Suspense>
-          <GalleryPageClient initialPieces={pieces} spotlight={spotlight} />
+          <GalleryPageClient initialPieces={pieces} spotlight={spotlight} totalCount={totalCount} />
         </Suspense>
 
         <SubmissionForm />
