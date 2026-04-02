@@ -169,7 +169,7 @@ async function main() {
         }
       }
 
-      await client.create(doc);
+      await client.create(doc as Parameters<typeof client.create>[0]);
       console.log(`  ✓ ${piece.title} (${pieceType})`);
       success++;
     } catch (err) {
