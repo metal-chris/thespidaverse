@@ -1,9 +1,18 @@
 "use client";
 
 import { NextStudio } from "next-sanity/studio";
+import { useEffect } from "react";
 import config from "../../../../sanity/sanity.config";
 
 export default function StudioPage() {
+  // Hide site header/footer and take over the full viewport
+  useEffect(() => {
+    document.body.classList.add("sanity-studio-active");
+    return () => {
+      document.body.classList.remove("sanity-studio-active");
+    };
+  }, []);
+
   if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#101112] text-white/70 p-8">

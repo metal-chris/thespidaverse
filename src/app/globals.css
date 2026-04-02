@@ -1517,3 +1517,24 @@
 .web-rating-slider:focus-visible::-moz-range-thumb {
   box-shadow: 0 0 0 3px var(--color-accent);
 }
+
+/* ========================================
+   Sanity Studio — Full viewport takeover
+   ======================================== */
+body.sanity-studio-active {
+  overflow: hidden;
+}
+
+body.sanity-studio-active > * > header,
+body.sanity-studio-active > * > footer,
+body.sanity-studio-active > * > button[aria-label="Scroll to top"],
+body.sanity-studio-active > * > a[href="#main-content"] {
+  display: none !important;
+}
+
+body.sanity-studio-active #main-content {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: auto;
+}
