@@ -38,11 +38,6 @@ function getYouTubeId(url: string): string | null {
   return null;
 }
 
-function getInstagramEmbedUrl(url: string): string | null {
-  const match = url.match(/instagram\.com\/(p|reel)\/([a-zA-Z0-9_-]+)/);
-  return match ? `https://www.instagram.com/${match[1]}/${match[2]}/embed/` : null;
-}
-
 function safeUrl(url: string | undefined | null): string {
   if (!url || url.length < 10) return "";
   return url;
@@ -64,16 +59,6 @@ function getImageUrl(piece: GalleryPiece): string {
   return "";
 }
 
-/** Check if piece should use an embed preview instead of an image */
-function getEmbedPreviewUrl(piece: GalleryPiece): string | null {
-  // Only for pieces with no image at all
-  const hasImage = getImageUrl(piece);
-  if (hasImage) return null;
-
-  const url = piece.videoUrl || piece.originalUrl || "";
-  return getInstagramEmbedUrl(url);
-}
-
 function getCarouselCount(piece: GalleryPiece): number {
   if (piece.images?.length) return piece.images.length;
   if (piece.imageUrls?.length) return piece.imageUrls.length;
@@ -92,14 +77,11 @@ function getAspectFromUrl(url: string): string | undefined {
 
 export function GalleryTile({ piece, onClick }: GalleryTileProps) {
   const imageUrl = getImageUrl(piece);
-  const embedPreviewUrl = getEmbedPreviewUrl(piece);
   const altText = piece.image?.alt || piece.videoThumbnail?.alt || piece.title;
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
-  const hasImage = imageUrl && !imgError;
-  const hasEmbed = !hasImage && !!embedPreviewUrl;
-  const showPlaceholder = !hasImage && !hasEmbed;
+  const showPlaceholder = !imageUrl || imgError;
   const aspect = imageUrl ? getAspectFromUrl(imageUrl) : undefined;
   const franchiseStyle = FRANCHISE_STYLES[piece.franchise] || FRANCHISE_STYLES.other;
   const carouselCount = getCarouselCount(piece);
@@ -110,7 +92,7 @@ export function GalleryTile({ piece, onClick }: GalleryTileProps) {
       className="group relative w-full rounded-xl overflow-hidden border border-border bg-card transition-[box-shadow,border-color] duration-300 hover:shadow-lg hover:shadow-accent/5 hover:border-accent/30 cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       aria-label={`View "${piece.title}" by ${piece.artistName}`}
     >
-      {hasImage ? (
+      {!showPlaceholder ? (
         <div className="relative" style={aspect ? { aspectRatio: aspect } : undefined}>
           {!imgLoaded && (
             <div className="absolute inset-0 bg-muted animate-pulse" />
@@ -129,22 +111,6 @@ export function GalleryTile({ piece, onClick }: GalleryTileProps) {
             loading="lazy"
             onLoad={() => setImgLoaded(true)}
             onError={() => setImgError(true)}
-          />
-        </div>
-      ) : hasEmbed ? (
-        <div className="relative aspect-square overflow-hidden bg-neutral-100">
-          <iframe
-            src={embedPreviewUrl!}
-            className="absolute top-0 left-0 border-none pointer-events-none"
-            style={{
-              width: "400%",
-              height: "400%",
-              transform: "scale(0.25)",
-              transformOrigin: "top left",
-            }}
-            tabIndex={-1}
-            loading="lazy"
-            title={`Preview: ${piece.title}`}
           />
         </div>
       ) : (

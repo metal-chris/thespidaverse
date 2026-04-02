@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import type { GalleryPiece } from "@/types";
 import { GalleryFilterBar } from "./GalleryFilterBar";
 import { MasonryGrid } from "./MasonryGrid";
-import { GalleryModal } from "./GalleryModal";
+import { GalleryDetailView } from "./GalleryDetailView";
 import { Button } from "@/components/ui/Button";
 
 const BATCH_SIZE = 16;
@@ -62,22 +62,30 @@ export function GalleryPageClient({ initialPieces, spotlight }: GalleryPageClien
     router.push(`/gallery?piece=${piece.slug.current}`, { scroll: false });
   }, [router]);
 
+  // ── Detail view: full-page viewer with filmstrip ──
+  if (viewerPiece) {
+    return (
+      <GalleryDetailView
+        initialPiece={viewerPiece}
+        pieces={filteredPieces}
+      />
+    );
+  }
+
+  // ── Grid mode: masonry gallery ──
   return (
     <>
-      {/* Filters */}
       <GalleryFilterBar
         activeType={activeType}
         onTypeChange={setActiveType}
         pieces={pieces}
       />
 
-      {/* Masonry Grid */}
       <MasonryGrid
         pieces={filteredPieces}
         onPieceClick={handlePieceClick}
       />
 
-      {/* Load More */}
       {hasMore && activeType === "all" && (
         <div className="flex justify-center mt-8">
           <Button
@@ -90,16 +98,6 @@ export function GalleryPageClient({ initialPieces, spotlight }: GalleryPageClien
             {loading ? "Loading..." : "Load More"}
           </Button>
         </div>
-      )}
-
-      {/* Modal overlay — grid stays rendered underneath */}
-      {viewerPiece && (
-        <GalleryModal
-          piece={viewerPiece}
-          pieces={filteredPieces}
-          onClose={() => router.push("/gallery", { scroll: false })}
-          onNavigate={(p) => router.push(`/gallery?piece=${p.slug.current}`, { scroll: false })}
-        />
       )}
     </>
   );
