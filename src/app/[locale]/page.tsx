@@ -24,7 +24,7 @@ export default async function HomePage() {
     <>
       {/* Hero + Categories — single viewport unit */}
       <HeroSection className="min-h-[calc(100vh-65px)]">
-        <Container className="relative z-10 pb-6 -mt-4">
+        <Container className="relative z-10 pb-2">
           <CategoryGrid />
         </Container>
       </HeroSection>
