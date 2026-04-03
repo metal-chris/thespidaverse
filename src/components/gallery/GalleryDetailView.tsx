@@ -259,7 +259,7 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
           >
             {/* Instagram embed */}
             {isIG && igEmbedUrl && (
-              <div className="relative w-full max-w-lg mx-auto" style={{ minHeight: 480 }}>
+              <div className="relative w-full max-w-xl mx-auto" style={{ minHeight: 480 }}>
                 {!iframeLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center bg-muted/50 rounded-lg animate-pulse">
                     <span className="text-muted-foreground text-sm">Loading embed...</span>
@@ -288,7 +288,7 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
 
             {/* YouTube / TikTok video */}
             {isVideo && activePiece.videoUrl && (
-              <div className="w-full max-w-3xl mx-auto">
+              <div className="w-full max-w-5xl mx-auto">
                 <VideoEmbed videoUrl={activePiece.videoUrl} videoPlatform={activePiece.videoPlatform} />
               </div>
             )}

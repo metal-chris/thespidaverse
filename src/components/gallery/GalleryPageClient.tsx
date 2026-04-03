@@ -23,7 +23,11 @@ export function GalleryPageClient({ initialPieces, spotlight, totalCount }: Gall
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [pieces, setPieces] = useState<GalleryPiece[]>(initialPieces);
+  // Merge spotlight into pieces so it's accessible in the detail viewer
+  const [pieces, setPieces] = useState<GalleryPiece[]>(() => {
+    if (!spotlight || initialPieces.some((p) => p._id === spotlight._id)) return initialPieces;
+    return [spotlight, ...initialPieces];
+  });
   const [activeType, setActiveType] = useState("all");
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialPieces.length >= BATCH_SIZE);
