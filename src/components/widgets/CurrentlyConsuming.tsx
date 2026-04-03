@@ -83,7 +83,7 @@ function ConsumingItem({ label, title, imageUrl, subtitle, progress, isLive, hre
             {statusText}
           </p>
         </div>
-        <p className="text-sm font-medium truncate">
+        <p className="text-sm font-bold truncate">
           {href ? (
             <a href={href} target="_blank" rel="noopener noreferrer" className="hover:text-accent">
               {title}
@@ -92,7 +92,7 @@ function ConsumingItem({ label, title, imageUrl, subtitle, progress, isLive, hre
             title
           )}
         </p>
-        {subtitle && <p className="text-xs text-muted-foreground truncate">{capitalizeSubtitle(subtitle)}</p>}
+        {subtitle && <p className="text-xs text-muted-foreground italic truncate">{capitalizeSubtitle(subtitle)}</p>}
         {progress && <p className="text-xs text-accent">{progress}</p>}
       </div>
     </div>
