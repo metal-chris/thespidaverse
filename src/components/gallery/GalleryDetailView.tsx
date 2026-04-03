@@ -251,7 +251,7 @@ export function GalleryDetailView({ initialPiece, pieces, hasMore, onLoadMore }:
       const target = el.offsetLeft - stripW / 2 + el.offsetWidth / 2;
       strip.scrollTo({ left: target, behavior });
     }
-  }, [activeIndex, activePiece._id, isAnimating]);
+  }, [activeIndex, activePiece._id, isAnimating, pieces.length]);
 
   const handleThumbTap = useCallback((index: number) => {
     setHasInteracted(true);
