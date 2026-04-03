@@ -20,6 +20,8 @@ const SUBTITLE_MAP: Record<string, string> = {
   switch: "Switch",
   manga: "Manga",
   anime: "Anime",
+  books: "Books",
+  comic: "Comic",
   movie: "Movie",
   music: "Music",
   podcast: "Podcast",

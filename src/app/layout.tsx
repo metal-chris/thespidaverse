@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s | The Spidaverse",
   },
   description:
-    "Movies. TV. Games. Anime. Manga. Music. One web connects them all. A pop culture blog by Spida-Mane.",
+    "Movies. TV. Games. Anime. Books. Music. One web connects them all. A pop culture blog by Spida-Mane.",
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -29,13 +29,13 @@ export const metadata: Metadata = {
     siteName: "The Spidaverse",
     title: "The Spidaverse",
     description:
-      "Movies. TV. Games. Anime. Manga. Music. One web connects them all.",
+      "Movies. TV. Games. Anime. Books. Music. One web connects them all.",
   },
   twitter: {
     card: "summary_large_image",
     title: "The Spidaverse",
     description:
-      "Movies. TV. Games. Anime. Manga. Music. One web connects them all.",
+      "Movies. TV. Games. Anime. Books. Music. One web connects them all.",
   },
   robots: {
     index: true,

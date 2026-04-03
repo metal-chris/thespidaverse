@@ -131,7 +131,7 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
           className="mt-6 text-base md:text-lg text-muted-foreground max-w-xl mx-auto text-balance leading-relaxed opacity-0 animate-hero-fade-in"
           style={{ animationDelay: "0.45s" }}
         >
-          Movies. TV. Games. Anime. Manga. Music.
+          Movies. TV. Games. Anime. Books. Music.
           <br />
           <span className="text-foreground font-medium">One web connects them all.</span>
         </p>

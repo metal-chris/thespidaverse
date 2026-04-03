@@ -11,7 +11,7 @@ const FRANCHISES: GalleryFranchise[] = [
   "spider-verse",
   "venom",
   "anime",
-  "manga",
+  "books",
   "games",
   "movies",
   "tv",

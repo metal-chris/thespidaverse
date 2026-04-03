@@ -35,7 +35,7 @@ export async function GET() {
   <channel>
     <title>The Spidaverse</title>
     <link>${siteUrl}</link>
-    <description>Movies. TV. Games. Anime. Manga. Music. One web connects them all.</description>
+    <description>Movies. TV. Games. Anime. Books. Music. One web connects them all.</description>
     <language>en-US</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml" />

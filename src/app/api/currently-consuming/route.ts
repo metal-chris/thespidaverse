@@ -100,7 +100,7 @@ export async function GET() {
   const reading = anilist.manga
     ? {
         title: anilist.manga.title,
-        mediaType: "manga",
+        mediaType: "books",
         coverUrl: anilist.manga.coverUrl,
         progress: anilist.manga.progress,
         isLive: false,

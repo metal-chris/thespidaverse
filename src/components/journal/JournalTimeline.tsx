@@ -119,7 +119,7 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
     "tv",
     "game",
     "anime",
-    "manga",
+    "books",
     "music",
   ];
   const statuses: FilterStatus[] = [

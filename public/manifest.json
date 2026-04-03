@@ -1,7 +1,7 @@
 {
   "name": "The Spidaverse",
   "short_name": "Spidaverse",
-  "description": "Movies. TV. Games. Anime. Manga. Music. One web connects them all.",
+  "description": "Movies. TV. Games. Anime. Books. Music. One web connects them all.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

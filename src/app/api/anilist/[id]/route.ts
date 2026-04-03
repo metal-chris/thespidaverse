@@ -72,7 +72,7 @@ export async function GET(
       releaseDate: media.startDate?.year
         ? `${media.startDate.year}-${String(media.startDate.month || 1).padStart(2, "0")}-${String(media.startDate.day || 1).padStart(2, "0")}`
         : null,
-      mediaType: type === "MANGA" ? "manga" : "anime",
+      mediaType: type === "MANGA" ? "books" : "anime",
     };
 
     return NextResponse.json(result, {

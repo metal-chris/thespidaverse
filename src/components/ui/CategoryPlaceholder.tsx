@@ -125,8 +125,8 @@ function PatternSVG({ category, rgb, baseOpacity, strongOpacity }: { category?: 
       return <GamesPattern c={c} cStrong={cStrong} />;
     case "Anime":
       return <AnimePattern c={c} cStrong={cStrong} />;
-    case "Manga":
-      return <MangaPattern c={c} cStrong={cStrong} />;
+    case "Books":
+      return <BooksPattern c={c} cStrong={cStrong} />;
     case "Music":
       return <MusicPattern c={c} cStrong={cStrong} />;
     case "Culture":
@@ -249,8 +249,8 @@ function AnimePattern({ c, cStrong }: PatternProps) {
   );
 }
 
-/** Manga — Halftone Ben-Day dots */
-function MangaPattern({ c, cStrong }: PatternProps) {
+/** Books — Halftone Ben-Day dots */
+function BooksPattern({ c, cStrong }: PatternProps) {
   const rows = 12;
   const cols = 18;
   return (

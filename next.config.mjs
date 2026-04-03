@@ -12,6 +12,11 @@ const nextConfig = {
         destination: "/journal",
         permanent: true,
       },
+      {
+        source: "/category/manga",
+        destination: "/category/books",
+        permanent: true,
+      },
     ];
   },
   images: {

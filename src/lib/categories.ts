@@ -64,7 +64,7 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     titleHover: "group-hover:text-amber-400",
     rgb: "245,158,11",
   },
-  Manga: {
+  Books: {
     icon: BookOpenText,
     iconColor: "text-pink-400",
     gradient: "from-pink-500/20 to-pink-500/5",

@@ -6,7 +6,7 @@ const THEME_TO_TEMPLATE: Record<string, CollectionTemplate> = {
   "seasonal-picks": "poster",
   "guilty-pleasures": "vinyl",
   "deep-cuts": "vinyl",
-  underrated: "manga",
+  underrated: "books",
 };
 
 /** Derive a visual template from the collection's theme field. */
@@ -18,7 +18,7 @@ export function getCollectionTemplate(theme?: string): CollectionTemplate {
 const TEMPLATE_ASPECTS: Record<CollectionTemplate, string> = {
   poster: "2/3",
   vinyl: "1/1",
-  manga: "3/4",
+  books: "3/4",
   default: "4/5",
 };
 
@@ -30,7 +30,7 @@ export function getTemplateAspect(template: CollectionTemplate): string {
 const ARTICLES_LABELS: Record<CollectionTemplate, string> = {
   poster: "Credits",
   vinyl: "Tracklist",
-  manga: "Chapters",
+  books: "Chapters",
   default: "Articles",
 };
 
@@ -42,7 +42,7 @@ export function getArticlesLabel(template: CollectionTemplate): string {
 const NUMBER_PREFIXES: Record<CollectionTemplate, string> = {
   poster: "",
   vinyl: "♪",
-  manga: "Ch.",
+  books: "Ch.",
   default: "",
 };
 

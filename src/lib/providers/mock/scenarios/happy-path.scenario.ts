@@ -42,7 +42,7 @@ export function buildHappyPathScenario(): MockDataset {
     createCategory({ title: "TV" }),            // 1
     createCategory({ title: "Video Games" }),   // 2
     createCategory({ title: "Anime" }),         // 3
-    createCategory({ title: "Manga" }),         // 4
+    createCategory({ title: "Books" }),         // 4
     createCategory({ title: "Music" }),         // 5
     createCategory({ title: "Culture" }),       // 6
   ];
@@ -462,7 +462,7 @@ export function buildHappyPathScenario(): MockDataset {
       tags: [tags[11], tags[8]],
       moodTags: ["dark", "thought-provoking"],
       format: "the-sinister-six",
-      mediaType: "manga",
+      mediaType: "books",
       webRating: 87,
       readingTime: 10,
     }),
@@ -826,7 +826,7 @@ export function buildHappyPathScenario(): MockDataset {
     createMedia({ title: "Frieren: Beyond Journey's End", mediaType: "anime", posterUrl: "https://picsum.photos/seed/frieren/300/450" }),
     createMedia({ title: "Kendrick Lamar - GNX", mediaType: "music", posterUrl: "https://picsum.photos/seed/gnx/300/300" }),
     createMedia({ title: "Hollow Knight: Silksong", mediaType: "game", posterUrl: "https://picsum.photos/seed/silksong/300/450" }),
-    createMedia({ title: "One Piece", mediaType: "manga", posterUrl: "https://picsum.photos/seed/onepiece/300/450" }),
+    createMedia({ title: "One Piece", mediaType: "books", posterUrl: "https://picsum.photos/seed/onepiece/300/450" }),
     // Replaced faker entries with real data
     createMedia({ title: "Arcane", mediaType: "tv", posterUrl: "https://picsum.photos/seed/arcane/300/450" }),
     createMedia({ title: "Cyberpunk 2077", mediaType: "game", posterUrl: "https://picsum.photos/seed/cyberpunk/300/450" }),
@@ -957,7 +957,7 @@ export function buildHappyPathScenario(): MockDataset {
     }),
     createJournalEntry({
       title: "One Piece (Manga)",
-      mediaType: "manga",
+      mediaType: "books",
       status: "reading",
       notes: "Chapter 1120. Oda keeps finding new ways to make me cry.",
       media: media[7],
@@ -1034,7 +1034,7 @@ export function buildHappyPathScenario(): MockDataset {
     },
     reading: {
       title: "One Piece",
-      mediaType: "manga",
+      mediaType: "books",
       coverUrl: "https://picsum.photos/seed/onepiece/300/450",
       externalId: "op-1120",
       externalSource: "anilist",

@@ -16,7 +16,7 @@ export type ArticleFormat =
 
 export type ArticleSeries = "cartoons-and-cereal";
 
-export type MediaType = "movie" | "tv" | "game" | "anime" | "manga" | "music";
+export type MediaType = "movie" | "tv" | "game" | "anime" | "books" | "music";
 
 export interface SanityImage {
   _type: "image";
@@ -76,7 +76,7 @@ export interface MediaEntry {
   metadata?: Record<string, unknown>;
 }
 
-export type CollectionTemplate = "poster" | "vinyl" | "manga" | "default";
+export type CollectionTemplate = "poster" | "vinyl" | "books" | "default";
 
 export interface Collection {
   _id: string;
@@ -212,7 +212,7 @@ export interface GraphEdge {
 // --- Gallery ---
 
 export type GalleryPieceType = "image" | "video";
-export type GalleryFranchise = "spider-verse" | "venom" | "anime" | "manga" | "games" | "movies" | "tv" | "music" | "culture" | "other";
+export type GalleryFranchise = "spider-verse" | "venom" | "anime" | "books" | "games" | "movies" | "tv" | "music" | "culture" | "other";
 export type VideoPlatform = "youtube" | "tiktok" | "instagram";
 
 export interface GalleryPiece {

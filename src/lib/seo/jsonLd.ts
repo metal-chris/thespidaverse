@@ -7,7 +7,7 @@ export function websiteJsonLd() {
     name: "The Spidaverse",
     url: siteUrl,
     description:
-      "Movies. TV. Games. Anime. Manga. Music. One web connects them all.",
+      "Movies. TV. Games. Anime. Books. Music. One web connects them all.",
     potentialAction: {
       "@type": "SearchAction",
       target: {

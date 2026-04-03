@@ -14,7 +14,7 @@ const MEDIA_TYPES: MediaType[] = [
   "tv",
   "game",
   "anime",
-  "manga",
+  "books",
   "music",
 ];
 

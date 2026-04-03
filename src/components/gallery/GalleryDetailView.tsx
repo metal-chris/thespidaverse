@@ -15,7 +15,7 @@ const FRANCHISE_LABELS: Record<string, string> = {
   "spider-verse": "Spider-Verse",
   venom: "Venom",
   anime: "Anime",
-  manga: "Manga",
+  books: "Books",
   games: "Games",
   movies: "Movies",
   tv: "TV",

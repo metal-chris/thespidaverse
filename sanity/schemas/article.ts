@@ -211,7 +211,7 @@ export default defineType({
           { title: "TV", value: "tv" },
           { title: "Game", value: "game" },
           { title: "Anime", value: "anime" },
-          { title: "Manga", value: "manga" },
+          { title: "Books", value: "books" },
           { title: "Music", value: "music" },
         ],
       },

@@ -16,7 +16,7 @@ export function formatMediaType(type: string): string {
     tv: "TV",
     game: "Game",
     anime: "Anime",
-    manga: "Manga",
+    books: "Books",
     music: "Music",
   };
   return labels[type] || type;

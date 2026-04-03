@@ -144,7 +144,7 @@ export default defineType({
           { title: "Spider-Verse", value: "spider-verse" },
           { title: "Venom", value: "venom" },
           { title: "Anime", value: "anime" },
-          { title: "Manga", value: "manga" },
+          { title: "Books", value: "books" },
           { title: "Games", value: "games" },
           { title: "Movies", value: "movies" },
           { title: "TV", value: "tv" },

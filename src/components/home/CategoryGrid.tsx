@@ -16,7 +16,7 @@ const primaryCategories: CategoryDef[] = [
 const secondaryCategories: CategoryDef[] = [
   { title: "TV", href: "/category/tv" },
   { title: "Tech", href: "/category/tech" },
-  { title: "Manga", href: "/category/manga" },
+  { title: "Books", href: "/category/books" },
   { title: "Music", href: "/category/music" },
 ];
 

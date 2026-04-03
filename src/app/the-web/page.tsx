@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "The Web",
   description:
-    "Explore the connections between movies, TV, games, anime, manga, and music across the Spidaverse.",
+    "Explore the connections between movies, TV, games, anime, books, and music across the Spidaverse.",
 };
 
 export const revalidate = 300;

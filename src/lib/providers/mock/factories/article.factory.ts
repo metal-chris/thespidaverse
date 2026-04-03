@@ -28,7 +28,7 @@ const MEDIA_TYPES: MediaType[] = [
   "tv",
   "game",
   "anime",
-  "manga",
+  "books",
   "music",
 ];
 const MOODS = [
@@ -65,7 +65,7 @@ function createCategory(overrides: Partial<Category> = {}): Category {
       "TV",
       "Video Games",
       "Anime",
-      "Manga",
+      "Books",
       "Music",
       "Culture",
       "Tech",
@@ -229,7 +229,7 @@ function generateMediaLength(mediaType?: MediaType): string | undefined {
       return `${faker.number.int({ min: 5, max: 100 })}+ hours`;
     case "anime":
       return `${faker.number.int({ min: 12, max: 50 })} episodes`;
-    case "manga":
+    case "books":
       return `${faker.number.int({ min: 20, max: 300 })} chapters`;
     case "music":
       return `${faker.number.int({ min: 30, max: 75 })} min`;

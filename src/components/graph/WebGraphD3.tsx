@@ -68,7 +68,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   TV: "#F97316",
   "Video Games": "#3B82F6",
   Anime: "#F59E0B",
-  Manga: "#EC4899",
+  Books: "#EC4899",
   Music: "#10B981",
   Culture: "#A855F7",
   Tech: "#06B6D4",
