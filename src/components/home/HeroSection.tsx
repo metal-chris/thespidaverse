@@ -102,7 +102,7 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
       <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} />
 
       {/* Content — above all background layers, centered in remaining space */}
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-start justify-center pt-[18vh] md:pt-[16vh]">
       <Container className="relative z-10 text-center">
         {/* Mono tagline above heading */}
         <p
@@ -139,13 +139,13 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
         </p>
 
         {/* Children (e.g. CategoryGrid) */}
-        <div className="mt-28 md:mt-32 opacity-0 animate-hero-fade-in" style={{ animationDelay: "0.6s" }}>
+        <div className="hidden md:block mt-36 md:mt-44 opacity-0 animate-hero-fade-in" style={{ animationDelay: "0.6s" }}>
           {children}
         </div>
 
-        {/* Scroll indicator — below categories */}
+        {/* Scroll indicator — below categories on desktop, lower on mobile */}
         <div
-          className="mt-8 flex justify-center opacity-0 animate-hero-fade-in"
+          className="mt-32 md:mt-8 flex justify-center opacity-0 animate-hero-fade-in"
           style={{ animationDelay: "0.8s" }}
         >
           <button
