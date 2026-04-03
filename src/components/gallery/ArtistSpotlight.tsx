@@ -30,7 +30,7 @@ export function ArtistSpotlight({ piece, onClick }: ArtistSpotlightProps) {
           src={imageUrl}
           alt={piece.image?.alt || piece.videoThumbnail?.alt || piece.title}
           fill
-          className="object-cover group-hover:scale-[1.03] transition-transform duration-700"
+          className="object-cover"
           sizes="100vw"
           priority
           unoptimized

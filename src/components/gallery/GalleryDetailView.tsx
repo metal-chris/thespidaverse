@@ -148,10 +148,20 @@ export function GalleryDetailView({ initialPiece, pieces, hasMore, onLoadMore }:
       return;
     }
 
-    if (dir === "next" && idx < len - 1) {
-      setCarouselIndex(idx + 1);
-    } else if (dir === "prev" && idx > 0) {
-      setCarouselIndex(idx - 1);
+    if (dir === "next") {
+      if (idx < len - 1) {
+        setCarouselIndex(idx + 1);
+      } else if (activeIndexRef.current < pieces.length - 1) {
+        // At last image — advance to next piece
+        goTo(activeIndexRef.current + 1);
+      }
+    } else if (dir === "prev") {
+      if (idx > 0) {
+        setCarouselIndex(idx - 1);
+      } else if (activeIndexRef.current > 0) {
+        // At first image — go to previous piece
+        goTo(activeIndexRef.current - 1);
+      }
     }
   };
   const [iframeLoaded, setIframeLoaded] = useState(false);

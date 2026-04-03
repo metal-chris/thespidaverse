@@ -32,11 +32,33 @@ export function GalleryPageClient({ initialPieces, spotlight, totalCount }: Gall
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialPieces.length >= BATCH_SIZE);
 
-  // Filter pieces client-side
+  const [activeSort, setActiveSort] = useState<"newest" | "oldest" | "a-z" | "z-a">("newest");
+
+  // Filter + sort pieces client-side
   const filteredPieces = useMemo(() => {
-    if (activeType === "all") return pieces;
-    return pieces.filter((p) => p.pieceType === activeType);
-  }, [pieces, activeType]);
+    let result = activeType === "all" ? [...pieces] : pieces.filter((p) => p.pieceType === activeType);
+
+    switch (activeSort) {
+      case "oldest":
+        result.sort((a, b) => (a.publishedAt || "").localeCompare(b.publishedAt || ""));
+        break;
+      case "a-z":
+        result.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case "z-a":
+        result.sort((a, b) => b.title.localeCompare(a.title));
+        break;
+      // "newest" is already the default order from the API
+    }
+
+    return result;
+  }, [pieces, activeType, activeSort]);
+
+  // Grid pieces: exclude spotlight to avoid duplicate display
+  const gridPieces = useMemo(() => {
+    if (!spotlight) return filteredPieces;
+    return filteredPieces.filter((p) => p._id !== spotlight._id);
+  }, [filteredPieces, spotlight]);
 
   // Check if we're viewing a specific piece
   const pieceSlug = searchParams.get("piece");
@@ -88,12 +110,14 @@ export function GalleryPageClient({ initialPieces, spotlight, totalCount }: Gall
       <GalleryFilterBar
         activeType={activeType}
         onTypeChange={setActiveType}
+        activeSort={activeSort}
+        onSortChange={setActiveSort}
         pieces={pieces}
         totalCount={totalCount}
       />
 
       <MasonryGrid
-        pieces={filteredPieces}
+        pieces={gridPieces}
         onPieceClick={handlePieceClick}
       />
 
