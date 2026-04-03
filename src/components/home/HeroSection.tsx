@@ -138,28 +138,29 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
           <span className="text-foreground font-medium">{t("hero.subtitle")}</span>
         </p>
 
-        {/* Scroll indicator */}
-        <div
-          className="mt-12 flex justify-center opacity-0 animate-hero-fade-in"
-          style={{ animationDelay: "0.7s" }}
-        >
-          <button
-            className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-accent/30 text-accent/70 bg-accent/5 backdrop-blur-sm hover:text-accent hover:border-accent/50 hover:bg-accent/10 transition-all duration-200 animate-bounce-slow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            onClick={() => {
-              const main = document.getElementById("main-content");
-              const hero = main?.querySelector("section:nth-child(2)");
-              hero?.scrollIntoView({ behavior: "smooth" });
-            }}
-            aria-label={t("hero.scrollToContent")}
-          >
-            <ArrowDown className="w-4 h-4" strokeWidth={2} />
-          </button>
-        </div>
       </Container>
       </div>
 
       {/* Children (e.g. CategoryGrid) anchored at bottom */}
       {children}
+
+      {/* Scroll indicator — below categories, nudges past the fold */}
+      <div
+        className="relative z-10 flex justify-center pb-4 opacity-0 animate-hero-fade-in"
+        style={{ animationDelay: "0.7s" }}
+      >
+        <button
+          className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-accent/30 text-accent/70 bg-accent/5 backdrop-blur-sm hover:text-accent hover:border-accent/50 hover:bg-accent/10 transition-all duration-200 animate-bounce-slow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          onClick={() => {
+            const main = document.getElementById("main-content");
+            const hero = main?.querySelector("section:nth-child(2)");
+            hero?.scrollIntoView({ behavior: "smooth" });
+          }}
+          aria-label={t("hero.scrollToContent")}
+        >
+          <ArrowDown className="w-4 h-4" strokeWidth={2} />
+        </button>
+      </div>
     </section>
   );
 }
