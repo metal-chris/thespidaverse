@@ -101,8 +101,8 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
       {/* Layer 4: Interactive spider web canvas */}
       <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} />
 
-      {/* Content — above all background layers, biased toward bottom to stay close to categories */}
-      <div className="flex-1 flex items-end justify-center pb-10 md:pb-14">
+      {/* Content — above all background layers, centered in remaining space */}
+      <div className="flex-1 flex items-center justify-center">
       <Container className="relative z-10 text-center">
         {/* Mono tagline above heading */}
         <p
