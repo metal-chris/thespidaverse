@@ -3,12 +3,65 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { Globe } from "lucide-react";
+
+/** Inline SVG flags — render consistently across all browsers/OS */
+function FlagUS({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 18" className={className} aria-hidden="true">
+      <rect width="24" height="18" fill="#B22234" rx="2" />
+      <rect y="1.38" width="24" height="1.38" fill="#fff" />
+      <rect y="4.15" width="24" height="1.38" fill="#fff" />
+      <rect y="6.92" width="24" height="1.38" fill="#fff" />
+      <rect y="9.69" width="24" height="1.38" fill="#fff" />
+      <rect y="12.46" width="24" height="1.38" fill="#fff" />
+      <rect y="15.23" width="24" height="1.38" fill="#fff" />
+      <rect width="10" height="9.69" fill="#3C3B6E" />
+    </svg>
+  );
+}
+
+function FlagES({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 18" className={className} aria-hidden="true">
+      <rect width="24" height="18" fill="#AA151B" rx="2" />
+      <rect y="4.5" width="24" height="9" fill="#F1BF00" />
+    </svg>
+  );
+}
+
+function FlagJP({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 18" className={className} aria-hidden="true">
+      <rect width="24" height="18" fill="#fff" rx="2" />
+      <rect width="24" height="18" fill="none" stroke="#e5e5e5" strokeWidth="0.5" rx="2" />
+      <circle cx="12" cy="9" r="5.4" fill="#BC002D" />
+    </svg>
+  );
+}
+
+function FlagBR({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 18" className={className} aria-hidden="true">
+      <rect width="24" height="18" fill="#009B3A" rx="2" />
+      <polygon points="12,2.5 22,9 12,15.5 2,9" fill="#FEDF00" />
+      <circle cx="12" cy="9" r="3.5" fill="#002776" />
+    </svg>
+  );
+}
+
+const FLAG_COMPONENTS: Record<string, React.FC<{ className?: string }>> = {
+  en: FlagUS,
+  es: FlagES,
+  ja: FlagJP,
+  pt: FlagBR,
+};
 
 const LOCALES = [
-  { code: "en", flag: "🇺🇸", label: "English" },
-  { code: "es", flag: "🇪🇸", label: "Español" },
-  { code: "ja", flag: "🇯🇵", label: "日本語" },
-  { code: "pt", flag: "🇧🇷", label: "Português" },
+  { code: "en", label: "English" },
+  { code: "es", label: "Español" },
+  { code: "ja", label: "日本語" },
+  { code: "pt", label: "Português" },
 ];
 
 /** Three rotating arcs matching the WebSpinner theme */
@@ -79,7 +132,7 @@ export function LocaleSwitcher() {
     return () => document.removeEventListener("keydown", handleKey);
   }, [open]);
 
-  const currentLocale = LOCALES.find((l) => l.code === locale);
+  const CurrentFlag = FLAG_COMPONENTS[locale];
 
   function switchTo(code: string) {
     router.replace(pathname, { locale: code });
@@ -88,7 +141,7 @@ export function LocaleSwitcher() {
 
   return (
     <div ref={ref} className="relative">
-      {/* Globe trigger button with spinner arcs */}
+      {/* Trigger button with spinner arcs */}
       <button
         onClick={() => setOpen(!open)}
         className="relative flex items-center justify-center w-8 h-8 rounded-lg hover:bg-muted transition-colors"
@@ -96,28 +149,33 @@ export function LocaleSwitcher() {
         aria-expanded={open}
       >
         <SpinnerArcs animate={open} />
-        <span className="relative text-base leading-none" aria-hidden="true">
-          {currentLocale?.flag || "🌐"}
-        </span>
+        {CurrentFlag ? (
+          <CurrentFlag className="relative w-5 h-[15px] rounded-sm" />
+        ) : (
+          <Globe className="relative w-4 h-4 text-muted-foreground" />
+        )}
       </button>
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 top-full mt-2 min-w-[140px] rounded-lg border border-border bg-background shadow-xl shadow-black/30 overflow-hidden z-50">
-          {LOCALES.map(({ code, flag, label }) => (
-            <button
-              key={code}
-              onClick={() => switchTo(code)}
-              className={`flex items-center gap-2.5 w-full px-3 py-2 text-sm transition-colors ${
-                code === locale
-                  ? "text-accent bg-accent/10 font-medium"
-                  : "text-foreground hover:bg-muted"
-              }`}
-            >
-              <span className="text-base leading-none">{flag}</span>
-              <span>{label}</span>
-            </button>
-          ))}
+        <div className="absolute right-0 top-full mt-2 min-w-[150px] rounded-lg border border-border bg-background shadow-xl shadow-black/30 overflow-hidden z-50">
+          {LOCALES.map(({ code, label }) => {
+            const Flag = FLAG_COMPONENTS[code];
+            return (
+              <button
+                key={code}
+                onClick={() => switchTo(code)}
+                className={`flex items-center gap-2.5 w-full px-3 py-2 text-sm transition-colors ${
+                  code === locale
+                    ? "text-accent bg-accent/10 font-medium"
+                    : "text-foreground hover:bg-muted"
+                }`}
+              >
+                {Flag && <Flag className="w-5 h-[15px] rounded-sm shrink-0" />}
+                <span>{label}</span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
