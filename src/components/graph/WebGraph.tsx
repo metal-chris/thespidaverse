@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { GraphControls } from "./GraphControls";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {

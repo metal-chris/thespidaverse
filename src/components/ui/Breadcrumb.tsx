@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Home, LayoutGrid, PenLine, type LucideIcon } from "lucide-react";
 
 /** Map of known routes to their icons. */

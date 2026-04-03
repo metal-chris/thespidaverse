@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { urlFor } from "@/lib/sanity/image";
 import { getCollectionTemplate } from "@/lib/collections/template";

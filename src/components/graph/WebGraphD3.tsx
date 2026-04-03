@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import * as d3Hierarchy from "d3-hierarchy";
 import * as d3Selection from "d3-selection";
 import * as d3Zoom from "d3-zoom";

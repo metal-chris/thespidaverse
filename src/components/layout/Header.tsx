@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { SearchButton } from "@/components/search/SearchButton";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";

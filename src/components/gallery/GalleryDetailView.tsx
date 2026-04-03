@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import Image from "next/image";
 import { urlFor } from "@/lib/sanity/image";
 import { CollapsibleActions } from "@/components/ui/CollapsibleActions";
