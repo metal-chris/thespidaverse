@@ -49,15 +49,19 @@ export function VideoEmbed({ videoUrl, videoPlatform, className = "" }: VideoEmb
     const videoId = getYouTubeId(videoUrl);
     if (!videoId) return <FallbackLink url={videoUrl} label="Watch on YouTube" />;
 
+    // Landscape: fill available width, cap height to 80vh so it doesn't
+    // overflow on ultra-wide monitors while still being large on standard ones
     return (
-      <div className={`aspect-video w-full ${className}`}>
-        <iframe
-          src={`https://www.youtube.com/embed/${videoId}`}
-          className="w-full h-full rounded-lg"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          title="YouTube video"
-        />
+      <div className={`w-full mx-auto ${className}`} style={{ maxHeight: "80vh" }}>
+        <div className="aspect-video w-full" style={{ maxHeight: "80vh" }}>
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}`}
+            className="w-full h-full rounded-lg"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title="YouTube video"
+          />
+        </div>
       </div>
     );
   }
@@ -66,14 +70,17 @@ export function VideoEmbed({ videoUrl, videoPlatform, className = "" }: VideoEmb
     const videoId = getTikTokId(videoUrl);
     if (!videoId) return <FallbackLink url={videoUrl} label="Watch on TikTok" />;
 
+    // Portrait: cap width so it doesn't stretch absurdly wide, center it
     return (
-      <div className={`aspect-[9/16] max-h-[70vh] w-auto mx-auto ${className}`}>
-        <iframe
-          src={`https://www.tiktok.com/embed/v2/${videoId}`}
-          className="w-full h-full rounded-lg"
-          allowFullScreen
-          title="TikTok video"
-        />
+      <div className={`max-w-sm mx-auto ${className}`}>
+        <div className="aspect-[9/16] max-h-[80vh] w-full">
+          <iframe
+            src={`https://www.tiktok.com/embed/v2/${videoId}`}
+            className="w-full h-full rounded-lg"
+            allowFullScreen
+            title="TikTok video"
+          />
+        </div>
       </div>
     );
   }
@@ -82,15 +89,18 @@ export function VideoEmbed({ videoUrl, videoPlatform, className = "" }: VideoEmb
     const igPath = getInstagramPath(videoUrl);
     if (!igPath) return <FallbackLink url={videoUrl} label="Watch on Instagram" />;
 
+    // Portrait: same treatment as TikTok
     return (
-      <div className={`aspect-[9/16] max-h-[70vh] w-auto mx-auto ${className}`}>
-        <iframe
-          src={`https://www.instagram.com/${igPath}/embed/`}
-          className="w-full h-full rounded-lg bg-neutral-900"
-          allowFullScreen
-          title="Instagram embed"
-          style={{ border: "none", overflow: "hidden" }}
-        />
+      <div className={`max-w-sm mx-auto ${className}`}>
+        <div className="aspect-[9/16] max-h-[80vh] w-full">
+          <iframe
+            src={`https://www.instagram.com/${igPath}/embed/`}
+            className="w-full h-full rounded-lg bg-neutral-900"
+            allowFullScreen
+            title="Instagram embed"
+            style={{ border: "none", overflow: "hidden" }}
+          />
+        </div>
       </div>
     );
   }

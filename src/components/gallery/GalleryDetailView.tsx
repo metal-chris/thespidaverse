@@ -288,7 +288,7 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
 
             {/* YouTube / TikTok video */}
             {isVideo && activePiece.videoUrl && (
-              <div className="w-full max-w-5xl mx-auto">
+              <div className="w-full mx-auto">
                 <VideoEmbed videoUrl={activePiece.videoUrl} videoPlatform={activePiece.videoPlatform} />
               </div>
             )}
