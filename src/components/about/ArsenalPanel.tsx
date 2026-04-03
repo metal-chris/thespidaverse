@@ -91,15 +91,15 @@ export function ArsenalPanel() {
               href={p.href}
               onClick={
                 p.onClick
-                  ? (e) => {
+                  ? (e: React.MouseEvent) => {
                       e.preventDefault();
-                      p.onClick();
+                      p.onClick!();
                     }
                   : undefined
               }
-              target={p.onClick ? undefined : "_blank"}
-              rel={p.onClick ? undefined : "noopener noreferrer"}
-              aria-label={p.onClick ? `${p.name}: ${p.handle} (click to copy)` : p.name}
+              target={!p.onClick ? "_blank" : undefined}
+              rel={!p.onClick ? "noopener noreferrer" : undefined}
+              aria-label={p.handle ? `${p.name}: ${p.handle} (click to copy)` : p.name}
               className={cn(
                 "inline-flex items-center gap-2 px-3 py-2 rounded-lg border bg-card/50 transition-all duration-200",
                 p.color
