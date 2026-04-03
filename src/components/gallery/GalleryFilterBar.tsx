@@ -1,21 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import type { GalleryPiece } from "@/types";
-
-const TYPE_OPTIONS = [
-  { value: "all", label: "All" },
-  { value: "image", label: "Art" },
-  { value: "video", label: "Videos" },
-];
-
-const SORT_OPTIONS = [
-  { value: "newest", label: "Newest" },
-  { value: "oldest", label: "Oldest" },
-  { value: "a-z", label: "A–Z" },
-  { value: "z-a", label: "Z–A" },
-];
 
 interface GalleryFilterBarProps {
   activeType: string;
@@ -34,6 +22,21 @@ export function GalleryFilterBar({
   pieces,
   totalCount,
 }: GalleryFilterBarProps) {
+  const t = useTranslations("gallery");
+
+  const TYPE_OPTIONS = [
+    { value: "all", label: t("filterAll") },
+    { value: "image", label: t("filterArt") },
+    { value: "video", label: t("filterVideos") },
+  ];
+
+  const SORT_OPTIONS = [
+    { value: "newest", label: t("sortNewest") },
+    { value: "oldest", label: t("sortOldest") },
+    { value: "a-z", label: t("sortAZ") },
+    { value: "z-a", label: t("sortZA") },
+  ];
+
   return (
     <div className="flex flex-wrap items-center gap-2 mb-6">
       {/* Type filter buttons */}
@@ -76,7 +79,7 @@ export function GalleryFilterBar({
         value={activeSort}
         onChange={(e) => onSortChange(e.target.value as "newest" | "oldest" | "a-z" | "z-a")}
         className="ml-auto text-xs font-medium bg-card border border-border rounded-lg px-2.5 py-1.5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-accent"
-        aria-label="Sort gallery"
+        aria-label={t("sortLabel")}
       >
         {SORT_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>

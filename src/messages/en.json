@@ -281,7 +281,15 @@
     "submitting": "Submitting...",
     "submit": "Submit",
     "successMessage": "Thanks! Your submission is under review.",
-    "submitAnother": "Submit another"
+    "submitAnother": "Submit another",
+    "filterAll": "All",
+    "filterArt": "Art",
+    "filterVideos": "Videos",
+    "sortNewest": "Newest",
+    "sortOldest": "Oldest",
+    "sortAZ": "A–Z",
+    "sortZA": "Z–A",
+    "sortLabel": "Sort gallery"
   },
   "theWeb": {
     "emptyHeading": "The web is still being spun...",

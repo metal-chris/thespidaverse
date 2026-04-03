@@ -281,7 +281,15 @@
     "submitting": "送信中...",
     "submit": "投稿",
     "successMessage": "ありがとうございます！投稿は審査中です。",
-    "submitAnother": "別の作品を投稿"
+    "submitAnother": "別の作品を投稿",
+    "filterAll": "すべて",
+    "filterArt": "アート",
+    "filterVideos": "動画",
+    "sortNewest": "新しい順",
+    "sortOldest": "古い順",
+    "sortAZ": "A–Z",
+    "sortZA": "Z–A",
+    "sortLabel": "ギャラリーを並べ替え"
   },
   "theWeb": {
     "emptyHeading": "ウェブはまだ紡がれています...",

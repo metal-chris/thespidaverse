@@ -50,7 +50,7 @@ export default async function GalleryPage() {
       </div>
 
       {/* Filters + Grid + Load More — below the fold */}
-      <Container className="pb-12">
+      <Container className="pt-6 pb-12">
         <Suspense>
           <GalleryPageClient initialPieces={pieces} spotlight={spotlight} totalCount={totalCount} />
         </Suspense>
