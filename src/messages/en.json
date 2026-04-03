@@ -1,0 +1,122 @@
+{
+  "common": {
+    "skipToContent": "Skip to content",
+    "scrollToContent": "Scroll to content",
+    "loading": "Loading...",
+    "somethingWentWrong": "Something went wrong."
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "journal": "Journal",
+    "collections": "Collections",
+    "web": "Web",
+    "gallery": "Gallery",
+    "toggleMenu": "Toggle menu"
+  },
+  "header": {
+    "logo": "The Spidaverse"
+  },
+  "hero": {
+    "tagline": "A Pop Culture Web",
+    "title": "The Spidaverse",
+    "titleAccent": "Spidaverse",
+    "description": "Movies. TV. Games. Anime. Books. Music.",
+    "subtitle": "One web connects them all.",
+    "scrollToContent": "Scroll to content"
+  },
+  "meta": {
+    "title": "The Spidaverse",
+    "titleTemplate": "%s | The Spidaverse",
+    "description": "Movies. TV. Games. Anime. Books. Music. One web connects them all. A pop culture blog by Spida-Mane.",
+    "ogDescription": "Movies. TV. Games. Anime. Books. Music. One web connects them all."
+  },
+  "newsletter": {
+    "heading": "Join the Web",
+    "description": "Get new articles delivered straight to your inbox. No spam, just vibes.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "your@email.com",
+    "submit": "Get Caught Up",
+    "submitting": "...",
+    "successMessage": "You're in! Check your email to confirm.",
+    "errorDefault": "Something went wrong. Try again.",
+    "errorNetwork": "Network error. Please try again."
+  },
+  "share": {
+    "groupLabel": "Share this article",
+    "x": "Share on X",
+    "reddit": "Share on Reddit",
+    "bluesky": "Share on Bluesky",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied",
+    "copied": "Copied!",
+    "share": "Share"
+  },
+  "search": {
+    "button": "Search",
+    "buttonLabel": "Search (Cmd+K)",
+    "shortcut": "⌘K",
+    "dialogLabel": "Search",
+    "placeholder": "Search articles, tags, moods...",
+    "escKey": "ESC",
+    "allCategories": "All Categories",
+    "allFormats": "All Formats",
+    "allMoods": "All Moods",
+    "filterByCategory": "Filter by category",
+    "filterByFormat": "Filter by format",
+    "filterByMood": "Filter by mood",
+    "clearAll": "Clear all",
+    "clearFilters": "Clear filters",
+    "resultCount": "{count} {count, plural, one {result} other {results}}",
+    "resultCountForQuery": "{count} {count, plural, one {result} other {results}} for \"{query}\"",
+    "noResults": "No articles found.",
+    "formats": {
+      "firstBite": "First Bite",
+      "theFullWeb": "The Full Web",
+      "spinTheBlock": "Spin the Block",
+      "theSinisterSix": "The Sinister Six",
+      "theGauntlet": "The Gauntlet",
+      "versus": "Versus",
+      "theDailyBugle": "The Daily Bugle",
+      "spidaSense": "Spida Sense",
+      "theWebSling": "The Web Sling",
+      "stateOfTheGame": "State of the Game",
+      "theRotation": "The Rotation",
+      "oneYearLater": "One Year Later"
+    }
+  },
+  "footer": {
+    "logo": "The Spidaverse",
+    "copyright": "© {year} Spida-Mane",
+    "transitions": "Transitions",
+    "transitionsOn": "Page transitions on",
+    "transitionsOff": "Page transitions off",
+    "youtube": "YouTube",
+    "twitch": "Twitch",
+    "instagram": "Instagram",
+    "discord": "Discord: spida.mane (click to copy)"
+  },
+  "comingSoon": {
+    "earlyAccess": "Early Access",
+    "headline": "The Spidaverse",
+    "subline": "The web is ready. Are you?",
+    "leapOfFaith": "Leap of Faith",
+    "swinging": "Swinging...",
+    "accessGranted": "Access Granted",
+    "welcomeToTheWeb": "Welcome to the web.",
+    "milesMode": "Miles Mode",
+    "peterMode": "Peter Mode",
+    "venomMode": "Venom Mode"
+  },
+  "consuming": {
+    "heading": "Currently Consuming",
+    "nowPlaying": "Now Playing",
+    "lastPlayed": "Last Played",
+    "watchingNow": "Watching Now",
+    "recentlyWatched": "Recently Watched",
+    "playingNow": "Playing Now",
+    "reading": "Reading",
+    "live": "Live",
+    "nothingTracked": "Nothing tracked right now. Check back later!"
+  }
+}

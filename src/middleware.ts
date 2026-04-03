@@ -1,13 +1,14 @@
+import createMiddleware from "next-intl/middleware";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { routing } from "@/i18n/routing";
 
 const COMING_SOON_PATH = "/coming-soon";
 const COOKIE_NAME = "spidaverse-access";
 const COOKIE_VALUE = "granted";
 
-// Paths that should never be redirected
+// Paths that skip BOTH locale routing and access gate
 const BYPASS_PREFIXES = [
-  COMING_SOON_PATH,
   "/api/",
   "/_next/",
   "/favicon",
@@ -20,10 +21,12 @@ const BYPASS_PREFIXES = [
 
 const BYPASS_EXTENSIONS = [".svg", ".png", ".jpg", ".ico", ".json", ".xml", ".js", ".css", ".woff", ".woff2"];
 
+const intlMiddleware = createMiddleware(routing);
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip bypass paths
+  // Skip bypass paths entirely (no locale routing, no access gate)
   if (BYPASS_PREFIXES.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
@@ -33,21 +36,26 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check for access cookie
-  const accessCookie = request.cookies.get(COOKIE_NAME);
-  if (accessCookie?.value === COOKIE_VALUE) {
-    return NextResponse.next();
+  // Check for access cookie — if not granted, redirect to coming-soon
+  // (coming-soon itself is handled by locale routing, so allow it through)
+  const isComingSoon = pathname === COMING_SOON_PATH ||
+    routing.locales.some((l) => pathname === `/${l}${COMING_SOON_PATH}` || pathname === `/${l}/coming-soon`);
+
+  if (!isComingSoon) {
+    const accessCookie = request.cookies.get(COOKIE_NAME);
+    if (accessCookie?.value !== COOKIE_VALUE) {
+      const url = request.nextUrl.clone();
+      url.pathname = COMING_SOON_PATH;
+      return NextResponse.redirect(url);
+    }
   }
 
-  // Redirect to coming soon
-  const url = request.nextUrl.clone();
-  url.pathname = COMING_SOON_PATH;
-  return NextResponse.redirect(url);
+  // Apply locale routing (adds/strips locale prefix)
+  return intlMiddleware(request);
 }
 
 export const config = {
   matcher: [
-    // Match all paths except static files and api
-    "/((?!_next/static|_next/image).*)",
+    "/((?!_next/static|_next/image|api|studio|admin).*)",
   ],
 };

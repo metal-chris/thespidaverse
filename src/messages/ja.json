@@ -1,0 +1,122 @@
+{
+  "common": {
+    "skipToContent": "コンテンツへスキップ",
+    "scrollToContent": "コンテンツへスクロール",
+    "loading": "読み込み中...",
+    "somethingWentWrong": "エラーが発生しました。"
+  },
+  "nav": {
+    "home": "ホーム",
+    "about": "紹介",
+    "journal": "ジャーナル",
+    "collections": "コレクション",
+    "web": "ウェブ",
+    "gallery": "ギャラリー",
+    "toggleMenu": "メニューを切り替え"
+  },
+  "header": {
+    "logo": "The Spidaverse"
+  },
+  "hero": {
+    "tagline": "ポップカルチャーのウェブ",
+    "title": "The Spidaverse",
+    "titleAccent": "Spidaverse",
+    "description": "映画。テレビ。ゲーム。アニメ。書籍。音楽。",
+    "subtitle": "すべてをつなぐ一つのウェブ。",
+    "scrollToContent": "コンテンツへスクロール"
+  },
+  "meta": {
+    "title": "The Spidaverse",
+    "titleTemplate": "%s | The Spidaverse",
+    "description": "映画。テレビ。ゲーム。アニメ。書籍。音楽。すべてをつなぐ一つのウェブ。Spida-Maneによるポップカルチャーブログ。",
+    "ogDescription": "映画。テレビ。ゲーム。アニメ。書籍。音楽。すべてをつなぐ一つのウェブ。"
+  },
+  "newsletter": {
+    "heading": "ウェブに参加",
+    "description": "新しい記事を直接お届けします。スパムなし、楽しさだけ。",
+    "emailLabel": "メールアドレス",
+    "emailPlaceholder": "your@email.com",
+    "submit": "最新情報を受け取る",
+    "submitting": "...",
+    "successMessage": "登録完了！確認メールをご確認ください。",
+    "errorDefault": "エラーが発生しました。もう一度お試しください。",
+    "errorNetwork": "ネットワークエラー。もう一度お試しください。"
+  },
+  "share": {
+    "groupLabel": "この記事をシェア",
+    "x": "Xでシェア",
+    "reddit": "Redditでシェア",
+    "bluesky": "Blueskyでシェア",
+    "copyLink": "リンクをコピー",
+    "linkCopied": "リンクをコピーしました",
+    "copied": "コピーしました！",
+    "share": "シェア"
+  },
+  "search": {
+    "button": "検索",
+    "buttonLabel": "検索 (Cmd+K)",
+    "shortcut": "⌘K",
+    "dialogLabel": "検索",
+    "placeholder": "記事、タグ、ムードを検索...",
+    "escKey": "ESC",
+    "allCategories": "すべてのカテゴリ",
+    "allFormats": "すべてのフォーマット",
+    "allMoods": "すべてのムード",
+    "filterByCategory": "カテゴリで絞り込み",
+    "filterByFormat": "フォーマットで絞り込み",
+    "filterByMood": "ムードで絞り込み",
+    "clearAll": "すべてクリア",
+    "clearFilters": "フィルターをクリア",
+    "resultCount": "{count}件の結果",
+    "resultCountForQuery": "「{query}」の検索結果 {count}件",
+    "noResults": "記事が見つかりませんでした。",
+    "formats": {
+      "firstBite": "First Bite",
+      "theFullWeb": "The Full Web",
+      "spinTheBlock": "Spin the Block",
+      "theSinisterSix": "The Sinister Six",
+      "theGauntlet": "The Gauntlet",
+      "versus": "Versus",
+      "theDailyBugle": "The Daily Bugle",
+      "spidaSense": "Spida Sense",
+      "theWebSling": "The Web Sling",
+      "stateOfTheGame": "State of the Game",
+      "theRotation": "The Rotation",
+      "oneYearLater": "One Year Later"
+    }
+  },
+  "footer": {
+    "logo": "The Spidaverse",
+    "copyright": "© {year} Spida-Mane",
+    "transitions": "トランジション",
+    "transitionsOn": "ページトランジション オン",
+    "transitionsOff": "ページトランジション オフ",
+    "youtube": "YouTube",
+    "twitch": "Twitch",
+    "instagram": "Instagram",
+    "discord": "Discord: spida.mane（クリックでコピー）"
+  },
+  "comingSoon": {
+    "earlyAccess": "先行アクセス",
+    "headline": "The Spidaverse",
+    "subline": "ウェブの準備はできた。君は？",
+    "leapOfFaith": "信じて飛べ",
+    "swinging": "スウィング中...",
+    "accessGranted": "アクセス許可",
+    "welcomeToTheWeb": "ウェブへようこそ。",
+    "milesMode": "Miles Mode",
+    "peterMode": "Peter Mode",
+    "venomMode": "Venom Mode"
+  },
+  "consuming": {
+    "heading": "いま楽しんでいるもの",
+    "nowPlaying": "再生中",
+    "lastPlayed": "最後に再生",
+    "watchingNow": "視聴中",
+    "recentlyWatched": "最近視聴",
+    "playingNow": "プレイ中",
+    "reading": "読書中",
+    "live": "ライブ",
+    "nothingTracked": "現在トラッキングされていません。また後で確認してください！"
+  }
+}

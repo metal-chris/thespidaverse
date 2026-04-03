@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { SearchButton } from "@/components/search/SearchButton";
+import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { Nav } from "./Nav";
 import { Container } from "@/components/ui/Container";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
@@ -31,12 +32,14 @@ export function Header() {
 
         {/* Desktop Actions (right) */}
         <div className="hidden lg:flex items-center gap-2">
+          <LocaleSwitcher />
           <SearchButton />
           <ThemeToggle />
         </div>
 
         {/* Mobile/Tablet Controls */}
         <div className="flex items-center gap-2 lg:hidden">
+          <LocaleSwitcher />
           <SearchButton />
           <ThemeToggle />
           <button

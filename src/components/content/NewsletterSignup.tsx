@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,7 @@ interface NewsletterSignupProps {
 }
 
 export function NewsletterSignup({ variant = "inline", className }: NewsletterSignupProps) {
+  const t = useTranslations();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
@@ -35,18 +37,18 @@ export function NewsletterSignup({ variant = "inline", className }: NewsletterSi
 
       if (res.ok) {
         setStatus("success");
-        setMessage("You're in! Check your email to confirm.");
+        setMessage(t("newsletter.successMessage"));
         setEmail("");
         // Brief scale bounce on success
         formRef.current?.classList.add("animate-web-shoot");
         setTimeout(() => formRef.current?.classList.remove("animate-web-shoot"), 400);
       } else {
         setStatus("error");
-        setMessage(data.error || "Something went wrong. Try again.");
+        setMessage(data.error || t("newsletter.errorDefault"));
       }
     } catch {
       setStatus("error");
-      setMessage("Network error. Please try again.");
+      setMessage(t("newsletter.errorNetwork"));
     }
   }
 
@@ -84,10 +86,10 @@ export function NewsletterSignup({ variant = "inline", className }: NewsletterSi
       <div className="relative">
         <h3 className={cn("font-bold flex items-center gap-2", isBanner ? "text-2xl mb-2 justify-center" : "text-lg mb-1")}>
           <Mail className="w-5 h-5 text-accent" />
-          Join the Web
+          {t("newsletter.heading")}
         </h3>
         <p className="text-muted-foreground text-sm mb-4">
-          Get new articles delivered straight to your inbox. No spam, just vibes.
+          {t("newsletter.description")}
         </p>
       </div>
 
@@ -99,7 +101,7 @@ export function NewsletterSignup({ variant = "inline", className }: NewsletterSi
         ) : (
           <form onSubmit={handleSubmit} className={cn("flex flex-col sm:flex-row gap-2", isBanner ? "max-w-md mx-auto" : "")}>
             <label htmlFor="newsletter-email" className="sr-only">
-              Email address
+              {t("newsletter.emailLabel")}
             </label>
             <input
               id="newsletter-email"
@@ -109,7 +111,7 @@ export function NewsletterSignup({ variant = "inline", className }: NewsletterSi
                 setEmail(e.target.value);
                 if (status === "error") setStatus("idle");
               }}
-              placeholder="your@email.com"
+              placeholder={t("newsletter.emailPlaceholder")}
               required
               disabled={status === "loading"}
               className="flex-1 px-3 py-2.5 text-sm rounded-lg border border-border bg-background/80 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent disabled:opacity-50"
@@ -121,7 +123,7 @@ export function NewsletterSignup({ variant = "inline", className }: NewsletterSi
               shape="rounded"
               disabled={status === "loading"}
             >
-              {status === "loading" ? "..." : "Get Caught Up"}
+              {status === "loading" ? t("newsletter.submitting") : t("newsletter.submit")}
             </Button>
           </form>
         )}

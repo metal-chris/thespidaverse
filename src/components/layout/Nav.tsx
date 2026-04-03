@@ -2,20 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Home, User, PenLine, LayoutGrid, Share2, Image, type LucideIcon } from "lucide-react";
 
-const links: { href: string; label: string; icon: LucideIcon }[] = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/about", label: "About", icon: User },
-  { href: "/journal", label: "Journal", icon: PenLine },
-  { href: "/collections", label: "Collections", icon: LayoutGrid },
-  { href: "/the-web", label: "Web", icon: Share2 },
-  { href: "/gallery", label: "Gallery", icon: Image },
+const links: { href: string; labelKey: string; icon: LucideIcon }[] = [
+  { href: "/", labelKey: "nav.home", icon: Home },
+  { href: "/about", labelKey: "nav.about", icon: User },
+  { href: "/journal", labelKey: "nav.journal", icon: PenLine },
+  { href: "/collections", labelKey: "nav.collections", icon: LayoutGrid },
+  { href: "/the-web", labelKey: "nav.web", icon: Share2 },
+  { href: "/gallery", labelKey: "nav.gallery", icon: Image },
 ];
 
 export function Nav({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
   const pathname = usePathname();
+  const t = useTranslations();
 
   return (
     <nav
@@ -45,7 +47,7 @@ export function Nav({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () 
             )}
           >
             {mobile && <Icon className="w-4 h-4 flex-shrink-0" />}
-            {link.label}
+            {t(link.labelKey)}
             {/* Active underline indicator */}
             {isActive && !mobile && (
               <span

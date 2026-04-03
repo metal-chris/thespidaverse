@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { SpiderWebCanvas } from "@/components/coming-soon/NeuralNetworkCanvas";
 import { GlitchText } from "@/components/ui/GlitchText";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { useTranslations } from "next-intl";
 import { ArrowDown } from "lucide-react";
 import type { Palette } from "@/components/coming-soon/particle-config";
 
@@ -15,6 +16,7 @@ interface HeroSectionProps {
 
 export function HeroSection({ className = "", children }: HeroSectionProps) {
   const { theme } = useTheme();
+  const t = useTranslations();
   const palette: Palette = theme; // miles | peter | venom — same type
 
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -107,18 +109,18 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
           className="font-mono text-xs md:text-sm uppercase tracking-[0.25em] text-accent mb-4 opacity-0 animate-hero-fade-in"
           style={{ animationDelay: "0.1s" }}
         >
-          A Pop Culture Web
+          {t("hero.tagline")}
         </p>
 
         <GlitchText
           as="h1"
-          dataText="The Spidaverse"
+          dataText={t("hero.title")}
           className="font-black tracking-tight text-balance leading-[0.9] opacity-0 animate-hero-fade-in"
           style={{ fontSize: "clamp(3rem, 5vw + 1.5rem, 7rem)", animationDelay: "0.25s" }}
         >
           The{" "}
           <span className="text-accent relative [html[data-theme='venom']_&]:text-white [html[data-theme='peter']_&]:text-[#1E50DC]">
-            Spidaverse
+            {t("hero.titleAccent")}
             {/* Underline accent */}
             <span
               className="absolute left-0 -bottom-1 w-full h-1 bg-accent/30 rounded-full"
@@ -131,9 +133,9 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
           className="mt-6 text-base md:text-lg text-muted-foreground max-w-xl mx-auto text-balance leading-relaxed opacity-0 animate-hero-fade-in"
           style={{ animationDelay: "0.45s" }}
         >
-          Movies. TV. Games. Anime. Books. Music.
+          {t("hero.description")}
           <br />
-          <span className="text-foreground font-medium">One web connects them all.</span>
+          <span className="text-foreground font-medium">{t("hero.subtitle")}</span>
         </p>
 
         {/* Scroll indicator */}
@@ -148,7 +150,7 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
               const hero = main?.querySelector("section:nth-child(2)");
               hero?.scrollIntoView({ behavior: "smooth" });
             }}
-            aria-label="Scroll to content"
+            aria-label={t("hero.scrollToContent")}
           >
             <ArrowDown className="w-4 h-4" strokeWidth={2} />
           </button>

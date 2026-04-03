@@ -1,0 +1,122 @@
+{
+  "common": {
+    "skipToContent": "Pular para o conteúdo",
+    "scrollToContent": "Rolar para o conteúdo",
+    "loading": "Carregando...",
+    "somethingWentWrong": "Algo deu errado."
+  },
+  "nav": {
+    "home": "Início",
+    "about": "Sobre",
+    "journal": "Diário",
+    "collections": "Coleções",
+    "web": "Rede",
+    "gallery": "Galeria",
+    "toggleMenu": "Abrir menu"
+  },
+  "header": {
+    "logo": "The Spidaverse"
+  },
+  "hero": {
+    "tagline": "Uma Teia de Cultura Pop",
+    "title": "The Spidaverse",
+    "titleAccent": "Spidaverse",
+    "description": "Filmes. TV. Jogos. Anime. Livros. Música.",
+    "subtitle": "Uma teia conecta tudo.",
+    "scrollToContent": "Rolar para o conteúdo"
+  },
+  "meta": {
+    "title": "The Spidaverse",
+    "titleTemplate": "%s | The Spidaverse",
+    "description": "Filmes. TV. Jogos. Anime. Livros. Música. Uma teia conecta tudo. Um blog de cultura pop por Spida-Mane.",
+    "ogDescription": "Filmes. TV. Jogos. Anime. Livros. Música. Uma teia conecta tudo."
+  },
+  "newsletter": {
+    "heading": "Entre na Teia",
+    "description": "Receba novos artigos direto na sua caixa de entrada. Sem spam, só conteúdo bom.",
+    "emailLabel": "Endereço de e-mail",
+    "emailPlaceholder": "seu@email.com",
+    "submit": "Fique por Dentro",
+    "submitting": "...",
+    "successMessage": "Você tá dentro! Confira seu e-mail para confirmar.",
+    "errorDefault": "Algo deu errado. Tente de novo.",
+    "errorNetwork": "Erro de rede. Por favor, tente novamente."
+  },
+  "share": {
+    "groupLabel": "Compartilhar este artigo",
+    "x": "Compartilhar no X",
+    "reddit": "Compartilhar no Reddit",
+    "bluesky": "Compartilhar no Bluesky",
+    "copyLink": "Copiar link",
+    "linkCopied": "Link copiado",
+    "copied": "Copiado!",
+    "share": "Compartilhar"
+  },
+  "search": {
+    "button": "Buscar",
+    "buttonLabel": "Buscar (Cmd+K)",
+    "shortcut": "⌘K",
+    "dialogLabel": "Buscar",
+    "placeholder": "Buscar artigos, tags, moods...",
+    "escKey": "ESC",
+    "allCategories": "Todas as Categorias",
+    "allFormats": "Todos os Formatos",
+    "allMoods": "Todos os Moods",
+    "filterByCategory": "Filtrar por categoria",
+    "filterByFormat": "Filtrar por formato",
+    "filterByMood": "Filtrar por mood",
+    "clearAll": "Limpar tudo",
+    "clearFilters": "Limpar filtros",
+    "resultCount": "{count} {count, plural, one {resultado} other {resultados}}",
+    "resultCountForQuery": "{count} {count, plural, one {resultado} other {resultados}} para \"{query}\"",
+    "noResults": "Nenhum artigo encontrado.",
+    "formats": {
+      "firstBite": "First Bite",
+      "theFullWeb": "The Full Web",
+      "spinTheBlock": "Spin the Block",
+      "theSinisterSix": "The Sinister Six",
+      "theGauntlet": "The Gauntlet",
+      "versus": "Versus",
+      "theDailyBugle": "The Daily Bugle",
+      "spidaSense": "Spida Sense",
+      "theWebSling": "The Web Sling",
+      "stateOfTheGame": "State of the Game",
+      "theRotation": "The Rotation",
+      "oneYearLater": "One Year Later"
+    }
+  },
+  "footer": {
+    "logo": "The Spidaverse",
+    "copyright": "© {year} Spida-Mane",
+    "transitions": "Transições",
+    "transitionsOn": "Transições de página ativadas",
+    "transitionsOff": "Transições de página desativadas",
+    "youtube": "YouTube",
+    "twitch": "Twitch",
+    "instagram": "Instagram",
+    "discord": "Discord: spida.mane (clique para copiar)"
+  },
+  "comingSoon": {
+    "earlyAccess": "Acesso Antecipado",
+    "headline": "The Spidaverse",
+    "subline": "A teia tá pronta. E você?",
+    "leapOfFaith": "Salto de Fé",
+    "swinging": "Balançando...",
+    "accessGranted": "Acesso Concedido",
+    "welcomeToTheWeb": "Bem-vindo à teia.",
+    "milesMode": "Miles Mode",
+    "peterMode": "Peter Mode",
+    "venomMode": "Venom Mode"
+  },
+  "consuming": {
+    "heading": "Consumindo Agora",
+    "nowPlaying": "Tocando Agora",
+    "lastPlayed": "Última Reprodução",
+    "watchingNow": "Assistindo Agora",
+    "recentlyWatched": "Assistido Recentemente",
+    "playingNow": "Jogando Agora",
+    "reading": "Lendo",
+    "live": "Ao Vivo",
+    "nothingTracked": "Nada sendo acompanhado agora. Volte mais tarde!"
+  }
+}
