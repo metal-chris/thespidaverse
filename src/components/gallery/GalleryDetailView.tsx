@@ -93,12 +93,27 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
 
   const initialIndex = pieces.findIndex((p) => p._id === initialPiece._id);
 
+  // Carousel state (within multi-image pieces)
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const carouselIndexRef = useRef(carouselIndex);
+  carouselIndexRef.current = carouselIndex;
+
+  // Track carousel length for edge detection
+  const carouselLengthRef = useRef(0);
+
+  // Horizontal nav handler (updated via ref to avoid circular dependency with goTo)
+  const horizontalNavRef = useRef<(dir: "next" | "prev") => void>(() => {});
+
   const {
     activeIndex,
     direction,
     isAnimating,
     swipeProgress,
     goTo,
+    canGoNext,
+    canGoPrev,
+    goNext,
+    goPrev,
     containerRef,
   } = useGalleryNavigation({
     totalPieces: pieces.length,
@@ -107,12 +122,36 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
     cooldownDuration: 80,
     wheelThreshold: 60,
     swipeThreshold: 50,
+    onHorizontalNav: useCallback((dir: "next" | "prev") => {
+      horizontalNavRef.current(dir);
+    }, []),
   });
 
   const activePiece = pieces[activeIndex];
+  const activeIndexRef = useRef(activeIndex);
+  activeIndexRef.current = activeIndex;
 
-  // Carousel state (within multi-image pieces)
-  const [carouselIndex, setCarouselIndex] = useState(0);
+  // Wire up horizontal nav handler now that goTo is available
+  horizontalNavRef.current = (dir: "next" | "prev") => {
+    const idx = carouselIndexRef.current;
+    const len = carouselLengthRef.current;
+
+    if (len <= 1) {
+      // Single image or video — horizontal nav moves between pieces
+      if (dir === "next" && activeIndexRef.current < pieces.length - 1) {
+        goTo(activeIndexRef.current + 1);
+      } else if (dir === "prev" && activeIndexRef.current > 0) {
+        goTo(activeIndexRef.current - 1);
+      }
+      return;
+    }
+
+    if (dir === "next" && idx < len - 1) {
+      setCarouselIndex(idx + 1);
+    } else if (dir === "prev" && idx > 0) {
+      setCarouselIndex(idx - 1);
+    }
+  };
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const [iframeHeight, setIframeHeight] = useState(480);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -223,6 +262,9 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
   const images = isImage ? getAllImages(activePiece) : [];
   const isCarousel = images.length > 1;
   const currentImage = images[carouselIndex] || images[0];
+
+  // Keep carousel length ref in sync for the horizontal nav callback
+  carouselLengthRef.current = images.length;
 
   return (
     <div ref={containerRef} className="gallery-viewer">
@@ -356,6 +398,29 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
             )}
           </div>
 
+          {/* ── Piece navigation arrows (desktop) ── */}
+          <button
+            onClick={goPrev}
+            className={`hidden md:flex absolute top-4 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm items-center justify-center text-white/70 hover:text-white hover:bg-black/60 transition-all ${
+              canGoPrev ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+            aria-label="Previous piece"
+          >
+            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M18 15l-6-6-6 6" />
+            </svg>
+          </button>
+          <button
+            onClick={goNext}
+            className={`hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm items-center justify-center text-white/70 hover:text-white hover:bg-black/60 transition-all ${
+              canGoNext ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+            aria-label="Next piece"
+          >
+            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
         </div>
 
         {/* ── Mobile drawer (collapsible, between media and filmstrip) ── */}

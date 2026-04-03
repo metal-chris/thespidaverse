@@ -3,18 +3,12 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 
 /**
- * Gallery Navigation Hook
+ * Gallery Navigation Hook — Split-Axis
  *
- * Converts all input types (mouse wheel, trackpad, touch swipe, keyboard)
- * into discrete "next/prev" navigation events via a gesture state machine.
+ * Vertical axis (scroll Y, swipe Y, Up/Down keys) → navigate between pieces
+ * Horizontal axis (scroll X, swipe X, Left/Right keys) → navigate within carousel
  *
- * State machine: idle → gesture_started → animating → cooldown → idle
- *
- * Key behaviors:
- * - Direction locking: once a gesture starts in one direction, opposite deltas are ignored
- * - Inertia absorption: trackpad inertia is consumed after the first navigation fires
- * - Animation gating: no input accepted while transitioning
- * - Touch preview: optional drag feedback before committing to navigation
+ * State machine per axis: idle → gesture_started → animating → cooldown → idle
  */
 
 type NavState = "idle" | "gesture_started" | "animating" | "cooldown";
@@ -23,16 +17,13 @@ type NavDirection = "next" | "prev" | null;
 interface UseGalleryNavigationOptions {
   totalPieces: number;
   initialIndex: number;
-  /** Duration of the crossfade/slide transition in ms */
   animationDuration?: number;
-  /** Cooldown after animation completes before accepting input again */
   cooldownDuration?: number;
-  /** Accumulated wheel delta needed to trigger navigation */
   wheelThreshold?: number;
-  /** Minimum touch swipe distance in px to trigger navigation */
   swipeThreshold?: number;
-  /** Time in ms without wheel events before gesture is considered ended */
   gestureEndDelay?: number;
+  /** Called when horizontal navigation fires (carousel prev/next) */
+  onHorizontalNav?: (dir: "next" | "prev") => void;
 }
 
 interface UseGalleryNavigationReturn {
@@ -40,14 +31,12 @@ interface UseGalleryNavigationReturn {
   previousIndex: number | null;
   direction: NavDirection;
   isAnimating: boolean;
-  /** Percentage of swipe progress (0-1) for touch drag preview */
   swipeProgress: number;
   canGoNext: boolean;
   canGoPrev: boolean;
   goNext: () => void;
   goPrev: () => void;
   goTo: (index: number) => void;
-  /** Attach to the gallery container element ref */
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
@@ -59,6 +48,7 @@ export function useGalleryNavigation({
   wheelThreshold = 60,
   swipeThreshold = 50,
   gestureEndDelay = 150,
+  onHorizontalNav,
 }: UseGalleryNavigationOptions): UseGalleryNavigationReturn {
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [previousIndex, setPreviousIndex] = useState<number | null>(null);
@@ -68,61 +58,64 @@ export function useGalleryNavigation({
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Refs for state machine (not reactive — used in event handlers)
-  const stateRef = useRef<NavState>("idle");
-  const gestureDirectionRef = useRef<number>(0); // +1 = next, -1 = prev
-  const accumulatedRef = useRef(0);
-  const gestureEndTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const activeIndexRef = useRef(activeIndex);
+  // Vertical axis (piece navigation) state machine
+  const vStateRef = useRef<NavState>("idle");
+  const vGestureDirRef = useRef<number>(0);
+  const vAccumulatedRef = useRef(0);
+  const vGestureTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  // Keep index ref in sync
+  // Horizontal axis (carousel navigation) state machine
+  const hStateRef = useRef<NavState>("idle");
+  const hGestureDirRef = useRef<number>(0);
+  const hAccumulatedRef = useRef(0);
+  const hGestureTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const activeIndexRef = useRef(activeIndex);
   activeIndexRef.current = activeIndex;
+
+  const onHorizontalNavRef = useRef(onHorizontalNav);
+  onHorizontalNavRef.current = onHorizontalNav;
 
   const canGoNext = activeIndex < totalPieces - 1;
   const canGoPrev = activeIndex > 0;
 
-  // ── Core navigation function ──
+  // ── Vertical navigation (between pieces) ──
   const navigate = useCallback((dir: "next" | "prev") => {
     const idx = activeIndexRef.current;
     const newIndex = dir === "next" ? idx + 1 : idx - 1;
-
     if (newIndex < 0 || newIndex >= totalPieces) return;
 
-    stateRef.current = "animating";
+    vStateRef.current = "animating";
     setPreviousIndex(idx);
     setDirection(dir);
     setIsAnimating(true);
     setActiveIndex(newIndex);
 
-    // After animation completes → cooldown → idle
     setTimeout(() => {
       setIsAnimating(false);
       setDirection(null);
       setPreviousIndex(null);
-      stateRef.current = "cooldown";
-
-      setTimeout(() => {
-        stateRef.current = "idle";
-      }, cooldownDuration);
+      vStateRef.current = "cooldown";
+      setTimeout(() => { vStateRef.current = "idle"; }, cooldownDuration);
     }, animationDuration);
   }, [totalPieces, animationDuration, cooldownDuration]);
 
   const goNext = useCallback(() => {
-    if (stateRef.current !== "idle") return;
+    if (vStateRef.current !== "idle") return;
     navigate("next");
   }, [navigate]);
 
   const goPrev = useCallback(() => {
-    if (stateRef.current !== "idle") return;
+    if (vStateRef.current !== "idle") return;
     navigate("prev");
   }, [navigate]);
 
   const goTo = useCallback((index: number) => {
     if (index < 0 || index >= totalPieces || index === activeIndexRef.current) return;
-    if (stateRef.current !== "idle") return;
+    if (vStateRef.current !== "idle") return;
 
     const dir = index > activeIndexRef.current ? "next" : "prev";
-    stateRef.current = "animating";
+    vStateRef.current = "animating";
     setPreviousIndex(activeIndexRef.current);
     setDirection(dir);
     setIsAnimating(true);
@@ -132,75 +125,114 @@ export function useGalleryNavigation({
       setIsAnimating(false);
       setDirection(null);
       setPreviousIndex(null);
-      stateRef.current = "cooldown";
-
-      setTimeout(() => {
-        stateRef.current = "idle";
-      }, cooldownDuration);
+      vStateRef.current = "cooldown";
+      setTimeout(() => { vStateRef.current = "idle"; }, cooldownDuration);
     }, animationDuration);
   }, [totalPieces, animationDuration, cooldownDuration]);
 
-  // ── Wheel handler (mouse + trackpad) ──
+  // ── Horizontal navigation (carousel) ──
+  const navigateHorizontal = useCallback((dir: "next" | "prev") => {
+    onHorizontalNavRef.current?.(dir);
+
+    // Brief cooldown to prevent rapid-fire
+    hStateRef.current = "cooldown";
+    setTimeout(() => { hStateRef.current = "idle"; }, cooldownDuration + 100);
+  }, [cooldownDuration]);
+
+  // ── Wheel handler — split Y vs X ──
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
+      const absY = Math.abs(e.deltaY);
+      const absX = Math.abs(e.deltaX);
 
-      const state = stateRef.current;
+      // Determine dominant axis
+      const isHorizontal = absX > absY && absX > 5;
+      const isVertical = absY >= absX && absY > 2;
 
-      // Reject input during animation or cooldown
-      if (state === "animating" || state === "cooldown") return;
+      if (isHorizontal) {
+        // ── Horizontal → carousel ──
+        e.preventDefault();
+        const state = hStateRef.current;
+        if (state === "animating" || state === "cooldown") return;
 
-      const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-      if (Math.abs(delta) < 2) return; // ignore micro-events
+        const sign = e.deltaX > 0 ? 1 : -1;
 
-      const sign = delta > 0 ? 1 : -1;
-
-      if (state === "idle") {
-        // Start new gesture
-        gestureDirectionRef.current = sign;
-        accumulatedRef.current = Math.abs(delta);
-        stateRef.current = "gesture_started";
-      } else if (state === "gesture_started") {
-        // Direction lock: ignore opposite deltas (inertia bounce-back)
-        if (sign !== gestureDirectionRef.current) {
-          // Reset gesture end timer but don't accumulate
-          clearTimeout(gestureEndTimerRef.current);
-          gestureEndTimerRef.current = setTimeout(() => {
-            stateRef.current = "idle";
-            accumulatedRef.current = 0;
-          }, gestureEndDelay);
-          return;
+        if (state === "idle") {
+          hGestureDirRef.current = sign;
+          hAccumulatedRef.current = absX;
+          hStateRef.current = "gesture_started";
+        } else if (state === "gesture_started") {
+          if (sign !== hGestureDirRef.current) {
+            clearTimeout(hGestureTimerRef.current);
+            hGestureTimerRef.current = setTimeout(() => {
+              hStateRef.current = "idle";
+              hAccumulatedRef.current = 0;
+            }, gestureEndDelay);
+            return;
+          }
+          hAccumulatedRef.current += absX;
         }
 
-        accumulatedRef.current += Math.abs(delta);
-      }
+        clearTimeout(hGestureTimerRef.current);
+        hGestureTimerRef.current = setTimeout(() => {
+          hStateRef.current = "idle";
+          hAccumulatedRef.current = 0;
+        }, gestureEndDelay);
 
-      // Reset gesture-end timer on every event
-      clearTimeout(gestureEndTimerRef.current);
-      gestureEndTimerRef.current = setTimeout(() => {
-        stateRef.current = "idle";
-        accumulatedRef.current = 0;
-      }, gestureEndDelay);
+        if (hAccumulatedRef.current >= wheelThreshold) {
+          hAccumulatedRef.current = 0;
+          navigateHorizontal(hGestureDirRef.current > 0 ? "next" : "prev");
+        }
+      } else if (isVertical) {
+        // ── Vertical → piece navigation ──
+        e.preventDefault();
+        const state = vStateRef.current;
+        if (state === "animating" || state === "cooldown") return;
 
-      // Check if threshold reached
-      if (accumulatedRef.current >= wheelThreshold) {
-        accumulatedRef.current = 0;
-        const dir = gestureDirectionRef.current > 0 ? "next" : "prev";
-        navigate(dir as "next" | "prev");
+        const delta = e.deltaY;
+        const sign = delta > 0 ? 1 : -1;
+
+        if (state === "idle") {
+          vGestureDirRef.current = sign;
+          vAccumulatedRef.current = absY;
+          vStateRef.current = "gesture_started";
+        } else if (state === "gesture_started") {
+          if (sign !== vGestureDirRef.current) {
+            clearTimeout(vGestureTimerRef.current);
+            vGestureTimerRef.current = setTimeout(() => {
+              vStateRef.current = "idle";
+              vAccumulatedRef.current = 0;
+            }, gestureEndDelay);
+            return;
+          }
+          vAccumulatedRef.current += absY;
+        }
+
+        clearTimeout(vGestureTimerRef.current);
+        vGestureTimerRef.current = setTimeout(() => {
+          vStateRef.current = "idle";
+          vAccumulatedRef.current = 0;
+        }, gestureEndDelay);
+
+        if (vAccumulatedRef.current >= wheelThreshold) {
+          vAccumulatedRef.current = 0;
+          navigate(vGestureDirRef.current > 0 ? "next" : "prev");
+        }
       }
     };
 
     container.addEventListener("wheel", handleWheel, { passive: false });
     return () => {
       container.removeEventListener("wheel", handleWheel);
-      clearTimeout(gestureEndTimerRef.current);
+      clearTimeout(vGestureTimerRef.current);
+      clearTimeout(hGestureTimerRef.current);
     };
-  }, [navigate, wheelThreshold, gestureEndDelay]);
+  }, [navigate, navigateHorizontal, wheelThreshold, gestureEndDelay]);
 
-  // ── Touch handler (mobile/tablet swipe) ──
+  // ── Touch handler — split Y vs X ──
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -211,7 +243,7 @@ export function useGalleryNavigation({
     let touchDelta = 0;
 
     const handleTouchStart = (e: TouchEvent) => {
-      if (stateRef.current !== "idle") return;
+      if (vStateRef.current === "animating") return;
 
       const touch = e.touches[0];
       touchStartY = touch.clientY;
@@ -222,7 +254,7 @@ export function useGalleryNavigation({
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (stateRef.current !== "idle") return;
+      if (vStateRef.current === "animating") return;
 
       const touch = e.touches[0];
       const dy = touchStartY - touch.clientY;
@@ -237,27 +269,31 @@ export function useGalleryNavigation({
         }
       }
 
-      touchDelta = touchAxis === "y" ? dy : dx;
-
-      // Preview progress (clamped 0-1)
-      const progress = Math.min(Math.abs(touchDelta) / swipeThreshold, 1);
-      setSwipeProgress(progress * Math.sign(touchDelta));
-
-      // Prevent native scroll
-      if (Math.abs(touchDelta) > 10) {
-        e.preventDefault();
+      if (touchAxis === "y") {
+        // Vertical → piece navigation preview
+        touchDelta = dy;
+        const progress = Math.min(Math.abs(touchDelta) / swipeThreshold, 1);
+        setSwipeProgress(progress * Math.sign(touchDelta));
+        if (Math.abs(touchDelta) > 10) e.preventDefault();
+      } else {
+        // Horizontal → carousel (no preview animation needed)
+        touchDelta = dx;
+        if (Math.abs(touchDelta) > 10) e.preventDefault();
       }
     };
 
     const handleTouchEnd = () => {
-      if (stateRef.current !== "idle") {
+      if (vStateRef.current === "animating") {
         setSwipeProgress(0);
         return;
       }
 
       if (Math.abs(touchDelta) >= swipeThreshold) {
-        const dir = touchDelta > 0 ? "next" : "prev";
-        navigate(dir);
+        if (touchAxis === "y") {
+          navigate(touchDelta > 0 ? "next" : "prev");
+        } else if (touchAxis === "x") {
+          navigateHorizontal(touchDelta > 0 ? "next" : "prev");
+        }
       }
 
       setSwipeProgress(0);
@@ -274,25 +310,25 @@ export function useGalleryNavigation({
       container.removeEventListener("touchmove", handleTouchMove);
       container.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [navigate, swipeThreshold]);
+  }, [navigate, navigateHorizontal, swipeThreshold]);
 
-  // ── Keyboard handler ──
+  // ── Keyboard — Up/Down for pieces, Left/Right for carousel ──
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (stateRef.current !== "idle") return;
-
-      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        if (vStateRef.current !== "idle") return;
         e.preventDefault();
-        navigate("next");
-      } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+        navigate(e.key === "ArrowDown" ? "next" : "prev");
+      } else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        if (hStateRef.current !== "idle") return;
         e.preventDefault();
-        navigate("prev");
+        navigateHorizontal(e.key === "ArrowRight" ? "next" : "prev");
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [navigate]);
+  }, [navigate, navigateHorizontal]);
 
   // Lock body scroll
   useEffect(() => {
