@@ -102,7 +102,7 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
       <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} />
 
       {/* Content — above all background layers, centered in remaining space */}
-      <div className="flex-1 flex items-start justify-center pt-[18vh] md:pt-[16vh]">
+      <div className="flex-1 flex items-center justify-center">
       <Container className="relative z-10 text-center">
         {/* Mono tagline above heading */}
         <p
@@ -139,14 +139,14 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
         </p>
 
         {/* Children (e.g. CategoryGrid) */}
-        <div className="hidden md:block mt-36 md:mt-44 opacity-0 animate-hero-fade-in" style={{ animationDelay: "0.6s" }}>
+        <div className="hidden md:block opacity-0 animate-hero-fade-in" style={{ animationDelay: "0.6s", marginTop: "14vh" }}>
           {children}
         </div>
 
         {/* Scroll indicator — below categories on desktop, lower on mobile */}
         <div
-          className="mt-32 md:mt-8 flex justify-center opacity-0 animate-hero-fade-in"
-          style={{ animationDelay: "0.8s" }}
+          className="flex justify-center opacity-0 animate-hero-fade-in"
+          style={{ animationDelay: "0.8s", marginTop: "min(8vh, 2rem)" }}
         >
           <button
             className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-accent/30 text-accent/70 bg-accent/5 backdrop-blur-sm hover:text-accent hover:border-accent/50 hover:bg-accent/10 transition-all duration-200 animate-bounce-slow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
