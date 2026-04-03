@@ -138,10 +138,15 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
           <span className="text-foreground font-medium">{t("hero.subtitle")}</span>
         </p>
 
-        {/* Scroll indicator */}
+        {/* Children (e.g. CategoryGrid) placed after tagline */}
+        <div className="mt-10 opacity-0 animate-hero-fade-in" style={{ animationDelay: "0.6s" }}>
+          {children}
+        </div>
+
+        {/* Scroll indicator — below categories */}
         <div
-          className="mt-12 flex justify-center opacity-0 animate-hero-fade-in"
-          style={{ animationDelay: "0.7s" }}
+          className="mt-6 flex justify-center opacity-0 animate-hero-fade-in"
+          style={{ animationDelay: "0.8s" }}
         >
           <button
             className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-accent/30 text-accent/70 bg-accent/5 backdrop-blur-sm hover:text-accent hover:border-accent/50 hover:bg-accent/10 transition-all duration-200 animate-bounce-slow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -157,9 +162,6 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
         </div>
       </Container>
       </div>
-
-      {/* Children (e.g. CategoryGrid) anchored at bottom */}
-      {children}
     </section>
   );
 }
