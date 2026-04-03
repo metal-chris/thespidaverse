@@ -264,7 +264,7 @@ export function Card({ article, featured = false }: CardProps) {
               )}
             >
               <CatIcon className="w-3 h-3" strokeWidth={2} />
-              {article.category.title}
+              {translateCategory(article.category.title)}
             </span>
           );
         })()}

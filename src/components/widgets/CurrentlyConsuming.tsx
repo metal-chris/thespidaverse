@@ -58,19 +58,18 @@ interface ConsumingItemProps {
 }
 
 /** Tinted background per slot, matching site category colors */
-const SLOT_COLORS: Record<string, string> = {
-  watching: "bg-orange-500/8 border-orange-500/20",
-  playing: "bg-blue-500/8 border-blue-500/20",
-  reading: "bg-pink-500/8 border-pink-500/20",
-  listening: "bg-emerald-500/8 border-emerald-500/20",
+const SLOT_BG: Record<string, string> = {
+  watching: "bg-orange-500/15",
+  playing: "bg-blue-500/15",
+  reading: "bg-pink-500/15",
+  listening: "bg-emerald-500/15",
 };
 
 function ConsumingItem({ label, title, imageUrl, subtitle, progress, isLive, href, statusText, liveLabel }: ConsumingItemProps) {
   const isListeningLive = label === "listening" && isLive;
-  const colorClass = SLOT_COLORS[label] || "bg-card border-border";
 
   return (
-    <div className={`flex items-center gap-3 p-3 rounded-lg border ${colorClass}`}>
+    <div className={`flex items-center gap-3 p-3 rounded-lg border border-border ${SLOT_BG[label] || "bg-card"}`}>
       {imageUrl && (
         <div className={`relative ${label === "listening" ? "w-12 h-12" : "w-12 h-16"} rounded overflow-hidden flex-shrink-0`}>
           <Image src={imageUrl} alt={title} fill className="object-cover" sizes="48px" />

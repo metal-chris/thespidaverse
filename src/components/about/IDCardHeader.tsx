@@ -54,6 +54,17 @@ const socials = [
 
 const categories = Object.entries(CATEGORY_CONFIG);
 
+const CATEGORY_I18N_KEY: Record<string, string> = {
+  Movies: "categories.movies",
+  TV: "categories.tv",
+  "Video Games": "categories.videoGames",
+  Anime: "categories.anime",
+  Books: "categories.books",
+  Music: "categories.music",
+  Culture: "categories.culture",
+  Tech: "categories.tech",
+};
+
 /** Spider emblem SVG — stylized avatar for the ID card */
 function SpiderEmblem() {
   return (
@@ -101,6 +112,7 @@ function AvatarWithFallback() {
 
 export function IDCardHeader() {
   const t = useTranslations("about");
+  const tCat = useTranslations("categories");
   const handleDiscordCopy = () => {
     navigator.clipboard.writeText("spida.mane");
   };
@@ -185,7 +197,7 @@ export function IDCardHeader() {
                   )}
                 >
                   <Icon className={cn("w-3 h-3", config.iconColor)} strokeWidth={2} />
-                  {name}
+                  {CATEGORY_I18N_KEY[name] ? tCat(CATEGORY_I18N_KEY[name].replace("categories.", "")) : name}
                 </div>
               );
             })}
