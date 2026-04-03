@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -16,6 +17,7 @@ interface ArticleGridProps {
 
 /** Auto-rotating carousel for 2 featured articles. */
 function FeaturedCarousel({ articles }: { articles: Article[] }) {
+  const t = useTranslations("home");
   const [activeIndex, setActiveIndex] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -73,7 +75,7 @@ function FeaturedCarousel({ articles }: { articles: Article[] }) {
               <button
                 key={i}
                 onClick={() => goTo(i)}
-                aria-label={`Show featured article ${i + 1}`}
+                aria-label={t("showFeatured", { index: i + 1 })}
                 className={cn(
                   "inline-flex items-center justify-center rounded-full text-[10px] font-bold tracking-wider transition-all duration-300 border",
                   i === activeIndex
@@ -92,6 +94,7 @@ function FeaturedCarousel({ articles }: { articles: Article[] }) {
 }
 
 export function ArticleGrid({ articles }: ArticleGridProps) {
+  const t = useTranslations("home");
   const [page, setPage] = useState(1);
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -129,13 +132,9 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
   if (articles.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
-        <p className="text-lg">No articles yet.</p>
+        <p className="text-lg">{t("noArticlesYet")}</p>
         <p className="text-sm mt-1">
-          Head to{" "}
-          <a href="/studio" className="text-accent underline">
-            /studio
-          </a>{" "}
-          to create your first post.
+          {t("noArticlesYetCta")}
         </p>
       </div>
     );
@@ -171,7 +170,7 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
               shape="rounded"
               disabled={page <= 1}
               onClick={() => goToPage(Math.max(1, page - 1))}
-              aria-label="Previous page"
+              aria-label={t("previousPage")}
             >
               <svg
                 viewBox="0 0 16 16"
@@ -193,7 +192,7 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
                 size="xs"
                 shape="rounded"
                 onClick={() => goToPage(p)}
-                aria-label={`Page ${p}`}
+                aria-label={t("page", { page: p })}
                 aria-current={p === page ? "page" : undefined}
               >
                 {p}
@@ -206,7 +205,7 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
               shape="rounded"
               disabled={page >= totalPages}
               onClick={() => goToPage(Math.min(totalPages, page + 1))}
-              aria-label="Next page"
+              aria-label={t("nextPage")}
             >
               <svg
                 viewBox="0 0 16 16"
@@ -223,7 +222,7 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
           </div>
 
           <span className="text-xs text-muted-foreground tabular-nums">
-            {articles.length} articles
+            {t("articlesCount", { count: articles.length })}
           </span>
         </div>
       )}

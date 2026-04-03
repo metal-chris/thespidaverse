@@ -1,26 +1,27 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 /* ─── Web-Shooters: Content Formats ─── */
 const formats = [
-  { name: "First Bite", tagline: "Quick-fire gut reactions" },
-  { name: "The Full Web", tagline: "Deep review, every strand examined" },
-  { name: "Spin the Block", tagline: "Ranked lists" },
-  { name: "The Sinister Six", tagline: "Top 6 picks" },
-  { name: "The Gauntlet", tagline: "Series marathon, sleep not guaranteed" },
-  { name: "Versus", tagline: "Head-to-head showdowns" },
-  { name: "The Daily Bugle", tagline: "News and hot takes" },
-  { name: "Spida Sense", tagline: "Predictions and forecasts" },
-  { name: "The Rotation", tagline: "Monthly roundup" },
-  { name: "State of the Game", tagline: "Industry check-in" },
+  { nameKey: "formatFirstBite", taglineKey: "formatFirstBiteTagline" },
+  { nameKey: "formatFullWeb", taglineKey: "formatFullWebTagline" },
+  { nameKey: "formatSpinTheBlock", taglineKey: "formatSpinTheBlockTagline" },
+  { nameKey: "formatSinisterSix", taglineKey: "formatSinisterSixTagline" },
+  { nameKey: "formatGauntlet", taglineKey: "formatGauntletTagline" },
+  { nameKey: "formatVersus", taglineKey: "formatVersusTagline" },
+  { nameKey: "formatDailyBugle", taglineKey: "formatDailyBugleTagline" },
+  { nameKey: "formatSpidaSense", taglineKey: "formatSpidaSenseTagline" },
+  { nameKey: "formatRotation", taglineKey: "formatRotationTagline" },
+  { nameKey: "formatStateOfGame", taglineKey: "formatStateOfGameTagline" },
 ];
 
 /* ─── Suit Tech: Platforms ─── */
 const platforms = [
   {
     name: "YouTube",
-    tagline: "Primary broadcast frequency",
+    taglineKey: "platformYouTubeTagline",
     handle: "@daspida-mane",
     href: "https://www.youtube.com/@daspida-mane",
     color: "text-red-500 border-red-500/30 hover:border-red-500/60 hover:bg-red-500/5",
@@ -32,7 +33,7 @@ const platforms = [
   },
   {
     name: "Twitch",
-    tagline: "Live ops channel",
+    taglineKey: "platformTwitchTagline",
     handle: "spidaman3",
     href: "https://www.twitch.tv/spidaman3",
     color: "text-purple-500 border-purple-500/30 hover:border-purple-500/60 hover:bg-purple-500/5",
@@ -44,7 +45,7 @@ const platforms = [
   },
   {
     name: "Instagram",
-    tagline: "Field recon and visual logs",
+    taglineKey: "platformInstagramTagline",
     handle: "spida.world",
     href: "https://instagram.com/spida.world",
     color: "text-pink-500 border-pink-500/30 hover:border-pink-500/60 hover:bg-pink-500/5",
@@ -56,7 +57,7 @@ const platforms = [
   },
   {
     name: "Discord",
-    tagline: "Encrypted team comms",
+    taglineKey: "platformDiscordTagline",
     handle: "spida.mane",
     href: "#",
     color: "text-indigo-400 border-indigo-400/30 hover:border-indigo-400/60 hover:bg-indigo-400/5",
@@ -71,9 +72,9 @@ const platforms = [
 
 /* ─── Gadgets: Site Mechanics ─── */
 const gadgets = [
-  { name: "The Web Rating", tagline: "Proprietary 0\u2013100 scoring system" },
-  { name: "Category Badges", tagline: "Tagging system for the multiverse catalog" },
-  { name: "The Spida Sense Poll", tagline: "Community-driven predictions" },
+  { nameKey: "gadgetWebRating", taglineKey: "gadgetWebRatingTagline" },
+  { nameKey: "gadgetCategoryBadges", taglineKey: "gadgetCategoryBadgesTagline" },
+  { nameKey: "gadgetSpidaSensePoll", taglineKey: "gadgetSpidaSensePollTagline" },
 ];
 
 function GearCategory({
@@ -94,21 +95,23 @@ function GearCategory({
 }
 
 export function ArsenalPanel() {
+  const t = useTranslations("about");
+
   return (
     <div className="space-y-6">
       {/* Web-Shooters — Content Formats */}
-      <GearCategory label="Web-Shooters">
+      <GearCategory label={t("webShooters")}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {formats.map((f) => (
             <div
-              key={f.name}
+              key={f.nameKey}
               className="flex items-baseline gap-2 px-3 py-2 rounded-lg border border-border/50 bg-card/30"
             >
               <span className="text-xs font-bold text-card-foreground whitespace-nowrap">
-                {f.name}
+                {t(f.nameKey)}
               </span>
               <span className="text-[10px] text-muted-foreground leading-tight">
-                {f.tagline}
+                {t(f.taglineKey)}
               </span>
             </div>
           ))}
@@ -116,7 +119,7 @@ export function ArsenalPanel() {
       </GearCategory>
 
       {/* Suit Tech — Platforms (inline) */}
-      <GearCategory label="Suit Tech">
+      <GearCategory label={t("suitTech")}>
         <div className="flex flex-wrap gap-2">
           {platforms.map((p) => (
             <a
@@ -148,18 +151,18 @@ export function ArsenalPanel() {
       </GearCategory>
 
       {/* Gadgets — Site Mechanics */}
-      <GearCategory label="Gadgets">
+      <GearCategory label={t("gadgetsLabel")}>
         <div className="flex flex-wrap gap-2">
           {gadgets.map((g) => (
             <div
-              key={g.name}
+              key={g.nameKey}
               className="flex items-baseline gap-2 px-3 py-2 rounded-lg border border-border/50 bg-card/30"
             >
               <span className="text-xs font-bold text-card-foreground whitespace-nowrap">
-                {g.name}
+                {t(g.nameKey)}
               </span>
               <span className="text-[10px] text-muted-foreground leading-tight">
-                {g.tagline}
+                {t(g.taglineKey)}
               </span>
             </div>
           ))}

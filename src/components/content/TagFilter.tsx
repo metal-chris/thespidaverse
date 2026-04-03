@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { cn, capitalizeTag } from "@/lib/utils";
 import { FilterDropdown } from "./FilterDropdown";
 import type { Article, Tag } from "@/types";
@@ -12,6 +13,7 @@ interface TagFilterProps {
 }
 
 export function TagFilter({ articles, allTags, children }: TagFilterProps) {
+  const t = useTranslations("home");
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
 
   const filteredArticles = useMemo(() => {
@@ -56,7 +58,7 @@ export function TagFilter({ articles, allTags, children }: TagFilterProps) {
 
       {filteredArticles.length === 0 ? (
         <p className="text-center text-muted-foreground py-8">
-          No articles match all selected tags.
+          {t("noArticlesMatchTags")}
         </p>
       ) : (
         children(filteredArticles)

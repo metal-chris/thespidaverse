@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { GlitchText } from "@/components/ui/GlitchText";
 import { LoreIndicator } from "@/components/about/LoreIndicator";
 import { CATEGORY_CONFIG, DEFAULT_CATEGORY } from "@/lib/categories";
@@ -99,6 +100,7 @@ function AvatarWithFallback() {
 }
 
 export function IDCardHeader() {
+  const t = useTranslations("about");
   const handleDiscordCopy = () => {
     navigator.clipboard.writeText("spida.mane");
   };
@@ -123,22 +125,22 @@ export function IDCardHeader() {
             </GlitchText>
 
             <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.15em] text-muted-foreground mt-2 flex flex-wrap items-center justify-center md:justify-start gap-x-1">
-              <span>Designation: Web-Designer</span>
+              <span>{t("designation")}</span>
               <LoreIndicator
-                lore="Web-Designer, Web-Slinger. Tomato, tomato. Wait, y'all are still on Web2? Oh, it's ghetto over here."
+                lore={t("loreDesignation")}
                 variant="static"
               />
-              <span>// &nbsp;Origin: Earth-1337</span>
+              <span>// &nbsp;{t("origin")}</span>
               <LoreIndicator
-                lore="I borrowed some tech from Kang No. 1337, and we don't have a designation for whatever Earth you're reading this from. Don't tell him though."
-                attribution="Redacted field notes"
+                lore={t("loreOrigin")}
+                attribution={t("loreOriginAttribution")}
               />
             </p>
 
             <p className="text-sm text-muted-foreground mt-3 font-bold italic flex items-center justify-center md:justify-start gap-1.5">
-              &ldquo;Fall down 7, get up 8.&rdquo;
+              &ldquo;{t("motto")}&rdquo;
               <LoreIndicator
-                lore="Something my folks told me long before I became a spida, so I etched it under my visor as a reminder."
+                lore={t("loreMotto")}
               />
             </p>
 
@@ -167,7 +169,7 @@ export function IDCardHeader() {
         {/* Category clearance badges */}
         <div className="mt-6 pt-5 border-t border-border/50">
           <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground/60 mb-3 text-center md:text-left">
-            Clearance Badges
+            {t("clearanceBadges")}
           </p>
           <div className="flex flex-wrap gap-2 justify-center md:justify-start">
             {categories.map(([name, config]) => {

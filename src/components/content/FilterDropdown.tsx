@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { cn, capitalizeTag } from "@/lib/utils";
 import { SlidersHorizontal, X, Check } from "lucide-react";
@@ -18,6 +19,7 @@ interface FilterDropdownProps {
 }
 
 export function FilterDropdown({ allTags, articles, selectedTags, onToggleTag, onClear }: FilterDropdownProps) {
+  const t = useTranslations("home");
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -79,7 +81,7 @@ export function FilterDropdown({ allTags, articles, selectedTags, onToggleTag, o
         aria-haspopup="listbox"
       >
         <SlidersHorizontal className="w-3.5 h-3.5" />
-        <span>Filter</span>
+        <span>{t("filter")}</span>
         {activeCount > 0 && (
           <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent text-background text-[10px] font-bold">
             {activeCount}
@@ -97,7 +99,7 @@ export function FilterDropdown({ allTags, articles, selectedTags, onToggleTag, o
           className="ml-1"
         >
           <X className="w-3 h-3" />
-          Clear
+          {t("clear")}
         </Button>
       )}
 
@@ -138,7 +140,7 @@ export function FilterDropdown({ allTags, articles, selectedTags, onToggleTag, o
               className="block text-center text-xs text-muted-foreground hover:text-accent transition-colors pt-2 mt-2 border-t border-border"
               onClick={() => setOpen(false)}
             >
-              All tags →
+              {t("allTags")}
             </Link>
           )}
         </div>

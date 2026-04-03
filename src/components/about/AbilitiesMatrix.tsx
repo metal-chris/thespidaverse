@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Globe,
   Lightbulb,
@@ -13,33 +15,36 @@ import {
   Megaphone,
   type LucideIcon,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 interface Skill {
-  name: string;
+  nameKey: string;
+  taglineKey: string;
   icon: LucideIcon;
-  tagline: string;
   type: "tech" | "creative";
 }
 
 const skills: Skill[] = [
   // Tech / Business
-  { name: "Web Dev", icon: Globe, tagline: "Full-stack, front to back", type: "tech" },
-  { name: "Product Design", icon: Lightbulb, tagline: "From concept to screen", type: "tech" },
-  { name: "Systems Architecture", icon: Layers, tagline: "Building the blueprint", type: "tech" },
-  { name: "Data & Analytics", icon: BarChart3, tagline: "Numbers tell stories too", type: "tech" },
-  { name: "Project Mgmt", icon: Kanban, tagline: "Shipping on schedule", type: "tech" },
-  { name: "BizDev", icon: Briefcase, tagline: "Growth with intention", type: "tech" },
+  { nameKey: "skillWebDev", icon: Globe, taglineKey: "skillWebDevTagline", type: "tech" },
+  { nameKey: "skillProductDesign", icon: Lightbulb, taglineKey: "skillProductDesignTagline", type: "tech" },
+  { nameKey: "skillSystemsArch", icon: Layers, taglineKey: "skillSystemsArchTagline", type: "tech" },
+  { nameKey: "skillDataAnalytics", icon: BarChart3, taglineKey: "skillDataAnalyticsTagline", type: "tech" },
+  { nameKey: "skillProjectMgmt", icon: Kanban, taglineKey: "skillProjectMgmtTagline", type: "tech" },
+  { nameKey: "skillBizDev", icon: Briefcase, taglineKey: "skillBizDevTagline", type: "tech" },
   // Creative
-  { name: "Writing", icon: PenTool, tagline: "Words are the first web", type: "creative" },
-  { name: "Design", icon: Palette, tagline: "Visual language, crafted", type: "creative" },
-  { name: "Curation", icon: Library, tagline: "Taste is a skill", type: "creative" },
-  { name: "Content Strategy", icon: Target, tagline: "Plan the spin, then spin", type: "creative" },
-  { name: "Community", icon: Users, tagline: "The web needs people in it", type: "creative" },
-  { name: "Branding", icon: Megaphone, tagline: "Voice, tone, identity", type: "creative" },
+  { nameKey: "skillWriting", icon: PenTool, taglineKey: "skillWritingTagline", type: "creative" },
+  { nameKey: "skillDesign", icon: Palette, taglineKey: "skillDesignTagline", type: "creative" },
+  { nameKey: "skillCuration", icon: Library, taglineKey: "skillCurationTagline", type: "creative" },
+  { nameKey: "skillContentStrategy", icon: Target, taglineKey: "skillContentStrategyTagline", type: "creative" },
+  { nameKey: "skillCommunity", icon: Users, taglineKey: "skillCommunityTagline", type: "creative" },
+  { nameKey: "skillBranding", icon: Megaphone, taglineKey: "skillBrandingTagline", type: "creative" },
 ];
 
 export function AbilitiesMatrix() {
+  const t = useTranslations("about");
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
       {skills.map((skill) => {
@@ -47,7 +52,7 @@ export function AbilitiesMatrix() {
         const isTech = skill.type === "tech";
         return (
           <div
-            key={skill.name}
+            key={skill.nameKey}
             className={cn(
               "group relative rounded-lg border border-border bg-card p-3 md:p-4 transition-all duration-200",
               "hover:-translate-y-0.5 hover:shadow-md",
@@ -82,10 +87,10 @@ export function AbilitiesMatrix() {
                     : "group-hover:text-purple-400"
                 )}
               >
-                {skill.name}
+                {t(skill.nameKey)}
               </h3>
               <p className="text-[10px] text-muted-foreground leading-tight">
-                {skill.tagline}
+                {t(skill.taglineKey)}
               </p>
             </div>
           </div>
