@@ -85,9 +85,11 @@ function getInstagramEmbedUrl(piece: GalleryPiece): string | null {
 interface GalleryDetailViewProps {
   initialPiece: GalleryPiece;
   pieces: GalleryPiece[];
+  hasMore?: boolean;
+  onLoadMore?: () => void;
 }
 
-export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewProps) {
+export function GalleryDetailView({ initialPiece, pieces, hasMore, onLoadMore }: GalleryDetailViewProps) {
   const router = useRouter();
   const stripRef = useRef<HTMLDivElement>(null);
 
@@ -208,6 +210,18 @@ export function GalleryDetailView({ initialPiece, pieces }: GalleryDetailViewPro
       setHasInteracted(true);
     }
   }, [activeIndex, initialIndex]);
+
+  // Auto-load next batch when within 3 pieces of the end
+  const loadingMoreRef = useRef(false);
+  useEffect(() => {
+    if (!hasMore || !onLoadMore || loadingMoreRef.current) return;
+    if (activeIndex >= pieces.length - 3) {
+      loadingMoreRef.current = true;
+      onLoadMore();
+      // Reset after a short delay to allow the pieces array to update
+      setTimeout(() => { loadingMoreRef.current = false; }, 2000);
+    }
+  }, [activeIndex, pieces.length, hasMore, onLoadMore]);
 
   // Escape to go back
   useEffect(() => {

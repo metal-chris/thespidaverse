@@ -76,6 +76,8 @@ export function GalleryPageClient({ initialPieces, spotlight, totalCount }: Gall
       <GalleryDetailView
         initialPiece={viewerPiece}
         pieces={filteredPieces}
+        hasMore={hasMore && activeType === "all"}
+        onLoadMore={handleLoadMore}
       />
     );
   }
