@@ -1,11 +1,26 @@
+"use client";
+
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { cn, formatDate } from "@/lib/utils";
 import { urlFor } from "@/lib/sanity/image";
 import { WebRating } from "@/components/content/WebRating";
 import { CategoryPlaceholder } from "@/components/ui/CategoryPlaceholder";
 import { getCategoryConfig } from "@/lib/categories";
 import type { Article, MediaType } from "@/types";
+
+/** Map Sanity category titles → i18n keys */
+const CATEGORY_I18N_KEY: Record<string, string> = {
+  Movies: "categories.movies",
+  TV: "categories.tv",
+  "Video Games": "categories.videoGames",
+  Anime: "categories.anime",
+  Books: "categories.books",
+  Music: "categories.music",
+  Culture: "categories.culture",
+  Tech: "categories.tech",
+};
 
 interface CardProps {
   article: Article;
@@ -76,6 +91,15 @@ const mediaLabel: Record<MediaType, string> = {
 };
 
 export function Card({ article, featured = false }: CardProps) {
+  const t = useTranslations();
+
+  /** Translate a Sanity category title using i18n, with fallback to raw title */
+  const translateCategory = (title?: string) => {
+    if (!title) return "";
+    const key = CATEGORY_I18N_KEY[title];
+    return key ? t(key) : title;
+  };
+
   /* Prefer direct URL (mock data) → fall back to Sanity urlFor (live data) */
   const sanityUrl = article.heroImage
     ? urlFor(article.heroImage)
@@ -148,7 +172,7 @@ export function Card({ article, featured = false }: CardProps) {
                   )}
                 >
                   <CatIcon className="w-3 h-3" strokeWidth={2} />
-                  {article.category.title}
+                  {translateCategory(article.category.title)}
                 </span>
               );
             })()}

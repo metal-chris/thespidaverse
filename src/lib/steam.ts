@@ -11,7 +11,7 @@ interface SteamPlaying {
 }
 
 function steamCoverUrl(appId: string | number): string {
-  return `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/header.jpg`;
+  return `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/library_600x900.jpg`;
 }
 
 export async function fetchSteamPlaying(): Promise<SteamPlaying | null> {
