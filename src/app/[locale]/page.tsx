@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { getProvider } from "@/lib/providers";
 import { Container } from "@/components/ui/Container";
 import { HeroSection } from "@/components/home/HeroSection";
@@ -10,6 +11,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 export const revalidate = 60;
 
 export default async function HomePage() {
+  const t = await getTranslations();
   const provider = getProvider();
 
   const [articles, tags, consuming] = await Promise.all([
@@ -39,10 +41,10 @@ export default async function HomePage() {
         <ScrollReveal>
           <div className="flex items-baseline justify-between mb-8">
             <h2 className="text-2xl font-bold flex items-center gap-2">
-              <span className="text-accent">///</span> Latest
+              <span className="text-accent">///</span> {t("home.latest")}
             </h2>
             <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
-              {articles.length} articles
+              {t("home.articlesCount", { count: articles.length })}
             </span>
           </div>
         </ScrollReveal>

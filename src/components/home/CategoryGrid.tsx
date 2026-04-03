@@ -1,27 +1,31 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { CATEGORY_CONFIG, DEFAULT_CATEGORY } from "@/lib/categories";
 
 interface CategoryDef {
-  title: string;
+  titleKey: string;
+  configTitle: string;
   href: string;
 }
 
 const primaryCategories: CategoryDef[] = [
-  { title: "Movies", href: "/category/movies" },
-  { title: "Video Games", href: "/category/video-games" },
-  { title: "Anime", href: "/category/anime" },
-  { title: "Culture", href: "/category/culture" },
+  { titleKey: "categories.movies", configTitle: "Movies", href: "/category/movies" },
+  { titleKey: "categories.videoGames", configTitle: "Video Games", href: "/category/video-games" },
+  { titleKey: "categories.anime", configTitle: "Anime", href: "/category/anime" },
+  { titleKey: "categories.culture", configTitle: "Culture", href: "/category/culture" },
 ];
 
 const secondaryCategories: CategoryDef[] = [
-  { title: "TV", href: "/category/tv" },
-  { title: "Tech", href: "/category/tech" },
-  { title: "Books", href: "/category/books" },
-  { title: "Music", href: "/category/music" },
+  { titleKey: "categories.tv", configTitle: "TV", href: "/category/tv" },
+  { titleKey: "categories.tech", configTitle: "Tech", href: "/category/tech" },
+  { titleKey: "categories.books", configTitle: "Books", href: "/category/books" },
+  { titleKey: "categories.music", configTitle: "Music", href: "/category/music" },
 ];
 
-function cfg(title: string) {
-  return CATEGORY_CONFIG[title] || DEFAULT_CATEGORY;
+function cfg(configTitle: string) {
+  return CATEGORY_CONFIG[configTitle] || DEFAULT_CATEGORY;
 }
 
 // Paired columns: primary[i] stacks on top of secondary[i]
@@ -31,17 +35,19 @@ const pairs = primaryCategories.map((primary, i) => ({
 }));
 
 export function CategoryGrid() {
+  const t = useTranslations();
+
   return (
     <>
       {/* Mobile: 2-column grid, each column = primary stacked on secondary */}
       <div className="grid grid-cols-2 gap-3 md:hidden">
         {pairs.map(({ primary, secondary }) => {
-          const pc = cfg(primary.title);
-          const sc = cfg(secondary.title);
+          const pc = cfg(primary.configTitle);
+          const sc = cfg(secondary.configTitle);
           const PIcon = pc.icon;
           const SIcon = sc.icon;
           return (
-            <div key={primary.title} className="flex flex-col gap-1">
+            <div key={primary.configTitle} className="flex flex-col gap-1">
               <Link
                 href={primary.href}
                 className={`group relative rounded-xl border border-border bg-card p-4 transition-all duration-300 hover:shadow-lg hover:shadow-accent/5 hover:-translate-y-0.5 ${pc.borderHover} overflow-hidden flex flex-col items-center justify-center text-center`}
@@ -53,7 +59,7 @@ export function CategoryGrid() {
                 <div className="relative flex flex-col items-center gap-2">
                   <PIcon className={`w-7 h-7 ${pc.iconColor}`} strokeWidth={1.5} />
                   <h3 className={`font-bold text-card-foreground text-sm ${pc.titleHover} transition-colors`}>
-                    {primary.title}
+                    {t(primary.titleKey)}
                   </h3>
                 </div>
               </Link>
@@ -67,7 +73,7 @@ export function CategoryGrid() {
                 />
                 <SIcon className={`relative w-4 h-4 ${sc.iconColor} shrink-0`} strokeWidth={1.5} />
                 <span className={`relative text-xs font-semibold text-card-foreground ${sc.titleHover} transition-colors`}>
-                  {secondary.title}
+                  {t(secondary.titleKey)}
                 </span>
               </Link>
             </div>
@@ -79,11 +85,11 @@ export function CategoryGrid() {
       <div className="hidden md:flex md:flex-col md:gap-1.5">
         <div className="grid grid-cols-4 gap-3">
           {primaryCategories.map((cat) => {
-            const c = cfg(cat.title);
+            const c = cfg(cat.configTitle);
             const Icon = c.icon;
             return (
               <Link
-                key={cat.title}
+                key={cat.configTitle}
                 href={cat.href}
                 className={`group relative rounded-xl border border-border bg-card p-5 transition-all duration-300 hover:shadow-lg hover:shadow-accent/5 hover:-translate-y-0.5 ${c.borderHover} overflow-hidden flex flex-col items-center justify-center text-center`}
               >
@@ -94,7 +100,7 @@ export function CategoryGrid() {
                 <div className="relative flex flex-col items-center gap-2">
                   <Icon className={`w-7 h-7 ${c.iconColor}`} strokeWidth={1.5} />
                   <h3 className={`font-bold text-card-foreground text-sm ${c.titleHover} transition-colors`}>
-                    {cat.title}
+                    {t(cat.titleKey)}
                   </h3>
                 </div>
               </Link>
@@ -103,11 +109,11 @@ export function CategoryGrid() {
         </div>
         <div className="grid grid-cols-4 gap-2">
           {secondaryCategories.map((cat) => {
-            const c = cfg(cat.title);
+            const c = cfg(cat.configTitle);
             const Icon = c.icon;
             return (
               <Link
-                key={cat.title}
+                key={cat.configTitle}
                 href={cat.href}
                 className={`group relative rounded-lg border border-border bg-card px-4 py-2.5 transition-all duration-300 hover:shadow-md hover:shadow-accent/5 ${c.borderHover} overflow-hidden flex items-center justify-center gap-2.5`}
               >
@@ -117,7 +123,7 @@ export function CategoryGrid() {
                 />
                 <Icon className={`relative w-4 h-4 ${c.iconColor} shrink-0`} strokeWidth={1.5} />
                 <span className={`relative text-xs font-semibold text-card-foreground ${c.titleHover} transition-colors`}>
-                  {cat.title}
+                  {t(cat.titleKey)}
                 </span>
               </Link>
             );

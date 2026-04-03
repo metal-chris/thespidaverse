@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import { getProvider } from "@/lib/providers";
 import { urlFor } from "@/lib/sanity/image";
 import { Container } from "@/components/ui/Container";
@@ -30,6 +31,7 @@ function getHeroImageUrl(col: Collection): string | null {
 }
 
 export default async function CollectionsPage() {
+  const t = await getTranslations();
   const provider = getProvider();
   const rawCollections = await provider.getCollections();
   const collections = rawCollections.map((c) => ({
@@ -49,17 +51,21 @@ export default async function CollectionsPage() {
         <Container className={heroCollection ? "pt-4 pb-4 md:pt-6 md:pb-4 flex-shrink-0" : "pt-4 pb-8 md:pt-6 md:pb-12"}>
           <header className={heroCollection ? "mb-0 text-center" : "mb-10 text-center"}>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-2">
-              Curated
+              {t("collections.subtitle")}
             </p>
-            <GlitchText className="text-3xl md:text-4xl font-bold mb-2">Collections</GlitchText>
+            <GlitchText className="text-3xl md:text-4xl font-bold mb-2">{t("collections.heading")}</GlitchText>
             <p className="text-muted-foreground max-w-lg mx-auto">
-              Curated groups of articles &mdash; by season, theme, or vibe. Browse the shelf.
+              {t("collections.description")}
             </p>
           </header>
         </Container>
 
         {heroCollection && (
-          <FeaturedHero collection={heroCollection} />
+          <FeaturedHero
+            collection={heroCollection}
+            articleCountLabel={(count: number) => t("collections.articleCount", { count })}
+            browseLabel={t("collections.browseCollection")}
+          />
         )}
       </div>
 
@@ -79,7 +85,7 @@ export default async function CollectionsPage() {
         {regular.length > 0 && (
           <section>
             <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-4">
-              All Collections
+              {t("collections.allCollections")}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {regular.map((col, i) => (
@@ -95,7 +101,7 @@ export default async function CollectionsPage() {
 
         {collections.length === 0 && (
           <p className="text-center text-muted-foreground py-12">
-            No collections yet. Check back when seasonal roundups drop!
+            {t("collections.noCollections")}
           </p>
         )}
       </Container>
@@ -104,7 +110,7 @@ export default async function CollectionsPage() {
 }
 
 /* ── Featured Hero Component ── */
-function FeaturedHero({ collection }: { collection: Collection & { articleCount?: number } }) {
+function FeaturedHero({ collection, articleCountLabel, browseLabel }: { collection: Collection & { articleCount?: number }; articleCountLabel: (count: number) => string; browseLabel: string }) {
   const imageUrl = getHeroImageUrl(collection);
   const template = getCollectionTemplate(collection.theme);
   const articleCount = collection.articleCount ?? collection.articles?.length ?? 0;
@@ -163,10 +169,10 @@ function FeaturedHero({ collection }: { collection: Collection & { articleCount?
 
             <div className="flex items-center gap-4">
               <span className="text-xs font-mono text-muted-foreground">
-                {articleCount} {articleCount === 1 ? "article" : "articles"}
+                {articleCountLabel(articleCount)}
               </span>
               <span className="inline-flex items-center gap-1.5 text-xs font-medium text-accent group-hover:underline">
-                Browse collection
+                {browseLabel}
                 <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 3l5 5-5 5" />
                 </svg>

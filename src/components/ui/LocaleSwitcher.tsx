@@ -103,7 +103,7 @@ export function LocaleSwitcher() {
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 top-full mt-2 min-w-[140px] rounded-lg border border-border bg-card/95 backdrop-blur-md shadow-lg overflow-hidden z-50">
+        <div className="absolute right-0 top-full mt-2 min-w-[140px] rounded-lg border border-border bg-background shadow-xl shadow-black/30 overflow-hidden z-50">
           {LOCALES.map(({ code, flag, label }) => (
             <button
               key={code}

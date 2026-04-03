@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
 export function SubmissionForm() {
+  const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [pieceType, setPieceType] = useState<"image" | "video">("image");
@@ -40,11 +42,11 @@ export function SubmissionForm() {
           setStatus("success");
         } else {
           const data = await res.json();
-          setErrorMessage(data.error || "Something went wrong");
+          setErrorMessage(data.error || t("common.somethingWentWrong"));
           setStatus("error");
         }
       } catch {
-        setErrorMessage("Failed to submit. Please try again.");
+        setErrorMessage(t("common.somethingWentWrong"));
         setStatus("error");
       }
     },
@@ -54,10 +56,7 @@ export function SubmissionForm() {
   if (status === "success") {
     return (
       <div className="mt-12 p-6 rounded-xl border border-border bg-card text-center">
-        <p className="text-lg font-semibold text-accent">Submission Received!</p>
-        <p className="text-sm text-muted-foreground mt-1">
-          We&apos;ll review your submission and add it to the Gallery if it&apos;s a fit. Thanks for contributing!
-        </p>
+        <p className="text-lg font-semibold text-accent">{t("gallery.successMessage")}</p>
         <Button
           variant="secondary"
           size="sm"
@@ -65,7 +64,7 @@ export function SubmissionForm() {
           onClick={() => { setStatus("idle"); setIsOpen(true); }}
           className="mt-4"
         >
-          Submit Another
+          {t("gallery.submitAnother")}
         </Button>
       </div>
     );
@@ -87,9 +86,9 @@ export function SubmissionForm() {
         className="w-full flex items-center justify-between p-5 text-left hover:bg-muted/30 transition-colors"
       >
         <div>
-          <h2 className="text-lg font-bold">Submit Art</h2>
+          <h2 className="text-lg font-bold">{t("gallery.submitHeading")}</h2>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Know a piece that belongs in the Gallery? Send it our way.
+            {t("gallery.submitDescription")}
           </p>
         </div>
         <svg
@@ -131,7 +130,7 @@ export function SubmissionForm() {
                     shape="rounded"
                     onClick={() => setPieceType(type)}
                   >
-                    {type === "image" ? "Art" : "Video"}
+                    {type === "image" ? t("gallery.image") : t("gallery.video")}
                   </Button>
                 ))}
                 </div>
@@ -185,7 +184,7 @@ export function SubmissionForm() {
                   shape="rounded"
                   disabled={status === "submitting"}
                 >
-                  {status === "submitting" ? "Submitting..." : "Submit"}
+                  {status === "submitting" ? t("gallery.submitting") : t("gallery.submit")}
                 </Button>
 
                 {status === "error" && errorMessage && (

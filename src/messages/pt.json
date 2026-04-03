@@ -118,5 +118,105 @@
     "reading": "Lendo",
     "live": "Ao Vivo",
     "nothingTracked": "Nada sendo acompanhado agora. Volte mais tarde!"
+  },
+  "categories": {
+    "movies": "Filmes",
+    "videoGames": "Videogames",
+    "anime": "Anime",
+    "culture": "Cultura",
+    "tv": "TV",
+    "tech": "Tecnologia",
+    "books": "Livros",
+    "music": "Música"
+  },
+  "home": {
+    "latest": "Recentes",
+    "articlesCount": "{count} artigos"
+  },
+  "about": {
+    "originFile": "Arquivo de Origem",
+    "skills": "Habilidades",
+    "gearLoadout": "Equipamento",
+    "principles": "Princípios",
+    "liveFeed": "Ao Vivo"
+  },
+  "journal": {
+    "subtitle": "Diário de Mídia",
+    "heading": "Diário",
+    "description": "Tudo que estou consumindo — registrado, avaliado e com data.",
+    "filter": "Filtrar",
+    "entryCount": "{count} {count, plural, one {entrada} other {entradas}}",
+    "typeLabel": "Tipo",
+    "statusLabel": "Status",
+    "all": "Tudo",
+    "readReview": "Ler resenha",
+    "noEntries": "Nenhuma entrada corresponde aos seus filtros.",
+    "clearFilters": "Limpar filtros",
+    "statusWatching": "Assistindo",
+    "statusPlaying": "Jogando",
+    "statusListening": "Ouvindo",
+    "statusReading": "Lendo",
+    "statusCompleted": "Concluído",
+    "statusDropped": "Abandonado",
+    "undated": "Sem data"
+  },
+  "collections": {
+    "subtitle": "Curado",
+    "heading": "Coleções",
+    "description": "Grupos curados de artigos — por temporada, tema ou vibe. Explore a estante.",
+    "allCollections": "Todas as Coleções",
+    "articleCount": "{count} {count, plural, one {artigo} other {artigos}}",
+    "browseCollection": "Ver coleção",
+    "noCollections": "Ainda sem coleções. Volte quando os resumos de temporada chegarem!"
+  },
+  "gallery": {
+    "subtitle": "Curado",
+    "heading": "Galeria",
+    "description": "As melhores fan arts, pôsteres e vídeos do Spider-Verse e além. Cada peça linka para o artista original.",
+    "loadMore": "Carregar mais",
+    "submitHeading": "Envie Sua Obra",
+    "submitDescription": "Tem fan art, um pôster ou um vídeo? Envie para a galeria.",
+    "submitButton": "Enviar uma Peça",
+    "title": "Título",
+    "artistName": "Nome do Artista",
+    "artistUrl": "URL do Artista",
+    "mediaUrl": "URL da Mídia",
+    "description2": "Descrição",
+    "email": "Seu Email (opcional)",
+    "image": "Imagem",
+    "video": "Vídeo",
+    "submitting": "Enviando...",
+    "submit": "Enviar",
+    "successMessage": "Obrigado! Sua submissão está em análise.",
+    "submitAnother": "Enviar outro"
+  },
+  "theWeb": {
+    "emptyHeading": "A teia ainda está sendo tecida...",
+    "emptyDescription": "Aqui você poderá explorar como tudo no Spidaverse se conecta — filmes, séries, jogos e mais, tudo interligado.",
+    "emptyGrowing": "Conforme artigos forem publicados, a teia crescerá com conexões entre mídias, tags e categorias.",
+    "exploreArticles": "Explorar artigos"
+  },
+  "mood": {
+    "heading": "Qual é o Seu Mood?",
+    "description": "Escolha uma vibe. Receba recomendações. Cada artigo é tagueado por mood, então combinamos com o que você está sentindo.",
+    "resultsFor": "{count} {count, plural, one {resultado} other {resultados}} para \"{mood}\"",
+    "noArticlesForMood": "Nenhum artigo com a tag \"{mood}\" ainda. Volte em breve!",
+    "selectPrompt": "Selecione um mood acima para receber recomendações",
+    "noArticlesYet": "Ainda sem artigos. Quando conteúdo com tags de mood for publicado, as recomendações aparecerão aqui.",
+    "hype": "Quero sentir a adrenalina",
+    "chill": "Algo relaxante e tranquilo",
+    "emotional": "Que me toque o coração",
+    "mindblown": "Explodir minha mente",
+    "dark": "Me leve para um lugar sombrio",
+    "nostalgic": "Uma viagem pela memória",
+    "funny": "Me faça rir",
+    "wholesome": "Algo aconchegante e fofo",
+    "epic": "Aventuras em grande escala",
+    "cerebral": "Me faça pensar",
+    "cozy": "Conteúdo confortável",
+    "intense": "Tensão à beira da cadeira"
+  },
+  "article": {
+    "minRead": "{minutes} min de leitura"
   }
 }

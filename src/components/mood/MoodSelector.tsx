@@ -2,22 +2,23 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import type { Article } from "@/types";
 import { Card } from "@/components/ui/Card";
 
-const MOOD_PRESETS: { mood: string; emoji: string; description: string }[] = [
-  { mood: "hype", emoji: "🔥", description: "I want to feel the adrenaline" },
-  { mood: "chill", emoji: "😌", description: "Something relaxing and easy" },
-  { mood: "emotional", emoji: "😭", description: "Hit me right in the feels" },
-  { mood: "mindblown", emoji: "🤯", description: "Blow my mind" },
-  { mood: "dark", emoji: "🌑", description: "Take me somewhere dark" },
-  { mood: "nostalgic", emoji: "✨", description: "A trip down memory lane" },
-  { mood: "funny", emoji: "😂", description: "Make me laugh" },
-  { mood: "wholesome", emoji: "🥰", description: "Something warm and fuzzy" },
-  { mood: "epic", emoji: "⚔️", description: "Grand scale adventures" },
-  { mood: "cerebral", emoji: "🧠", description: "Make me think" },
-  { mood: "cozy", emoji: "☕", description: "Comfort content" },
-  { mood: "intense", emoji: "💀", description: "Edge-of-seat tension" },
+const MOOD_PRESETS: { mood: string; emoji: string; descriptionKey: string }[] = [
+  { mood: "hype", emoji: "🔥", descriptionKey: "mood.hype" },
+  { mood: "chill", emoji: "😌", descriptionKey: "mood.chill" },
+  { mood: "emotional", emoji: "😭", descriptionKey: "mood.emotional" },
+  { mood: "mindblown", emoji: "🤯", descriptionKey: "mood.mindblown" },
+  { mood: "dark", emoji: "🌑", descriptionKey: "mood.dark" },
+  { mood: "nostalgic", emoji: "✨", descriptionKey: "mood.nostalgic" },
+  { mood: "funny", emoji: "😂", descriptionKey: "mood.funny" },
+  { mood: "wholesome", emoji: "🥰", descriptionKey: "mood.wholesome" },
+  { mood: "epic", emoji: "⚔️", descriptionKey: "mood.epic" },
+  { mood: "cerebral", emoji: "🧠", descriptionKey: "mood.cerebral" },
+  { mood: "cozy", emoji: "☕", descriptionKey: "mood.cozy" },
+  { mood: "intense", emoji: "💀", descriptionKey: "mood.intense" },
 ];
 
 interface MoodSelectorProps {
@@ -26,6 +27,7 @@ interface MoodSelectorProps {
 }
 
 export function MoodSelector({ articles, availableMoods }: MoodSelectorProps) {
+  const t = useTranslations();
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
 
   const visiblePresets = MOOD_PRESETS.filter(
@@ -43,7 +45,7 @@ export function MoodSelector({ articles, availableMoods }: MoodSelectorProps) {
     <div>
       {/* Mood grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-8">
-        {presets.map(({ mood, emoji, description }) => {
+        {presets.map(({ mood, emoji, descriptionKey }) => {
           const isActive = selectedMood === mood;
           const hasArticles = articles.some((a) => a.moodTags?.includes(mood));
 
@@ -64,7 +66,7 @@ export function MoodSelector({ articles, availableMoods }: MoodSelectorProps) {
             >
               <span className="text-2xl block mb-1">{emoji}</span>
               <span className="font-medium text-sm capitalize block">{mood}</span>
-              <span className="text-xs text-muted-foreground">{description}</span>
+              <span className="text-xs text-muted-foreground">{t(descriptionKey)}</span>
             </button>
           );
         })}
@@ -75,7 +77,7 @@ export function MoodSelector({ articles, availableMoods }: MoodSelectorProps) {
         <div>
           <h2 className="text-xl font-bold mb-4">
             {MOOD_PRESETS.find((p) => p.mood === selectedMood)?.emoji || "🎯"}{" "}
-            {filteredArticles.length} result{filteredArticles.length !== 1 ? "s" : ""} for &ldquo;{selectedMood}&rdquo;
+            {t("mood.resultsFor", { count: filteredArticles.length, mood: selectedMood })}
           </h2>
 
           {filteredArticles.length > 0 ? (
@@ -88,7 +90,7 @@ export function MoodSelector({ articles, availableMoods }: MoodSelectorProps) {
             </div>
           ) : (
             <p className="text-muted-foreground text-center py-8">
-              No articles tagged with &ldquo;{selectedMood}&rdquo; yet. Check back soon!
+              {t("mood.noArticlesForMood", { mood: selectedMood })}
             </p>
           )}
         </div>
@@ -96,13 +98,13 @@ export function MoodSelector({ articles, availableMoods }: MoodSelectorProps) {
 
       {!selectedMood && articles.length > 0 && (
         <p className="text-center text-muted-foreground py-8">
-          Select a mood above to get recommendations
+          {t("mood.selectPrompt")}
         </p>
       )}
 
       {articles.length === 0 && (
         <p className="text-center text-muted-foreground py-8">
-          No articles yet. Once content is published with mood tags, recommendations will appear here.
+          {t("mood.noArticlesYet")}
         </p>
       )}
     </div>

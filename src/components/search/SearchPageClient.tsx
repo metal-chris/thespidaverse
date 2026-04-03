@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
 import type { Article, Category, Tag } from "@/types";
@@ -28,6 +29,7 @@ const FORMATS = [
 ];
 
 export function SearchPageClient({ articles, categories, tags }: SearchPageClientProps) {
+  const t = useTranslations();
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
 
@@ -107,7 +109,7 @@ export function SearchPageClient({ articles, categories, tags }: SearchPageClien
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search articles, tags, moods..."
+          placeholder={t("search.placeholder")}
           className="w-full pl-10 pr-4 py-3 rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
           autoFocus
         />
@@ -121,9 +123,9 @@ export function SearchPageClient({ articles, categories, tags }: SearchPageClien
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="text-sm px-3 py-1.5 rounded-md border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-            aria-label="Filter by category"
+            aria-label={t("search.filterByCategory")}
           >
-            <option value="">All Categories</option>
+            <option value="">{t("search.allCategories")}</option>
             {categories.map((c) => (
               <option key={c._id} value={c.slug.current}>
                 {c.title}
@@ -137,9 +139,9 @@ export function SearchPageClient({ articles, categories, tags }: SearchPageClien
           value={selectedFormat}
           onChange={(e) => setSelectedFormat(e.target.value)}
           className="text-sm px-3 py-1.5 rounded-md border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-          aria-label="Filter by format"
+          aria-label={t("search.filterByFormat")}
         >
-          <option value="">All Formats</option>
+          <option value="">{t("search.allFormats")}</option>
           {FORMATS.map((f) => (
             <option key={f.value} value={f.value}>
               {f.label}
@@ -153,9 +155,9 @@ export function SearchPageClient({ articles, categories, tags }: SearchPageClien
             value={selectedMood}
             onChange={(e) => setSelectedMood(e.target.value)}
             className="text-sm px-3 py-1.5 rounded-md border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-            aria-label="Filter by mood"
+            aria-label={t("search.filterByMood")}
           >
-            <option value="">All Moods</option>
+            <option value="">{t("search.allMoods")}</option>
             {allMoods.map((m) => (
               <option key={m} value={m}>
                 {m}
@@ -169,15 +171,16 @@ export function SearchPageClient({ articles, categories, tags }: SearchPageClien
             onClick={clearAll}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Clear all
+            {t("search.clearAll")}
           </button>
         )}
       </div>
 
       {/* Results count */}
       <p className="text-sm text-muted-foreground mb-4">
-        {filteredArticles.length} {filteredArticles.length === 1 ? "result" : "results"}
-        {query && ` for "${query}"`}
+        {query
+          ? t("search.resultCountForQuery", { count: filteredArticles.length, query })
+          : t("search.resultCount", { count: filteredArticles.length })}
       </p>
 
       {/* Results grid */}
@@ -189,13 +192,13 @@ export function SearchPageClient({ articles, categories, tags }: SearchPageClien
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No articles found.</p>
+          <p className="text-muted-foreground">{t("search.noResults")}</p>
           {hasFilters && (
             <button
               onClick={clearAll}
               className="mt-2 text-accent text-sm hover:underline"
             >
-              Clear filters
+              {t("search.clearFilters")}
             </button>
           )}
         </div>

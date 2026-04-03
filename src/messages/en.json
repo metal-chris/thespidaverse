@@ -118,5 +118,105 @@
     "reading": "Reading",
     "live": "Live",
     "nothingTracked": "Nothing tracked right now. Check back later!"
+  },
+  "categories": {
+    "movies": "Movies",
+    "videoGames": "Video Games",
+    "anime": "Anime",
+    "culture": "Culture",
+    "tv": "TV",
+    "tech": "Tech",
+    "books": "Books",
+    "music": "Music"
+  },
+  "home": {
+    "latest": "Latest",
+    "articlesCount": "{count} articles"
+  },
+  "about": {
+    "originFile": "Origin File",
+    "skills": "Skills",
+    "gearLoadout": "Gear Loadout",
+    "principles": "Principles",
+    "liveFeed": "Live Feed"
+  },
+  "journal": {
+    "subtitle": "Media Diary",
+    "heading": "Journal",
+    "description": "Everything I'm consuming — tracked, rated, and timestamped.",
+    "filter": "Filter",
+    "entryCount": "{count} {count, plural, one {entry} other {entries}}",
+    "typeLabel": "Type",
+    "statusLabel": "Status",
+    "all": "All",
+    "readReview": "Read review",
+    "noEntries": "No entries match your filters.",
+    "clearFilters": "Clear filters",
+    "statusWatching": "Watching",
+    "statusPlaying": "Playing",
+    "statusListening": "Listening",
+    "statusReading": "Reading",
+    "statusCompleted": "Completed",
+    "statusDropped": "Dropped",
+    "undated": "Undated"
+  },
+  "collections": {
+    "subtitle": "Curated",
+    "heading": "Collections",
+    "description": "Curated groups of articles — by season, theme, or vibe. Browse the shelf.",
+    "allCollections": "All Collections",
+    "articleCount": "{count} {count, plural, one {article} other {articles}}",
+    "browseCollection": "Browse collection",
+    "noCollections": "No collections yet. Check back when seasonal roundups drop!"
+  },
+  "gallery": {
+    "subtitle": "Curated",
+    "heading": "Gallery",
+    "description": "The best fan art, posters, and videos from across the Spider-Verse and beyond. Every piece links back to the original artist.",
+    "loadMore": "Load more",
+    "submitHeading": "Submit Your Work",
+    "submitDescription": "Got fan art, a poster, or a video? Submit it for the gallery.",
+    "submitButton": "Submit a Piece",
+    "title": "Title",
+    "artistName": "Artist Name",
+    "artistUrl": "Artist URL",
+    "mediaUrl": "Media URL",
+    "description2": "Description",
+    "email": "Your Email (optional)",
+    "image": "Image",
+    "video": "Video",
+    "submitting": "Submitting...",
+    "submit": "Submit",
+    "successMessage": "Thanks! Your submission is under review.",
+    "submitAnother": "Submit another"
+  },
+  "theWeb": {
+    "emptyHeading": "The web is still being spun...",
+    "emptyDescription": "This is where you'll be able to explore how everything in the Spidaverse connects — movies, shows, games, and more, all linked together.",
+    "emptyGrowing": "As articles are published, the web will grow with connections between media, tags, and categories.",
+    "exploreArticles": "Explore articles"
+  },
+  "mood": {
+    "heading": "What's Your Mood?",
+    "description": "Pick a vibe. Get recommendations. Every article is tagged by mood, so we can match you with exactly what you're feeling.",
+    "resultsFor": "{count} {count, plural, one {result} other {results}} for \"{mood}\"",
+    "noArticlesForMood": "No articles tagged with \"{mood}\" yet. Check back soon!",
+    "selectPrompt": "Select a mood above to get recommendations",
+    "noArticlesYet": "No articles yet. Once content is published with mood tags, recommendations will appear here.",
+    "hype": "I want to feel the adrenaline",
+    "chill": "Something relaxing and easy",
+    "emotional": "Hit me right in the feels",
+    "mindblown": "Blow my mind",
+    "dark": "Take me somewhere dark",
+    "nostalgic": "A trip down memory lane",
+    "funny": "Make me laugh",
+    "wholesome": "Something warm and fuzzy",
+    "epic": "Grand scale adventures",
+    "cerebral": "Make me think",
+    "cozy": "Comfort content",
+    "intense": "Edge-of-seat tension"
+  },
+  "article": {
+    "minRead": "{minutes} min read"
   }
 }

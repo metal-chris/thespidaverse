@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { Palette } from "./particle-config";
 
 interface ComingSoonContentProps {
@@ -11,6 +12,7 @@ interface ComingSoonContentProps {
 }
 
 export function ComingSoonContent({ palette, onTogglePalette, onAccessGranted }: ComingSoonContentProps) {
+  const t = useTranslations();
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -31,11 +33,11 @@ export function ComingSoonContent({ palette, onTogglePalette, onAccessGranted }:
         }, 3200);
       } else {
         setStatus("error");
-        setErrorMessage("Something went wrong.");
+        setErrorMessage(t("common.somethingWentWrong"));
       }
     } catch {
       setStatus("error");
-      setErrorMessage("Something went wrong.");
+      setErrorMessage(t("common.somethingWentWrong"));
     }
   };
 
@@ -81,16 +83,16 @@ export function ComingSoonContent({ palette, onTogglePalette, onAccessGranted }:
               className="text-center text-[11px] font-mono font-medium tracking-[0.25em] uppercase mb-5"
               style={{ color: "#555", transition: "color 0.4s ease" }}
             >
-              Early Access
+              {t("comingSoon.earlyAccess")}
             </p>
 
             {/* Headline */}
             <h1
               className="text-center text-4xl sm:text-5xl font-extrabold leading-[1.1] mb-3 tracking-tight cs-glitch-strong"
               style={{ color: "#F5F5F5" }}
-              data-text="The Spidaverse"
+              data-text={t("comingSoon.headline")}
             >
-              The Spidaverse
+              {t("comingSoon.headline")}
             </h1>
 
             {/* Subline */}
@@ -98,7 +100,7 @@ export function ComingSoonContent({ palette, onTogglePalette, onAccessGranted }:
               className="text-center text-sm sm:text-base leading-relaxed mb-8 max-w-xs mx-auto"
               style={{ color: "#999" }}
             >
-              The web is ready. Are you?
+              {t("comingSoon.subline")}
             </p>
 
             {/* Leap of Faith CTA */}
@@ -107,12 +109,12 @@ export function ComingSoonContent({ palette, onTogglePalette, onAccessGranted }:
                 <p
                   className="text-lg font-extrabold tracking-[0.15em] uppercase cs-glitch-access"
                   style={{ color: accent }}
-                  data-text="Access Granted"
+                  data-text={t("comingSoon.accessGranted")}
                 >
-                  Access Granted
+                  {t("comingSoon.accessGranted")}
                 </p>
                 <p className="text-xs mt-2" style={{ color: "#666" }}>
-                  Welcome to the web.
+                  {t("comingSoon.welcomeToTheWeb")}
                 </p>
               </div>
             ) : (
@@ -156,10 +158,10 @@ export function ComingSoonContent({ palette, onTogglePalette, onAccessGranted }:
                           className="inline-block w-4 h-4 rounded-full border-2 border-white/30 border-t-white"
                           style={{ animation: "spin 0.6s linear infinite" }}
                         />
-                        Swinging...
+                        {t("comingSoon.swinging")}
                       </span>
                     ) : (
-                      "Leap of Faith"
+                      t("comingSoon.leapOfFaith")
                     )}
                   </span>
                 </button>
@@ -195,7 +197,7 @@ export function ComingSoonContent({ palette, onTogglePalette, onAccessGranted }:
                   className="inline-block w-2 h-2 rounded-full transition-colors duration-300"
                   style={{ background: accent }}
                 />
-                {{ miles: "Miles Mode", peter: "Peter Mode", venom: "Venom Mode" }[palette]}
+                {{ miles: t("comingSoon.milesMode"), peter: t("comingSoon.peterMode"), venom: t("comingSoon.venomMode") }[palette]}
               </button>
             </div>
           </div>

@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import type { MediaDiaryEntry, MediaType } from "@/types";
 import { formatMediaType } from "@/lib/utils";
@@ -64,13 +65,13 @@ const DOT_COLORS: Record<string, Record<string, string>> = {
   },
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  watching: "Watching",
-  playing: "Playing",
-  listening: "Listening",
-  reading: "Reading",
-  completed: "Completed",
-  dropped: "Dropped",
+const STATUS_KEYS: Record<string, string> = {
+  watching: "journal.statusWatching",
+  playing: "journal.statusPlaying",
+  listening: "journal.statusListening",
+  reading: "journal.statusReading",
+  completed: "journal.statusCompleted",
+  dropped: "journal.statusDropped",
 };
 
 interface JournalTimelineProps {
@@ -81,6 +82,7 @@ type FilterType = "all" | MediaType;
 type FilterStatus = "all" | MediaDiaryEntry["status"];
 
 export function JournalTimeline({ entries }: JournalTimelineProps) {
+  const t = useTranslations();
   const { theme } = useTheme();
   const [typeFilter, setTypeFilter] = useState<FilterType>("all");
   const [statusFilter, setStatusFilter] = useState<FilterStatus>("all");
@@ -156,14 +158,14 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
           >
             <path d="M2 4h12M4 8h8M6 12h4" strokeLinecap="round" />
           </svg>
-          Filter
+          {t("journal.filter")}
           {hasActiveFilters && (
             <span className="w-1.5 h-1.5 rounded-full bg-accent" />
           )}
         </button>
 
         <span className="text-xs text-muted-foreground tabular-nums">
-          {filtered.length} entr{filtered.length !== 1 ? "ies" : "y"}
+          {t("journal.entryCount", { count: filtered.length })}
         </span>
       </div>
 
@@ -177,28 +179,28 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
         <div className="flex flex-col sm:flex-row gap-4 p-4 rounded-lg border border-border bg-card/50">
           <div className="flex-1">
             <label className="text-[10px] text-muted-foreground uppercase tracking-wider block mb-1.5">
-              Type
+              {t("journal.typeLabel")}
             </label>
             <div className="flex flex-wrap gap-1">
-              {mediaTypes.map((t) => (
+              {mediaTypes.map((mt) => (
                 <button
-                  key={t}
-                  onClick={() => setTypeFilter(t)}
+                  key={mt}
+                  onClick={() => setTypeFilter(mt)}
                   className={cn(
                     "px-2.5 py-1 text-xs rounded-full border transition-colors",
-                    typeFilter === t
+                    typeFilter === mt
                       ? "bg-accent text-background border-accent"
                       : "border-border text-muted-foreground hover:border-accent/50"
                   )}
                 >
-                  {t === "all" ? "All" : formatMediaType(t)}
+                  {mt === "all" ? t("journal.all") : formatMediaType(mt)}
                 </button>
               ))}
             </div>
           </div>
           <div className="flex-1">
             <label className="text-[10px] text-muted-foreground uppercase tracking-wider block mb-1.5">
-              Status
+              {t("journal.statusLabel")}
             </label>
             <div className="flex flex-wrap gap-1">
               {statuses.map((s) => (
@@ -212,7 +214,7 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
                       : "border-border text-muted-foreground hover:border-accent/50"
                   )}
                 >
-                  {s === "all" ? "All" : STATUS_LABELS[s] || s}
+                  {s === "all" ? t("journal.all") : (STATUS_KEYS[s] ? t(STATUS_KEYS[s]) : s)}
                 </button>
               ))}
             </div>
@@ -227,7 +229,7 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
       {grouped.map(([month, items]) => {
         const monthLabel =
           month === "unknown"
-            ? "Undated"
+            ? t("journal.undated")
             : new Date(month + "-01").toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
@@ -250,7 +252,7 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
                         "absolute left-1 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-background",
                         dotColors[entry.status] || "bg-muted"
                       )}
-                      title={STATUS_LABELS[entry.status]}
+                      title={STATUS_KEYS[entry.status] ? t(STATUS_KEYS[entry.status]) : entry.status}
                     />
 
                     {/* Card */}
@@ -284,7 +286,7 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
                                 "bg-muted text-muted-foreground"
                             )}
                           >
-                            {STATUS_LABELS[entry.status]}
+                            {STATUS_KEYS[entry.status] ? t(STATUS_KEYS[entry.status]) : entry.status}
                           </span>
                           {entry.rating != null && isCompleted ? (
                             <WebRating
@@ -315,7 +317,7 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
                             href={`/articles/${entry.linkedArticle.slug.current}`}
                             className="inline-flex items-center gap-1 mt-2 px-2.5 py-1 rounded-full text-[11px] font-medium bg-accent/10 text-accent border border-accent/20 hover:bg-accent/20 transition-colors"
                           >
-                            Read review
+                            {t("journal.readReview")}
                             <span aria-hidden="true">&rarr;</span>
                           </Link>
                         )}
@@ -346,7 +348,7 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
             />
           </svg>
           <p className="text-muted-foreground text-sm">
-            No entries match your filters.
+            {t("journal.noEntries")}
           </p>
           <button
             onClick={() => {
@@ -355,7 +357,7 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
             }}
             className="mt-2 text-xs text-accent hover:underline"
           >
-            Clear filters
+            {t("journal.clearFilters")}
           </button>
         </div>
       )}

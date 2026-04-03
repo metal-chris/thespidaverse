@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import type { CurrentlyConsuming } from "@/types";
 
 const MEDIA_ICONS: Record<string, string> = {
@@ -34,9 +35,9 @@ function capitalizeSubtitle(value: string): string {
   return value.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function NowPlayingBars() {
+function NowPlayingBars({ liveLabel }: { liveLabel: string }) {
   return (
-    <span className="flex gap-0.5 items-end h-3" aria-label="Live">
+    <span className="flex gap-0.5 items-end h-3" aria-label={liveLabel}>
       <span className="w-0.5 bg-accent rounded-full animate-now-playing-1 h-2" />
       <span className="w-0.5 bg-accent rounded-full animate-now-playing-2 h-3" />
       <span className="w-0.5 bg-accent rounded-full animate-now-playing-3 h-1.5" />
@@ -52,9 +53,11 @@ interface ConsumingItemProps {
   progress?: string;
   isLive?: boolean;
   href?: string;
+  statusText: string;
+  liveLabel: string;
 }
 
-function ConsumingItem({ label, title, imageUrl, subtitle, progress, isLive, href }: ConsumingItemProps) {
+function ConsumingItem({ label, title, imageUrl, subtitle, progress, isLive, href, statusText, liveLabel }: ConsumingItemProps) {
   const isListeningLive = label === "listening" && isLive;
 
   return (
@@ -66,12 +69,10 @@ function ConsumingItem({ label, title, imageUrl, subtitle, progress, isLive, hre
       )}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          {isListeningLive && <NowPlayingBars />}
+          {isListeningLive && <NowPlayingBars liveLabel={liveLabel} />}
           <p className="text-xs text-muted-foreground">
             {MEDIA_ICONS[label] || ""}{" "}
-            {isLive
-              ? label === "listening" ? "Now Playing" : label === "watching" ? "Watching Now" : "Playing Now"
-              : label === "listening" ? "Last Played" : label === "watching" ? "Recently Watched" : label === "playing" ? "Last Played" : "Reading"}
+            {statusText}
           </p>
         </div>
         <p className="text-sm font-medium truncate">
@@ -90,12 +91,29 @@ function ConsumingItem({ label, title, imageUrl, subtitle, progress, isLive, hre
   );
 }
 
+function getConsumingStatusText(
+  t: ReturnType<typeof useTranslations>,
+  label: string,
+  isLive?: boolean,
+): string {
+  if (isLive) {
+    if (label === "listening") return t("consuming.nowPlaying");
+    if (label === "watching") return t("consuming.watchingNow");
+    return t("consuming.playingNow");
+  }
+  if (label === "listening") return t("consuming.lastPlayed");
+  if (label === "watching") return t("consuming.recentlyWatched");
+  if (label === "playing") return t("consuming.lastPlayed");
+  return t("consuming.reading");
+}
+
 interface CurrentlyConsumingWidgetProps {
   data?: CurrentlyConsuming | null;
   className?: string;
 }
 
 export function CurrentlyConsumingWidget({ data: initialData, className = "" }: CurrentlyConsumingWidgetProps) {
+  const t = useTranslations();
   const [data, setData] = useState<CurrentlyConsuming | null>(initialData ?? null);
 
   useEffect(() => {
@@ -121,18 +139,19 @@ export function CurrentlyConsumingWidget({ data: initialData, className = "" }: 
   }, []);
 
   const hasAny = data?.watching || data?.playing || data?.reading || data?.listening;
+  const liveLabel = t("consuming.live");
 
   return (
     <section
       className={`relative rounded-xl border border-border/60 p-4 md:p-6 overflow-hidden ${className}`}
-      aria-label="Currently consuming"
+      aria-label={t("consuming.heading")}
     >
       {/* Glassmorphism background */}
       <div className="absolute inset-0 bg-card/40 backdrop-blur-sm" aria-hidden="true" />
       <div className="absolute -top-20 -right-20 w-48 h-48 rounded-full bg-accent/5 blur-3xl" aria-hidden="true" />
 
       <h2 className="relative text-lg font-bold mb-4 flex items-center gap-2">
-        <span className="text-accent">///</span> Currently Consuming
+        <span className="text-accent">///</span> {t("consuming.heading")}
       </h2>
       <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-3">
         {data?.watching?.title && (
@@ -143,6 +162,8 @@ export function CurrentlyConsumingWidget({ data: initialData, className = "" }: 
             subtitle={data.watching.mediaType}
             progress={data.watching.progress}
             isLive={data.watching.isLive}
+            statusText={getConsumingStatusText(t, "watching", data.watching.isLive)}
+            liveLabel={liveLabel}
           />
         )}
         {data?.playing?.title && (
@@ -153,6 +174,8 @@ export function CurrentlyConsumingWidget({ data: initialData, className = "" }: 
             subtitle={data.playing.platform}
             progress={data.playing.progress}
             isLive={data.playing.isLive}
+            statusText={getConsumingStatusText(t, "playing", data.playing.isLive)}
+            liveLabel={liveLabel}
           />
         )}
         {data?.reading?.title && (
@@ -162,6 +185,8 @@ export function CurrentlyConsumingWidget({ data: initialData, className = "" }: 
             imageUrl={data.reading.coverUrl}
             subtitle={data.reading.mediaType}
             progress={data.reading.progress}
+            statusText={getConsumingStatusText(t, "reading")}
+            liveLabel={liveLabel}
           />
         )}
         {data?.listening?.title && (
@@ -172,11 +197,13 @@ export function CurrentlyConsumingWidget({ data: initialData, className = "" }: 
             subtitle={data.listening.artist}
             isLive={data.listening.isPlaying}
             href={data.listening.spotifyUrl}
+            statusText={getConsumingStatusText(t, "listening", data.listening.isPlaying)}
+            liveLabel={liveLabel}
           />
         )}
       </div>
       {!hasAny && (
-        <p className="relative text-sm text-muted-foreground italic">Nothing tracked right now. Check back later!</p>
+        <p className="relative text-sm text-muted-foreground italic">{t("consuming.nothingTracked")}</p>
       )}
     </section>
   );

@@ -118,5 +118,105 @@
     "reading": "読書中",
     "live": "ライブ",
     "nothingTracked": "現在トラッキングされていません。また後で確認してください！"
+  },
+  "categories": {
+    "movies": "映画",
+    "videoGames": "ゲーム",
+    "anime": "アニメ",
+    "culture": "カルチャー",
+    "tv": "テレビ",
+    "tech": "テック",
+    "books": "書籍",
+    "music": "音楽"
+  },
+  "home": {
+    "latest": "最新",
+    "articlesCount": "{count}件の記事"
+  },
+  "about": {
+    "originFile": "オリジンファイル",
+    "skills": "スキル",
+    "gearLoadout": "装備",
+    "principles": "信条",
+    "liveFeed": "ライブフィード"
+  },
+  "journal": {
+    "subtitle": "メディアダイアリー",
+    "heading": "ジャーナル",
+    "description": "いま消費しているすべて — 記録、評価、タイムスタンプ付き。",
+    "filter": "フィルター",
+    "entryCount": "{count}件のエントリ",
+    "typeLabel": "タイプ",
+    "statusLabel": "ステータス",
+    "all": "すべて",
+    "readReview": "レビューを読む",
+    "noEntries": "フィルターに一致するエントリがありません。",
+    "clearFilters": "フィルターをクリア",
+    "statusWatching": "視聴中",
+    "statusPlaying": "プレイ中",
+    "statusListening": "リスニング中",
+    "statusReading": "読書中",
+    "statusCompleted": "完了",
+    "statusDropped": "中断",
+    "undated": "日付なし"
+  },
+  "collections": {
+    "subtitle": "キュレーション",
+    "heading": "コレクション",
+    "description": "シーズン、テーマ、雰囲気別にまとめた記事コレクション。本棚を探索しよう。",
+    "allCollections": "すべてのコレクション",
+    "articleCount": "{count}件の記事",
+    "browseCollection": "コレクションを見る",
+    "noCollections": "まだコレクションがありません。シーズンまとめが登場したら確認してください！"
+  },
+  "gallery": {
+    "subtitle": "キュレーション",
+    "heading": "ギャラリー",
+    "description": "スパイダーバースやその先から集めた最高のファンアート、ポスター、動画。すべての作品はオリジナルアーティストにリンクしています。",
+    "loadMore": "もっと見る",
+    "submitHeading": "作品を投稿",
+    "submitDescription": "ファンアート、ポスター、動画がありますか？ギャラリーに投稿しましょう。",
+    "submitButton": "作品を投稿する",
+    "title": "タイトル",
+    "artistName": "アーティスト名",
+    "artistUrl": "アーティストURL",
+    "mediaUrl": "メディアURL",
+    "description2": "説明",
+    "email": "メールアドレス（任意）",
+    "image": "画像",
+    "video": "動画",
+    "submitting": "送信中...",
+    "submit": "投稿",
+    "successMessage": "ありがとうございます！投稿は審査中です。",
+    "submitAnother": "別の作品を投稿"
+  },
+  "theWeb": {
+    "emptyHeading": "ウェブはまだ紡がれています...",
+    "emptyDescription": "ここではSpidaverseのすべてがどうつながっているか探索できます — 映画、ドラマ、ゲームなど、すべてがリンクしています。",
+    "emptyGrowing": "記事が公開されるにつれ、メディア、タグ、カテゴリ間のつながりでウェブが成長します。",
+    "exploreArticles": "記事を探索"
+  },
+  "mood": {
+    "heading": "今の気分は？",
+    "description": "雰囲気を選んで、おすすめを受け取ろう。すべての記事はムードでタグ付けされているので、あなたの気分にぴったり合わせます。",
+    "resultsFor": "「{mood}」の結果 {count}件",
+    "noArticlesForMood": "「{mood}」タグの記事はまだありません。また確認してください！",
+    "selectPrompt": "上からムードを選んでおすすめを受け取ろう",
+    "noArticlesYet": "まだ記事がありません。ムードタグ付きのコンテンツが公開されると、ここにおすすめが表示されます。",
+    "hype": "アドレナリンを感じたい",
+    "chill": "リラックスできるもの",
+    "emotional": "心に響くもの",
+    "mindblown": "度肝を抜かれたい",
+    "dark": "ダークな世界へ",
+    "nostalgic": "懐かしい思い出の旅",
+    "funny": "笑わせて",
+    "wholesome": "心温まるもの",
+    "epic": "壮大な冒険",
+    "cerebral": "考えさせられるもの",
+    "cozy": "ほっこりコンテンツ",
+    "intense": "ハラハラする緊張感"
+  },
+  "article": {
+    "minRead": "{minutes}分で読了"
   }
 }

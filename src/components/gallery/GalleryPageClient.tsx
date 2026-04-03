@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import type { GalleryPiece } from "@/types";
 import { GalleryFilterBar } from "./GalleryFilterBar";
 import { MasonryGrid } from "./MasonryGrid";
@@ -17,6 +18,7 @@ interface GalleryPageClientProps {
 }
 
 export function GalleryPageClient({ initialPieces, spotlight, totalCount }: GalleryPageClientProps) {
+  const t = useTranslations();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -97,7 +99,7 @@ export function GalleryPageClient({ initialPieces, spotlight, totalCount }: Gall
             onClick={handleLoadMore}
             disabled={loading}
           >
-            {loading ? "Loading..." : "Load More"}
+            {loading ? t("common.loading") : t("gallery.loadMore")}
           </Button>
         </div>
       )}

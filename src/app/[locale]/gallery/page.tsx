@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { getTranslations } from "next-intl/server";
 import { getProvider } from "@/lib/providers";
 import { Container } from "@/components/ui/Container";
 import { GlitchText } from "@/components/ui/GlitchText";
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function GalleryPage() {
+  const t = await getTranslations();
   const provider = getProvider();
 
   const [pieces, spotlight, totalCount] = await Promise.all([
@@ -31,12 +33,11 @@ export default async function GalleryPage() {
         <Container className={spotlight ? "pt-4 pb-4 md:pt-6 md:pb-4 flex-shrink-0" : "pt-4 pb-8 md:pt-6 md:pb-12"}>
           <header className={spotlight ? "mb-0 text-center" : "mb-10 text-center"}>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-2">
-              Curated
+              {t("gallery.subtitle")}
             </p>
-            <GlitchText className="text-3xl md:text-4xl font-bold mb-2">Gallery</GlitchText>
+            <GlitchText className="text-3xl md:text-4xl font-bold mb-2">{t("gallery.heading")}</GlitchText>
             <p className="text-muted-foreground max-w-lg mx-auto">
-              The best fan art, posters, and videos from across the Spider-Verse
-              and beyond. Every piece links back to the original artist.
+              {t("gallery.description")}
             </p>
           </header>
         </Container>

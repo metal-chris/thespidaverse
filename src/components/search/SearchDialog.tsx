@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 interface SearchDialogProps {
@@ -10,6 +11,7 @@ interface SearchDialogProps {
 }
 
 export function SearchDialog({ open, onClose }: SearchDialogProps) {
+  const t = useTranslations();
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
@@ -47,7 +49,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100]" role="dialog" aria-modal="true" aria-label="Search">
+    <div className="fixed inset-0 z-[100]" role="dialog" aria-modal="true" aria-label={t("search.dialogLabel")}>
       {/* Backdrop */}
       <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
 
@@ -63,12 +65,12 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search articles, tags, moods..."
+              placeholder={t("search.placeholder")}
               className="flex-1 py-4 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
               autoComplete="off"
             />
             <kbd className="hidden sm:inline-flex text-xs text-muted-foreground px-1.5 py-0.5 rounded border border-border font-mono">
-              ESC
+              {t("search.escKey")}
             </kbd>
           </div>
         </form>

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { getProvider } from "@/lib/providers";
 import { urlFor } from "@/lib/sanity/image";
 import { Container } from "@/components/ui/Container";
@@ -108,6 +109,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ArticlePage({ params }: Props) {
+  const t = await getTranslations();
   const { slug } = await params;
   const provider = getProvider();
   const article = await provider.getArticleBySlug(slug);
@@ -177,8 +179,8 @@ export default async function ArticlePage({ params }: Props) {
       <Container className="pt-3 pb-3">
         <Breadcrumb
           items={[
-            { label: "Home", href: "/" },
-            { label: "Journal", href: "/journal" },
+            { label: t("nav.home"), href: "/" },
+            { label: t("nav.journal"), href: "/journal" },
             { label: article.title },
           ]}
         />
@@ -255,7 +257,7 @@ export default async function ArticlePage({ params }: Props) {
                     <svg viewBox="0 0 16 16" className="w-3 h-3 md:w-3.5 md:h-3.5" fill="currentColor" aria-hidden="true">
                       <path d="M2 2a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V2zm2 0v12h8V2H4zm2 2h4v1H6V4zm0 3h4v1H6V7zm0 3h3v1H6v-1z" />
                     </svg>
-                    {article.readingTime} min read
+                    {t("article.minRead", { minutes: article.readingTime })}
                   </span>
                 </>
               )}
@@ -355,7 +357,7 @@ export default async function ArticlePage({ params }: Props) {
                     <svg viewBox="0 0 16 16" className="w-3 h-3 md:w-3.5 md:h-3.5" fill="currentColor" aria-hidden="true">
                       <path d="M2 2a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V2zm2 0v12h8V2H4zm2 2h4v1H6V4zm0 3h4v1H6V7zm0 3h3v1H6v-1z" />
                     </svg>
-                    {article.readingTime} min read
+                    {t("article.minRead", { minutes: article.readingTime })}
                   </span>
                 </>
               )}

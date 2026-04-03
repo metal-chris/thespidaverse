@@ -118,5 +118,105 @@
     "reading": "Leyendo",
     "live": "En Vivo",
     "nothingTracked": "Nada registrado ahora mismo. ¡Vuelve más tarde!"
+  },
+  "categories": {
+    "movies": "Películas",
+    "videoGames": "Videojuegos",
+    "anime": "Anime",
+    "culture": "Cultura",
+    "tv": "TV",
+    "tech": "Tecnología",
+    "books": "Libros",
+    "music": "Música"
+  },
+  "home": {
+    "latest": "Recientes",
+    "articlesCount": "{count} artículos"
+  },
+  "about": {
+    "originFile": "Archivo de Origen",
+    "skills": "Habilidades",
+    "gearLoadout": "Equipamiento",
+    "principles": "Principios",
+    "liveFeed": "En Directo"
+  },
+  "journal": {
+    "subtitle": "Diario de Medios",
+    "heading": "Diario",
+    "description": "Todo lo que estoy consumiendo — registrado, puntuado y con marca de tiempo.",
+    "filter": "Filtrar",
+    "entryCount": "{count} {count, plural, one {entrada} other {entradas}}",
+    "typeLabel": "Tipo",
+    "statusLabel": "Estado",
+    "all": "Todo",
+    "readReview": "Leer reseña",
+    "noEntries": "Ninguna entrada coincide con tus filtros.",
+    "clearFilters": "Limpiar filtros",
+    "statusWatching": "Viendo",
+    "statusPlaying": "Jugando",
+    "statusListening": "Escuchando",
+    "statusReading": "Leyendo",
+    "statusCompleted": "Completado",
+    "statusDropped": "Abandonado",
+    "undated": "Sin fecha"
+  },
+  "collections": {
+    "subtitle": "Curado",
+    "heading": "Colecciones",
+    "description": "Grupos curados de artículos — por temporada, tema o vibra. Explora el estante.",
+    "allCollections": "Todas las Colecciones",
+    "articleCount": "{count} {count, plural, one {artículo} other {artículos}}",
+    "browseCollection": "Ver colección",
+    "noCollections": "Aún no hay colecciones. ¡Vuelve cuando lleguen los resúmenes de temporada!"
+  },
+  "gallery": {
+    "subtitle": "Curado",
+    "heading": "Galería",
+    "description": "El mejor fan art, pósters y videos del Spider-Verse y más allá. Cada pieza enlaza al artista original.",
+    "loadMore": "Cargar más",
+    "submitHeading": "Envía Tu Obra",
+    "submitDescription": "¿Tienes fan art, un póster o un video? Envíalo para la galería.",
+    "submitButton": "Enviar una Pieza",
+    "title": "Título",
+    "artistName": "Nombre del Artista",
+    "artistUrl": "URL del Artista",
+    "mediaUrl": "URL del Medio",
+    "description2": "Descripción",
+    "email": "Tu Email (opcional)",
+    "image": "Imagen",
+    "video": "Video",
+    "submitting": "Enviando...",
+    "submit": "Enviar",
+    "successMessage": "¡Gracias! Tu envío está en revisión.",
+    "submitAnother": "Enviar otro"
+  },
+  "theWeb": {
+    "emptyHeading": "La red aún se está tejiendo...",
+    "emptyDescription": "Aquí podrás explorar cómo todo en el Spidaverse se conecta — películas, series, juegos y más, todo enlazado.",
+    "emptyGrowing": "A medida que se publiquen artículos, la red crecerá con conexiones entre medios, etiquetas y categorías.",
+    "exploreArticles": "Explorar artículos"
+  },
+  "mood": {
+    "heading": "¿Cuál es tu Ánimo?",
+    "description": "Elige una vibra. Recibe recomendaciones. Cada artículo está etiquetado por ánimo, así que te podemos emparejar con lo que estés sintiendo.",
+    "resultsFor": "{count} {count, plural, one {resultado} other {resultados}} para \"{mood}\"",
+    "noArticlesForMood": "No hay artículos etiquetados con \"{mood}\" aún. ¡Vuelve pronto!",
+    "selectPrompt": "Selecciona un ánimo arriba para recibir recomendaciones",
+    "noArticlesYet": "Aún no hay artículos. Cuando se publique contenido con etiquetas de ánimo, las recomendaciones aparecerán aquí.",
+    "hype": "Quiero sentir la adrenalina",
+    "chill": "Algo relajante y fácil",
+    "emotional": "Que me llegue al corazón",
+    "mindblown": "Que me vuele la cabeza",
+    "dark": "Llévame a un lugar oscuro",
+    "nostalgic": "Un viaje por los recuerdos",
+    "funny": "Hazme reír",
+    "wholesome": "Algo cálido y tierno",
+    "epic": "Aventuras a gran escala",
+    "cerebral": "Hazme pensar",
+    "cozy": "Contenido reconfortante",
+    "intense": "Tensión al borde del asiento"
+  },
+  "article": {
+    "minRead": "{minutes} min de lectura"
   }
 }

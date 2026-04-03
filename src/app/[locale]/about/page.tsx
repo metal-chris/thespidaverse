@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { getProvider } from "@/lib/providers";
 import { Container } from "@/components/ui/Container";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function AboutPage() {
+  const t = await getTranslations();
   const provider = getProvider();
   const consuming = await provider.getCurrentlyConsuming();
 
@@ -30,35 +32,35 @@ export default async function AboutPage() {
 
       {/* Origin File — expandable bio accordion */}
       <ScrollReveal delay={60}>
-        <DossierSection title="Origin File">
+        <DossierSection title={t("about.originFile")}>
           <OriginFile />
         </DossierSection>
       </ScrollReveal>
 
       {/* Abilities — category stat grid */}
       <ScrollReveal delay={120}>
-        <DossierSection title="Skills">
+        <DossierSection title={t("about.skills")}>
           <AbilitiesMatrix />
         </DossierSection>
       </ScrollReveal>
 
       {/* Arsenal — platforms + article formats */}
       <ScrollReveal delay={180}>
-        <DossierSection title="Gear Loadout">
+        <DossierSection title={t("about.gearLoadout")}>
           <ArsenalPanel />
         </DossierSection>
       </ScrollReveal>
 
       {/* Philosophy — WebRating demo + core beliefs */}
       <ScrollReveal delay={240}>
-        <DossierSection title="Principles">
+        <DossierSection title={t("about.principles")}>
           <PhilosophyConsole />
         </DossierSection>
       </ScrollReveal>
 
       {/* Live Feed — currently consuming + Spotify */}
       <ScrollReveal delay={300}>
-        <DossierSection title="Live Feed">
+        <DossierSection title={t("about.liveFeed")}>
           <CurrentlyConsumingWidget data={consuming} />
         </DossierSection>
       </ScrollReveal>
