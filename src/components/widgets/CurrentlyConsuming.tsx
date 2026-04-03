@@ -1,6 +1,8 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import type { CurrentlyConsuming } from "@/types";
-import { NowPlaying } from "./NowPlaying";
 
 const MEDIA_ICONS: Record<string, string> = {
   watching: "📺",
@@ -9,7 +11,6 @@ const MEDIA_ICONS: Record<string, string> = {
   listening: "🎧",
 };
 
-/** Capitalize known abbreviations/terms for display */
 const SUBTITLE_MAP: Record<string, string> = {
   tv: "TV",
   ps5: "PS5",
@@ -22,13 +23,23 @@ const SUBTITLE_MAP: Record<string, string> = {
   movie: "Movie",
   music: "Music",
   podcast: "Podcast",
+  steam: "Steam",
 };
 
 function capitalizeSubtitle(value: string): string {
   const lower = value.toLowerCase();
   if (SUBTITLE_MAP[lower]) return SUBTITLE_MAP[lower];
-  // Title-case fallback: "some thing" → "Some Thing"
   return value.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function NowPlayingBars() {
+  return (
+    <span className="flex gap-0.5 items-end h-3" aria-label="Live">
+      <span className="w-0.5 bg-accent rounded-full animate-now-playing-1 h-2" />
+      <span className="w-0.5 bg-accent rounded-full animate-now-playing-2 h-3" />
+      <span className="w-0.5 bg-accent rounded-full animate-now-playing-3 h-1.5" />
+    </span>
+  );
 }
 
 interface ConsumingItemProps {
@@ -37,21 +48,39 @@ interface ConsumingItemProps {
   imageUrl?: string;
   subtitle?: string;
   progress?: string;
+  isLive?: boolean;
+  href?: string;
 }
 
-function ConsumingItem({ label, title, imageUrl, subtitle, progress }: ConsumingItemProps) {
+function ConsumingItem({ label, title, imageUrl, subtitle, progress, isLive, href }: ConsumingItemProps) {
+  const isListeningLive = label === "listening" && isLive;
+
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border">
       {imageUrl && (
-        <div className="relative w-12 h-16 rounded overflow-hidden flex-shrink-0">
+        <div className={`relative ${label === "listening" ? "w-12 h-12" : "w-12 h-16"} rounded overflow-hidden flex-shrink-0`}>
           <Image src={imageUrl} alt={title} fill className="object-cover" sizes="48px" />
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <p className="text-xs text-muted-foreground">
-          {MEDIA_ICONS[label] || ""} {label.charAt(0).toUpperCase() + label.slice(1)}
+        <div className="flex items-center gap-2">
+          {isListeningLive && <NowPlayingBars />}
+          <p className="text-xs text-muted-foreground">
+            {MEDIA_ICONS[label] || ""}{" "}
+            {isLive
+              ? label === "listening" ? "Now Playing" : label === "watching" ? "Watching Now" : "Playing Now"
+              : label === "listening" ? "Last Played" : label === "watching" ? "Recently Watched" : label === "playing" ? "Last Played" : "Reading"}
+          </p>
+        </div>
+        <p className="text-sm font-medium truncate">
+          {href ? (
+            <a href={href} target="_blank" rel="noopener noreferrer" className="hover:text-accent">
+              {title}
+            </a>
+          ) : (
+            title
+          )}
         </p>
-        <p className="text-sm font-medium truncate">{title}</p>
         {subtitle && <p className="text-xs text-muted-foreground truncate">{capitalizeSubtitle(subtitle)}</p>}
         {progress && <p className="text-xs text-accent">{progress}</p>}
       </div>
@@ -60,11 +89,35 @@ function ConsumingItem({ label, title, imageUrl, subtitle, progress }: Consuming
 }
 
 interface CurrentlyConsumingWidgetProps {
-  data: CurrentlyConsuming | null;
+  data?: CurrentlyConsuming | null;
   className?: string;
 }
 
-export function CurrentlyConsumingWidget({ data, className = "" }: CurrentlyConsumingWidgetProps) {
+export function CurrentlyConsumingWidget({ data: initialData, className = "" }: CurrentlyConsumingWidgetProps) {
+  const [data, setData] = useState<CurrentlyConsuming | null>(initialData ?? null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function fetchData() {
+      try {
+        const res = await fetch("/api/currently-consuming");
+        if (res.ok && mounted) {
+          setData(await res.json());
+        }
+      } catch {
+        // Keep existing data on error
+      }
+    }
+
+    fetchData();
+    const interval = setInterval(fetchData, 60_000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
   const hasAny = data?.watching || data?.playing || data?.reading || data?.listening;
 
   return (
@@ -87,6 +140,7 @@ export function CurrentlyConsumingWidget({ data, className = "" }: CurrentlyCons
             imageUrl={data.watching.posterUrl}
             subtitle={data.watching.mediaType}
             progress={data.watching.progress}
+            isLive={data.watching.isLive}
           />
         )}
         {data?.playing?.title && (
@@ -96,6 +150,7 @@ export function CurrentlyConsumingWidget({ data, className = "" }: CurrentlyCons
             imageUrl={data.playing.coverUrl}
             subtitle={data.playing.platform}
             progress={data.playing.progress}
+            isLive={data.playing.isLive}
           />
         )}
         {data?.reading?.title && (
@@ -107,18 +162,15 @@ export function CurrentlyConsumingWidget({ data, className = "" }: CurrentlyCons
             progress={data.reading.progress}
           />
         )}
-        {/* Spotify live widget */}
-        {data?.listening?.useSpotifyLive ? (
-          <NowPlaying />
-        ) : data?.listening?.title ? (
+        {data?.listening?.title && (
           <ConsumingItem
             label="listening"
             title={data.listening.title}
             imageUrl={data.listening.coverUrl}
             subtitle={data.listening.artist}
+            isLive={data.listening.isPlaying}
+            href={data.listening.spotifyUrl}
           />
-        ) : (
-          <NowPlaying />
         )}
       </div>
       {!hasAny && (

@@ -347,7 +347,7 @@ export class MockProvider implements DataProvider {
   async getGalleryCount(): Promise<number> {
     try {
       const data = await this.getData();
-      return data.gallery.length;
+      return (data.galleryPieces || []).length;
     } catch {
       return 0;
     }

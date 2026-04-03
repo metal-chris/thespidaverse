@@ -113,6 +113,7 @@ export interface CurrentlyConsuming {
     externalId?: string;
     externalSource?: string;
     progress?: string;
+    isLive?: boolean;
   };
   playing?: {
     title: string;
@@ -120,6 +121,7 @@ export interface CurrentlyConsuming {
     externalId?: string;
     platform?: string;
     progress?: string;
+    isLive?: boolean;
   };
   reading?: {
     title: string;
@@ -128,6 +130,7 @@ export interface CurrentlyConsuming {
     externalId?: string;
     externalSource?: string;
     progress?: string;
+    isLive?: boolean;
   };
   listening?: {
     title: string;
@@ -135,6 +138,7 @@ export interface CurrentlyConsuming {
     coverUrl?: string;
     spotifyUrl?: string;
     useSpotifyLive?: boolean;
+    isPlaying?: boolean;
   };
 }
 
