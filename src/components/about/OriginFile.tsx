@@ -58,13 +58,14 @@ export function OriginFile() {
         isOpen={openIndex === 0}
         onToggle={() => toggle(0)}
       >
+        <p>{t("originBody1p1")}</p>
         <p>
-          {t.rich("originBody1p1", {
+          {t.rich("originBody1p2", {
             em: (chunks) => <em>{chunks}</em>,
           })}
         </p>
         <p>
-          {t.rich("originBody1p2", {
+          {t.rich("originBody1p3", {
             strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
           })}
         </p>
@@ -83,6 +84,11 @@ export function OriginFile() {
         </p>
         <p>
           {t.rich("originBody2p3", {
+            em: (chunks) => <em>{chunks}</em>,
+          })}
+        </p>
+        <p>
+          {t.rich("originBody2p4", {
             strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
           })}
         </p>
@@ -93,15 +99,16 @@ export function OriginFile() {
         isOpen={openIndex === 2}
         onToggle={() => toggle(2)}
       >
+        <p>{t("originBody3p1")}</p>
         <p>
-          {t.rich("originBody3p1", {
+          {t.rich("originBody3p2", {
             em: (chunks) => <em>{chunks}</em>,
           })}
         </p>
-        <p>{t("originBody3p2")}</p>
         <p>{t("originBody3p3")}</p>
+        <p>{t("originBody3p4")}</p>
         <p>
-          {t.rich("originBody3p4", {
+          {t.rich("originBody3p5", {
             strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
             em: (chunks) => <em>{chunks}</em>,
           })}
