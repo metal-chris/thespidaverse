@@ -82,11 +82,11 @@ export function IDCardHeader() {
   const [discordCopied, setDiscordCopied] = useState(false);
   const [quoteIndex, setQuoteIndex] = useState(0);
 
-  // Rotate quotes every 10 seconds
+  // Rotate quotes every 12 seconds (5 quotes × 12s = 60s full cycle)
   useEffect(() => {
     const interval = setInterval(() => {
       setQuoteIndex((i) => (i + 1) % QUOTES.length);
-    }, 10000);
+    }, 12000);
     return () => clearInterval(interval);
   }, []);
 
