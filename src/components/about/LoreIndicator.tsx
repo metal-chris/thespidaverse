@@ -76,18 +76,37 @@ export function LoreIndicator({
         onBlur={close}
         onClick={() => (isOpen ? close() : open())}
       >
-        {/* Outer glow ring */}
-        <span
-          className={cn(
-            "absolute inset-0 rounded-full bg-accent/30",
-            variant === "pulse" && "animate-[lore-ping_2s_ease-in-out_infinite]",
-            variant === "glitch" && "animate-[lore-glitch_3s_steps(1)_infinite]"
-          )}
-        />
+        {/* Three rotating arcs — thematic spider-web motif */}
+        <svg
+          viewBox="0 0 14 14"
+          className="absolute inset-0 w-full h-full animate-spin text-accent"
+          style={{ animationDuration: "4s" }}
+        >
+          {[0, 120, 240].map((angle) => {
+            const r = 6;
+            const cx = 7;
+            const cy = 7;
+            const gap = 20;
+            const span = 120 - gap;
+            const a1 = ((angle + gap / 2 - 90) * Math.PI) / 180;
+            const a2 = ((angle + gap / 2 + span - 90) * Math.PI) / 180;
+            return (
+              <path
+                key={angle}
+                d={`M ${(cx + Math.cos(a1) * r).toFixed(2)} ${(cy + Math.sin(a1) * r).toFixed(2)} A ${r} ${r} 0 0 1 ${(cx + Math.cos(a2) * r).toFixed(2)} ${(cy + Math.sin(a2) * r).toFixed(2)}`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1}
+                strokeLinecap="round"
+                opacity={0.5}
+              />
+            );
+          })}
+        </svg>
         {/* Inner dot */}
-        <span className="absolute inset-[2px] rounded-full bg-accent/80" />
+        <span className="absolute inset-[3px] rounded-full bg-accent/80" />
         {/* Center pip */}
-        <span className="absolute inset-[4px] rounded-full bg-accent" />
+        <span className="absolute inset-[4.5px] rounded-full bg-accent" />
       </button>
 
       {/* Portal tooltip — escapes overflow-hidden ancestors. All spans to be p-safe. */}
