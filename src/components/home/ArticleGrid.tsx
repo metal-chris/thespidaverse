@@ -162,7 +162,7 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-4 pt-4 border-t border-border/50">
+        <div className="flex flex-col items-center gap-3 pt-4">
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -220,6 +220,8 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
               </svg>
             </Button>
           </div>
+
+          <div className="w-12 h-px bg-border/50" />
 
           <span className="text-xs text-muted-foreground tabular-nums">
             {t("articlesCount", { count: articles.length })}

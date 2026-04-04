@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
@@ -60,6 +61,7 @@ function GearCategory({
 
 export function ArsenalPanel() {
   const t = useTranslations("about");
+  const [discordCopied, setDiscordCopied] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -86,30 +88,32 @@ export function ArsenalPanel() {
       <GearCategory label={t("suitTech")}>
         <div className="flex flex-wrap gap-2">
           {platforms.map((p) => (
-            <a
-              key={p.name}
-              href={p.href}
-              onClick={
-                p.onClick
-                  ? (e: React.MouseEvent) => {
-                      e.preventDefault();
-                      p.onClick!();
-                    }
-                  : undefined
-              }
-              target={!p.onClick ? "_blank" : undefined}
-              rel={!p.onClick ? "noopener noreferrer" : undefined}
-              aria-label={p.handle ? `${p.name}: ${p.handle} (click to copy)` : p.name}
-              className={cn(
-                "inline-flex items-center gap-2 px-3 py-2 rounded-lg border bg-card/50 transition-all duration-200",
-                p.color
+            <div key={p.name} className="relative">
+              <button
+                onClick={() => {
+                  if (p.onClick) {
+                    p.onClick();
+                    setDiscordCopied(true);
+                    setTimeout(() => setDiscordCopied(false), 2000);
+                  }
+                }}
+                aria-label={p.handle ? `${p.name}: ${p.handle} (click to copy)` : p.name}
+                className={cn(
+                  "inline-flex items-center gap-2 px-3 py-2 rounded-lg border bg-card/50 transition-all duration-200",
+                  p.color
+                )}
+              >
+                {p.icon}
+                <span className="text-sm font-semibold text-card-foreground">
+                  {p.name}
+                </span>
+              </button>
+              {p.handle && discordCopied && (
+                <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 text-[10px] font-medium text-white bg-[#5865F2] rounded-md whitespace-nowrap animate-fade-in">
+                  {p.handle} copied!
+                </span>
               )}
-            >
-              {p.icon}
-              <span className="text-sm font-semibold text-card-foreground">
-                {p.name}
-              </span>
-            </a>
+            </div>
           ))}
         </div>
       </GearCategory>

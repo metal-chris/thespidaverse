@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { GlitchText } from "@/components/ui/GlitchText";
@@ -68,15 +68,34 @@ function AvatarWithFallback() {
   );
 }
 
+const QUOTES = [
+  { textKey: "quote1", speakerKey: "quote1Speaker", tooltipKey: "quote1Tooltip" },
+  { textKey: "quote2", speakerKey: "quote2Speaker", tooltipKey: "quote2Tooltip" },
+  { textKey: "quote3", speakerKey: "quote3Speaker", tooltipKey: "quote3Tooltip" },
+  { textKey: "quote4", speakerKey: "quote4Speaker", tooltipKey: "quote4Tooltip" },
+];
+
 export function IDCardHeader() {
   const t = useTranslations("about");
   const tCat = useTranslations("categories");
   const [discordCopied, setDiscordCopied] = useState(false);
+  const [quoteIndex, setQuoteIndex] = useState(0);
+
+  // Rotate quotes every 6 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setQuoteIndex((i) => (i + 1) % QUOTES.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleDiscordCopy = () => {
     navigator.clipboard.writeText("spida.mane");
     setDiscordCopied(true);
     setTimeout(() => setDiscordCopied(false), 2000);
   };
+
+  const currentQuote = QUOTES[quoteIndex];
 
   return (
     <div className="rounded-xl border-2 border-accent/30 bg-card/60 backdrop-blur-sm overflow-hidden">
@@ -110,12 +129,18 @@ export function IDCardHeader() {
               />
             </p>
 
-            <p className="text-sm text-muted-foreground mt-3 font-bold italic flex items-center justify-center md:justify-start gap-1.5">
-              &ldquo;{t("motto")}&rdquo;
-              <LoreIndicator
-                lore={t("loreMotto")}
-              />
-            </p>
+            <div className="mt-3 text-center md:text-left">
+              <p
+                key={quoteIndex}
+                className="text-sm text-muted-foreground font-bold italic inline-flex items-center gap-1.5 transition-opacity duration-500 animate-fade-in"
+              >
+                &ldquo;{t(currentQuote.textKey)}&rdquo;
+                <LoreIndicator lore={t(currentQuote.tooltipKey)} />
+              </p>
+              <p className="text-[10px] text-muted-foreground/60 font-mono uppercase tracking-wider mt-1">
+                &mdash; {t(currentQuote.speakerKey)}
+              </p>
+            </div>
 
             {/* Social links */}
             <div className="flex items-center gap-3 mt-4 justify-center md:justify-start">
