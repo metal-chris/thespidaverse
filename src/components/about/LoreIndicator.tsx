@@ -38,7 +38,8 @@ export function LoreIndicator({
   const updatePosition = useCallback(() => {
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
-    const direction = rect.top < 180 ? "below" : "above";
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const direction = spaceBelow < 180 ? "above" : "below";
     // Clamp left so tooltip stays within viewport (16px padding each side)
     const tooltipWidth = Math.min(288, window.innerWidth - 32); // w-72 = 288px
     const centerX = rect.left + rect.width / 2;
@@ -134,7 +135,7 @@ export function LoreIndicator({
             }
             role="tooltip"
           >
-            <span className="relative block rounded-lg border border-accent/30 bg-card/95 backdrop-blur-md shadow-lg shadow-accent/10 p-3">
+            <span className="relative block rounded-lg border border-accent/30 bg-card/80 backdrop-blur-md shadow-lg shadow-accent/10 p-3">
               {/* Corner brackets for that dossier feel */}
               <span className="absolute top-1 left-1 w-2 h-2 border-t border-l border-accent/40 block" />
               <span className="absolute top-1 right-1 w-2 h-2 border-t border-r border-accent/40 block" />
