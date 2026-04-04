@@ -136,10 +136,10 @@ export function IDCardHeader() {
                 className="text-sm text-muted-foreground font-bold italic inline-flex items-center gap-1.5 transition-opacity duration-500 animate-fade-in"
               >
                 &ldquo;{t(currentQuote.textKey)}&rdquo;
-                <LoreIndicator lore={t(currentQuote.tooltipKey)} />
               </p>
-              <p className="text-[10px] text-muted-foreground/60 font-mono uppercase tracking-wider mt-1">
-                &mdash; {t(currentQuote.speakerKey)}
+              <p className="text-[10px] text-muted-foreground/60 font-mono uppercase tracking-wider mt-1 flex items-center gap-1.5 justify-center md:justify-start">
+                <span>&mdash; {t(currentQuote.speakerKey)}</span>
+                <LoreIndicator lore={t(currentQuote.tooltipKey)} />
               </p>
             </div>
 
