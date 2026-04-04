@@ -59,13 +59,14 @@ export function OriginFile() {
         onToggle={() => toggle(0)}
       >
         <p>{t("originBody1p1")}</p>
+        <p>{t("originBody1p2")}</p>
         <p>
-          {t.rich("originBody1p2", {
+          {t.rich("originBody1p3", {
             em: (chunks) => <em>{chunks}</em>,
           })}
         </p>
         <p>
-          {t.rich("originBody1p3", {
+          {t.rich("originBody1p4", {
             strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
           })}
         </p>
