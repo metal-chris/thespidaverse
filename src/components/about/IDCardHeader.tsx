@@ -74,6 +74,7 @@ const QUOTES = [
   { textKey: "quote3", speakerKey: "quote3Speaker", tooltipKey: "quote3Tooltip" },
   { textKey: "quote4", speakerKey: "quote4Speaker", tooltipKey: "quote4Tooltip" },
   { textKey: "quote5", speakerKey: "quote5Speaker", tooltipKey: "quote5Tooltip" },
+  { textKey: "quote6", speakerKey: "quote6Speaker", tooltipKey: "quote6Tooltip" },
 ];
 
 export function IDCardHeader() {
