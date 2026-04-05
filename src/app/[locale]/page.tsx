@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { HeroSection } from "@/components/home/HeroSection";
 import { HomeContent } from "@/components/home/HomeContent";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
+import { WhatIsSection } from "@/components/home/WhatIsSection";
 import { NewsletterSignup } from "@/components/content/NewsletterSignup";
 import { CurrentlyConsumingWidget } from "@/components/widgets/CurrentlyConsuming";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -29,9 +30,16 @@ export default async function HomePage() {
         </Container>
       </HeroSection>
 
-      {/* Currently consuming widget — generous breathing room */}
+      {/* What is The Spidaverse? — principles section */}
       <ScrollReveal>
-        <Container as="section" className="pt-8 pb-16">
+        <Container as="section" className="pt-12 pb-16">
+          <WhatIsSection />
+        </Container>
+      </ScrollReveal>
+
+      {/* Currently Vibing widget */}
+      <ScrollReveal>
+        <Container as="section" className="pb-16">
           <CurrentlyConsumingWidget data={consuming} />
         </Container>
       </ScrollReveal>
@@ -48,7 +56,9 @@ export default async function HomePage() {
             </span>
           </div>
         </ScrollReveal>
-        <HomeContent articles={articles} tags={tags} />
+        <ScrollReveal>
+          <HomeContent articles={articles} tags={tags} />
+        </ScrollReveal>
       </Container>
 
       {/* Newsletter */}

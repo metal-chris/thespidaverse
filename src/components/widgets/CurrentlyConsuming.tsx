@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { Skeleton } from "@/components/ui/Skeleton";
 import type { CurrentlyConsuming } from "@/types";
 
 const MEDIA_ICONS: Record<string, string> = {
@@ -120,14 +121,33 @@ interface CurrentlyConsumingWidgetProps {
   className?: string;
 }
 
+function VibingSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {[0, 1, 2, 3].map((i) => (
+        <div key={i} className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card/30">
+          <Skeleton className="w-12 h-16 rounded flex-shrink-0" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-1/2" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function CurrentlyConsumingWidget({ data: initialData, className = "" }: CurrentlyConsumingWidgetProps) {
   const t = useTranslations();
   const [data, setData] = useState<CurrentlyConsuming | null>(initialData ?? null);
+  const [isRefetching, setIsRefetching] = useState(false);
 
   useEffect(() => {
     let mounted = true;
 
     async function fetchData() {
+      setIsRefetching(true);
       try {
         const res = await fetch("/api/currently-consuming");
         if (res.ok && mounted) {
@@ -135,6 +155,8 @@ export function CurrentlyConsumingWidget({ data: initialData, className = "" }: 
         }
       } catch {
         // Keep existing data on error
+      } finally {
+        if (mounted) setIsRefetching(false);
       }
     }
 
@@ -161,56 +183,59 @@ export function CurrentlyConsumingWidget({ data: initialData, className = "" }: 
       <h2 className="relative text-lg font-bold mb-4 flex items-center gap-2">
         <span className="text-accent">///</span> {t("consuming.heading")}
       </h2>
-      <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {data?.watching?.title && (
-          <ConsumingItem
-            label="watching"
-            title={data.watching.title}
-            imageUrl={data.watching.posterUrl}
-            subtitle={data.watching.mediaType}
-            progress={data.watching.progress}
-            isLive={data.watching.isLive}
-            statusText={getConsumingStatusText(t, "watching", data.watching.isLive)}
-            liveLabel={liveLabel}
-          />
-        )}
-        {data?.playing?.title && (
-          <ConsumingItem
-            label="playing"
-            title={data.playing.title}
-            imageUrl={data.playing.coverUrl}
-            subtitle={data.playing.platform}
-            progress={data.playing.progress}
-            isLive={data.playing.isLive}
-            statusText={getConsumingStatusText(t, "playing", data.playing.isLive)}
-            liveLabel={liveLabel}
-          />
-        )}
-        {data?.reading?.title && (
-          <ConsumingItem
-            label="reading"
-            title={data.reading.title}
-            imageUrl={data.reading.coverUrl}
-            subtitle={data.reading.mediaType}
-            progress={data.reading.progress}
-            statusText={getConsumingStatusText(t, "reading")}
-            liveLabel={liveLabel}
-          />
-        )}
-        {data?.listening?.title && (
-          <ConsumingItem
-            label="listening"
-            title={data.listening.title}
-            imageUrl={data.listening.coverUrl}
-            subtitle={data.listening.artist}
-            isLive={data.listening.isPlaying}
-            href={data.listening.spotifyUrl}
-            statusText={getConsumingStatusText(t, "listening", data.listening.isPlaying)}
-            liveLabel={liveLabel}
-          />
-        )}
-      </div>
-      {!hasAny && (
+      {isRefetching && !hasAny ? (
+        <div className="relative"><VibingSkeleton /></div>
+      ) : hasAny ? (
+        <div className={`relative grid grid-cols-1 sm:grid-cols-2 gap-3 transition-opacity duration-300 ${isRefetching ? "opacity-80" : ""}`}>
+          {data?.watching?.title && (
+            <ConsumingItem
+              label="watching"
+              title={data.watching.title}
+              imageUrl={data.watching.posterUrl}
+              subtitle={data.watching.mediaType}
+              progress={data.watching.progress}
+              isLive={data.watching.isLive}
+              statusText={getConsumingStatusText(t, "watching", data.watching.isLive)}
+              liveLabel={liveLabel}
+            />
+          )}
+          {data?.playing?.title && (
+            <ConsumingItem
+              label="playing"
+              title={data.playing.title}
+              imageUrl={data.playing.coverUrl}
+              subtitle={data.playing.platform}
+              progress={data.playing.progress}
+              isLive={data.playing.isLive}
+              statusText={getConsumingStatusText(t, "playing", data.playing.isLive)}
+              liveLabel={liveLabel}
+            />
+          )}
+          {data?.reading?.title && (
+            <ConsumingItem
+              label="reading"
+              title={data.reading.title}
+              imageUrl={data.reading.coverUrl}
+              subtitle={data.reading.mediaType}
+              progress={data.reading.progress}
+              statusText={getConsumingStatusText(t, "reading")}
+              liveLabel={liveLabel}
+            />
+          )}
+          {data?.listening?.title && (
+            <ConsumingItem
+              label="listening"
+              title={data.listening.title}
+              imageUrl={data.listening.coverUrl}
+              subtitle={data.listening.artist}
+              isLive={data.listening.isPlaying}
+              href={data.listening.spotifyUrl}
+              statusText={getConsumingStatusText(t, "listening", data.listening.isPlaying)}
+              liveLabel={liveLabel}
+            />
+          )}
+        </div>
+      ) : (
         <p className="relative text-sm text-muted-foreground italic">{t("consuming.nothingTracked")}</p>
       )}
     </section>

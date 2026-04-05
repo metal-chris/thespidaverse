@@ -146,7 +146,12 @@
     "showFeatured": "Afficher l'article en vedette {index}",
     "previousPage": "Page précédente",
     "nextPage": "Page suivante",
-    "page": "Page {page}"
+    "page": "Page {page}",
+    "whatIs": {
+      "heading": "C'est quoi The Spidaverse ?",
+      "intro": "La plupart des sites veulent vos données. Celui-ci veut juste parler de films, jeux, anime, livres et musique. Pas de tracking, pas de pubs, aucune contrepartie. Juste le travail.",
+      "welcome": "Bienvenue dans The Spidaverse."
+    }
   },
   "about": {
     "originFile": "Dossier d'origine",

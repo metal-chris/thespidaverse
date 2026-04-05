@@ -15,11 +15,12 @@ interface ArticleGridProps {
   articles: Article[];
 }
 
-/** Auto-rotating carousel for 2 featured articles. */
+/** Auto-rotating carousel for 2 featured articles with swipe + keyboard support. */
 function FeaturedCarousel({ articles }: { articles: Article[] }) {
   const t = useTranslations("home");
   const [activeIndex, setActiveIndex] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const startTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -39,15 +40,62 @@ function FeaturedCarousel({ articles }: { articles: Article[] }) {
   const goTo = useCallback(
     (index: number) => {
       setActiveIndex(index);
-      startTimer(); // Reset timer on manual navigation
+      startTimer();
     },
     [startTimer]
+  );
+
+  const goNext = useCallback(() => {
+    goTo((activeIndex + 1) % articles.length);
+  }, [activeIndex, articles.length, goTo]);
+
+  const goPrev = useCallback(() => {
+    goTo((activeIndex - 1 + articles.length) % articles.length);
+  }, [activeIndex, articles.length, goTo]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "ArrowLeft") { e.preventDefault(); goPrev(); }
+      else if (e.key === "ArrowRight") { e.preventDefault(); goNext(); }
+    },
+    [goNext, goPrev]
+  );
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  }, []);
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (!touchStartRef.current) return;
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - touchStartRef.current.x;
+      const dy = touch.clientY - touchStartRef.current.y;
+      touchStartRef.current = null;
+
+      // Only trigger if horizontal swipe is dominant and exceeds threshold
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        if (dx < 0) goNext();
+        else goPrev();
+      }
+    },
+    [goNext, goPrev]
   );
 
   if (articles.length === 0) return null;
 
   return (
-    <div className="relative">
+    <div
+      className="relative outline-none"
+      role="region"
+      aria-roledescription="carousel"
+      aria-label={t("showFeatured", { index: activeIndex + 1 })}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Cards — crossfade */}
       <div className="relative">
         {articles.map((article, i) => (

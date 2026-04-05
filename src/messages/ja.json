@@ -146,7 +146,12 @@
     "showFeatured": "注目記事{index}を表示",
     "previousPage": "前のページ",
     "nextPage": "次のページ",
-    "page": "ページ{page}"
+    "page": "ページ{page}",
+    "whatIs": {
+      "heading": "The Spidaverseとは？",
+      "intro": "ほとんどのサイトはあなたのデータを欲しがります。ここは映画、ゲーム、アニメ、本、音楽について語りたいだけです。トラッキングなし、広告なし、裏も表もなし。ただ作品だけ。",
+      "welcome": "The Spidaverseへようこそ。"
+    }
   },
   "about": {
     "originFile": "オリジンファイル",

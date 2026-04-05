@@ -146,7 +146,12 @@
     "showFeatured": "추천 글 {index} 보기",
     "previousPage": "이전 페이지",
     "nextPage": "다음 페이지",
-    "page": "{page} 페이지"
+    "page": "{page} 페이지",
+    "whatIs": {
+      "heading": "The Spidaverse란?",
+      "intro": "대부분의 사이트는 당신의 데이터를 원합니다. 이곳은 그저 영화, 게임, 애니메이션, 책, 음악에 대해 이야기하고 싶을 뿐입니다. 추적도, 광고도, 조건도 없습니다. 오직 작품만.",
+      "welcome": "The Spidaverse에 오신 것을 환영합니다."
+    }
   },
   "about": {
     "originFile": "오리진 파일",
