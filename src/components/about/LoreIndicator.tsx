@@ -150,10 +150,9 @@ export function LoreIndicator({
               <span className="block font-mono text-[9px] uppercase tracking-[0.2em] text-accent/60 mb-1.5">
                 Classified Lore Entry
               </span>
-              <span
-                className="block text-xs text-foreground/90 leading-relaxed [&>strong]:text-accent [&>strong]:font-semibold"
-                dangerouslySetInnerHTML={{ __html: lore }}
-              />
+              <span className="block text-xs text-foreground/90 leading-relaxed">
+                {lore}
+              </span>
               {attribution && (
                 <span className="block text-[10px] text-muted-foreground/60 mt-2 italic text-right">
                   &mdash; {attribution}

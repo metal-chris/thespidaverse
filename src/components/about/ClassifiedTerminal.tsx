@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Shield, Link2, MessageCircleOff, Palette, Ban } from "lucide-react";
+import { Shield, Link2, MessageCircleOff, Palette, Ban, BarChart3 } from "lucide-react";
 import { LoreIndicator } from "./LoreIndicator";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
@@ -17,8 +17,9 @@ const PRINCIPLES: PrincipleCard[] = [
   { icon: Shield, titleKey: "principle1Title", tooltipKey: "principle1Tooltip" },
   { icon: Link2, titleKey: "principle2Title", tooltipKey: "principle2Tooltip" },
   { icon: MessageCircleOff, titleKey: "principle3Title", tooltipKey: "principle3Tooltip" },
-  { icon: Palette, titleKey: "principle4Title", tooltipKey: "principle4Tooltip" },
+  { icon: BarChart3, titleKey: "principle6Title", tooltipKey: "principle6Tooltip" },
   { icon: Ban, titleKey: "principle5Title", tooltipKey: "principle5Tooltip" },
+  { icon: Palette, titleKey: "principle4Title", tooltipKey: "principle4Tooltip" },
 ];
 
 export function ClassifiedTerminal() {
@@ -35,19 +36,14 @@ export function ClassifiedTerminal() {
 
       {/* Classification header bar */}
       <div className="relative z-[2] bg-accent/5 border-b border-accent/15 px-4 py-2.5 font-mono text-[9px] uppercase tracking-[0.2em]">
-        <p className="text-accent/50">
+        <div className="flex flex-col md:flex-row text-accent/50">
           <span>{t("terminalClearance1")}</span>
-          <span className="hidden md:inline"> // </span>
-          <br className="md:hidden" />
-          <span>{t("terminalClearance2")}</span>
-        </p>
-        <p className="text-accent/40 mt-0.5">
+          <span><span className="font-bold text-accent"> // </span>{t("terminalClearance2")}</span>
+        </div>
+        <div className="flex flex-col md:flex-row text-accent/40 mt-0.5">
           <span>{t("terminalFile")}</span>
-          <span className="hidden md:inline"> // </span>
-          <br className="md:hidden" />
-          <span>{t("terminalDate")} </span>
-          <span className="text-accent/20">{t("terminalRedacted")}</span>
-        </p>
+          <span><span className="font-bold text-accent"> // </span>{t("terminalDate")} <span className="text-accent/20">{t("terminalRedacted")}</span></span>
+        </div>
       </div>
 
       {/* Content area */}
@@ -58,7 +54,7 @@ export function ClassifiedTerminal() {
         </p>
 
         {/* Principle cards grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-2.5">
+        <div className="grid grid-cols-2 gap-2 md:gap-2.5">
           {PRINCIPLES.map(({ icon: Icon, titleKey, tooltipKey }) => {
             const isActive = activeCard === titleKey;
             return (
