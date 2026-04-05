@@ -51,7 +51,7 @@ function Subsection({ title, isOpen, onToggle, children, classified }: Subsectio
           <div className={cn(
             "pb-4 px-1 space-y-4 text-sm md:text-base leading-relaxed",
             classified
-              ? "text-foreground/70 border-l-2 border-accent/20 pl-4 ml-1"
+              ? "text-foreground/70"
               : "text-foreground/90"
           )}>
             {children}

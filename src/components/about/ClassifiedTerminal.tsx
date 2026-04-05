@@ -23,7 +23,7 @@ export function ClassifiedTerminal() {
   const t = useTranslations("about");
 
   return (
-    <div className="terminal-scanlines terminal-boot relative rounded-lg border border-accent/20 bg-black/40 overflow-hidden">
+    <div className="terminal-scanlines terminal-boot relative rounded-lg border border-accent/20 bg-black/40">
       {/* Corner brackets */}
       <span className="absolute top-1.5 left-1.5 w-3 h-3 border-t border-l border-accent/30 z-10" />
       <span className="absolute top-1.5 right-1.5 w-3 h-3 border-t border-r border-accent/30 z-10" />
@@ -36,7 +36,10 @@ export function ClassifiedTerminal() {
           {t("terminalClearance")}
         </p>
         <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-accent/40 mt-0.5">
-          {t("terminalFile")} // {t("terminalDate")}{" "}
+          <span>{t("terminalFile")}</span>
+          <span className="hidden md:inline"> // </span>
+          <br className="md:hidden" />
+          <span>{t("terminalDate")} </span>
           <span className="text-accent/20">{t("terminalRedacted")}</span>
         </p>
       </div>
@@ -53,7 +56,7 @@ export function ClassifiedTerminal() {
           {PRINCIPLES.map(({ icon: Icon, titleKey, tooltipKey }) => (
             <div
               key={titleKey}
-              className="relative rounded-md border border-accent/15 bg-accent/5 p-3 flex flex-col items-center text-center gap-2 hover:border-accent/30 hover:bg-accent/8 transition-all duration-200"
+              className="relative rounded-md border border-accent/15 bg-accent/5 p-4 flex flex-col items-center justify-center text-center gap-2.5 min-h-[100px] hover:border-accent/30 transition-all duration-200"
             >
               <Icon className="w-4 h-4 text-accent/60" strokeWidth={1.5} />
               <span className="font-mono text-[10px] uppercase tracking-wider text-accent/80 font-semibold">
@@ -65,7 +68,7 @@ export function ClassifiedTerminal() {
         </div>
 
         {/* Signature footer */}
-        <div className="border-t border-accent/15 pt-3 mt-4">
+        <div className="border-t border-accent/15 pt-3 mt-4 text-center">
           <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-accent/30">
             {t("terminalFooter")}
           </p>

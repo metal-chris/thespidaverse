@@ -46,8 +46,8 @@ export function LoreIndicator({
     const halfWidth = tooltipWidth / 2;
     const clampedLeft = Math.max(halfWidth + 16, Math.min(centerX, window.innerWidth - halfWidth - 16));
     setCoords({
-      top: direction === "above" ? rect.top + window.scrollY : rect.bottom + window.scrollY,
-      left: clampedLeft + window.scrollX,
+      top: direction === "above" ? rect.top : rect.bottom,
+      left: clampedLeft,
       direction,
     });
   }, []);
