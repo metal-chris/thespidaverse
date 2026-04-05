@@ -12,7 +12,7 @@ import { buttonClasses } from "@/components/ui/Button";
  * Flow: dark frosted backdrop fades in → WebShot expands over it → navigate home.
  * Uses createPortal to escape the 404 page's overflow-hidden container.
  */
-export function SwingHomeLink() {
+export function SwingHomeLink({ label = "Swing Back Home" }: { label?: string }) {
   const router = useRouter();
   const [active, setActive] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -64,7 +64,7 @@ export function SwingHomeLink() {
             "!bg-black !text-white !border-transparent hover:!bg-neutral-800 active:!bg-neutral-700",
         })}
       >
-        Swing Back Home
+        {label}
       </a>
 
       {mounted && overlay && createPortal(overlay, document.body)}

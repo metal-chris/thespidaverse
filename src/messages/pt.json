@@ -3,7 +3,12 @@
     "skipToContent": "Pular para o conteúdo",
     "scrollToContent": "Rolar para o conteúdo",
     "loading": "Carregando...",
-    "somethingWentWrong": "Algo deu errado."
+    "somethingWentWrong": "Algo deu errado.",
+    "notFoundLabel": "Dimensão Errada",
+    "notFoundTitle": "Você caiu por um portal.",
+    "notFoundDescription": "Esta página existe em outra dimensão.",
+    "notFoundSwingHome": "Voltar pra Casa",
+    "notFoundSearch": "Buscar"
   },
   "nav": {
     "home": "Início",

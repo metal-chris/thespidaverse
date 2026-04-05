@@ -3,7 +3,12 @@
     "skipToContent": "본문으로 건너뛰기",
     "scrollToContent": "본문으로 스크롤",
     "loading": "로딩 중...",
-    "somethingWentWrong": "문제가 발생했습니다."
+    "somethingWentWrong": "문제가 발생했습니다.",
+    "notFoundLabel": "잘못된 차원",
+    "notFoundTitle": "포털에 빠졌습니다.",
+    "notFoundDescription": "이 페이지는 다른 차원에 있습니다.",
+    "notFoundSwingHome": "홈으로 돌아가기",
+    "notFoundSearch": "검색하기"
   },
   "nav": {
     "home": "홈",

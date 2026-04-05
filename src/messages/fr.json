@@ -3,7 +3,12 @@
     "skipToContent": "Aller au contenu",
     "scrollToContent": "Défiler vers le contenu",
     "loading": "Chargement...",
-    "somethingWentWrong": "Une erreur est survenue."
+    "somethingWentWrong": "Une erreur est survenue.",
+    "notFoundLabel": "Mauvaise Dimension",
+    "notFoundTitle": "Vous êtes tombé dans un portail.",
+    "notFoundDescription": "Cette page existe dans une autre dimension.",
+    "notFoundSwingHome": "Retour à l'Accueil",
+    "notFoundSearch": "Rechercher"
   },
   "nav": {
     "home": "Accueil",

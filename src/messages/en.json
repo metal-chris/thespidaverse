@@ -3,7 +3,12 @@
     "skipToContent": "Skip to content",
     "scrollToContent": "Scroll to content",
     "loading": "Loading...",
-    "somethingWentWrong": "Something went wrong."
+    "somethingWentWrong": "Something went wrong.",
+    "notFoundLabel": "Wrong Dimension",
+    "notFoundTitle": "You fell through a spot.",
+    "notFoundDescription": "This page exists in another dimension.",
+    "notFoundSwingHome": "Swing Back Home",
+    "notFoundSearch": "Search Instead"
   },
   "nav": {
     "home": "Home",

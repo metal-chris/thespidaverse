@@ -3,7 +3,12 @@
     "skipToContent": "Saltar al contenido",
     "scrollToContent": "Desplazarse al contenido",
     "loading": "Cargando...",
-    "somethingWentWrong": "Algo salió mal."
+    "somethingWentWrong": "Algo salió mal.",
+    "notFoundLabel": "Dimensión Equivocada",
+    "notFoundTitle": "Caíste por un portal.",
+    "notFoundDescription": "Esta página existe en otra dimensión.",
+    "notFoundSwingHome": "Volver a Casa",
+    "notFoundSearch": "Buscar"
   },
   "nav": {
     "home": "Inicio",
