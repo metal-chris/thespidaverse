@@ -75,6 +75,8 @@ const QUOTES = [
   { textKey: "quote4", speakerKey: "quote4Speaker", tooltipKey: "quote4Tooltip" },
   { textKey: "quote5", speakerKey: "quote5Speaker", tooltipKey: "quote5Tooltip" },
   { textKey: "quote6", speakerKey: "quote6Speaker", tooltipKey: "quote6Tooltip" },
+  { textKey: "quote7", speakerKey: "quote7Speaker", tooltipKey: "quote7Tooltip" },
+  { textKey: "quote8", speakerKey: "quote8Speaker", tooltipKey: "quote8Tooltip" },
 ];
 
 export function IDCardHeader() {
@@ -83,7 +85,7 @@ export function IDCardHeader() {
   const [discordCopied, setDiscordCopied] = useState(false);
   const [quoteIndex, setQuoteIndex] = useState(0);
 
-  // Rotate quotes every 12 seconds (5 quotes × 12s = 60s full cycle)
+  // Rotate quotes every 12 seconds (8 quotes × 12s = 96s full cycle)
   useEffect(() => {
     const interval = setInterval(() => {
       setQuoteIndex((i) => (i + 1) % QUOTES.length);

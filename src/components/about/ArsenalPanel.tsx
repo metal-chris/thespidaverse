@@ -44,16 +44,22 @@ const gadgets = [
 
 function GearCategory({
   label,
+  description,
   children,
 }: {
   label: string;
+  description?: string;
   children: React.ReactNode;
 }) {
   return (
     <div>
-      <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground/60 mb-3">
+      <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground/60 mb-1">
         {label}
       </p>
+      {description && (
+        <p className="text-xs text-muted-foreground mb-3">{description}</p>
+      )}
+      {!description && <div className="mb-2" />}
       {children}
     </div>
   );
@@ -66,7 +72,7 @@ export function ArsenalPanel() {
   return (
     <div className="space-y-6">
       {/* Web-Shooters — Content Formats */}
-      <GearCategory label={t("webShooters")}>
+      <GearCategory label={t("webShooters")} description={t("webShootersDesc")}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {formats.map((f) => (
             <div
@@ -85,7 +91,7 @@ export function ArsenalPanel() {
       </GearCategory>
 
       {/* Suit Tech — Platforms (inline) */}
-      <GearCategory label={t("suitTech")}>
+      <GearCategory label={t("suitTech")} description={t("suitTechDesc")}>
         <div className="flex flex-wrap gap-2">
           {platforms.map((p) => (
             <div key={p.name} className="relative">
@@ -119,7 +125,7 @@ export function ArsenalPanel() {
       </GearCategory>
 
       {/* Gadgets — Site Mechanics */}
-      <GearCategory label={t("gadgetsLabel")}>
+      <GearCategory label={t("gadgetsLabel")} description={t("gadgetsDesc")}>
         <div className="flex flex-wrap gap-2">
           {gadgets.map((g) => (
             <div
