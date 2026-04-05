@@ -10,21 +10,34 @@ interface SubsectionProps {
   isOpen: boolean;
   onToggle: () => void;
   children: React.ReactNode;
+  classified?: boolean;
 }
 
-function Subsection({ title, isOpen, onToggle, children }: SubsectionProps) {
+function Subsection({ title, isOpen, onToggle, children, classified }: SubsectionProps) {
   return (
-    <div className="border-b border-border/30 last:border-b-0">
+    <div className={cn(
+      "border-b border-border/30 last:border-b-0",
+      classified && "mt-4 border-t border-b-0 border-accent/20"
+    )}>
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between gap-3 py-3 px-1 text-left group"
+        className={cn(
+          "w-full flex items-center justify-between gap-3 py-3 px-1 text-left group",
+          classified && "py-4"
+        )}
       >
-        <span className="font-mono text-xs uppercase tracking-[0.15em] text-foreground/80 group-hover:text-accent transition-colors">
+        <span className={cn(
+          "font-mono text-xs uppercase tracking-[0.15em] transition-colors",
+          classified
+            ? "text-accent/50 group-hover:text-accent"
+            : "text-foreground/80 group-hover:text-accent"
+        )}>
           {title}
         </span>
         <ChevronDown
           className={cn(
-            "w-4 h-4 text-muted-foreground transition-transform duration-300 shrink-0",
+            "w-4 h-4 transition-transform duration-300 shrink-0",
+            classified ? "text-accent/30" : "text-muted-foreground",
             isOpen && "rotate-180"
           )}
         />
@@ -34,7 +47,12 @@ function Subsection({ title, isOpen, onToggle, children }: SubsectionProps) {
         style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
       >
         <div className="overflow-hidden">
-          <div className="pb-4 px-1 space-y-4 text-foreground/90 text-sm md:text-base leading-relaxed">
+          <div className={cn(
+            "pb-4 px-1 space-y-4 text-sm md:text-base leading-relaxed",
+            classified
+              ? "text-foreground/70 border-l-2 border-accent/20 pl-4 ml-1"
+              : "text-foreground/90"
+          )}>
             {children}
           </div>
         </div>
@@ -46,8 +64,12 @@ function Subsection({ title, isOpen, onToggle, children }: SubsectionProps) {
 export function OriginFile() {
   const t = useTranslations("about");
   const [openIndex, setOpenIndex] = useState(0);
+  const [classifiedRevealed, setClassifiedRevealed] = useState(false);
 
   const toggle = (index: number) => {
+    if (index === 3 && !classifiedRevealed) {
+      setClassifiedRevealed(true);
+    }
     setOpenIndex(openIndex === index ? -1 : index);
   };
 
@@ -112,6 +134,46 @@ export function OriginFile() {
           {t.rich("originBody3p5", {
             strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
             em: (chunks) => <em>{chunks}</em>,
+          })}
+        </p>
+      </Subsection>
+
+      {/* Hidden 4th canon event — Easter egg */}
+      <Subsection
+        title={classifiedRevealed ? t("originTitle4Revealed") : t("originTitle4")}
+        isOpen={openIndex === 3}
+        onToggle={() => toggle(3)}
+        classified
+      >
+        <p>{t("originBody4p1")}</p>
+        <p>
+          {t.rich("originBody4p2", {
+            strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
+          })}
+        </p>
+        <p>
+          {t.rich("originBody4p3", {
+            strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
+          })}
+        </p>
+        <p>
+          {t.rich("originBody4p4", {
+            strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
+          })}
+        </p>
+        <p>
+          {t.rich("originBody4p5", {
+            strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
+          })}
+        </p>
+        <p>
+          {t.rich("originBody4p6", {
+            strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
+          })}
+        </p>
+        <p>
+          {t.rich("originBody4p7", {
+            strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
           })}
         </p>
       </Subsection>
