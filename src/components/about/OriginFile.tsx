@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ClassifiedTerminal } from "./ClassifiedTerminal";
 
 interface SubsectionProps {
   title: string;
@@ -145,37 +146,7 @@ export function OriginFile() {
         onToggle={() => toggle(3)}
         classified
       >
-        <p>{t("originBody4p1")}</p>
-        <p>
-          {t.rich("originBody4p2", {
-            strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
-          })}
-        </p>
-        <p>
-          {t.rich("originBody4p3", {
-            strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
-          })}
-        </p>
-        <p>
-          {t.rich("originBody4p4", {
-            strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
-          })}
-        </p>
-        <p>
-          {t.rich("originBody4p5", {
-            strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
-          })}
-        </p>
-        <p>
-          {t.rich("originBody4p6", {
-            strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
-          })}
-        </p>
-        <p>
-          {t.rich("originBody4p7", {
-            strong: (chunks) => <strong className="text-accent">{chunks}</strong>,
-          })}
-        </p>
+        <ClassifiedTerminal />
       </Subsection>
     </div>
   );
