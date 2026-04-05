@@ -581,20 +581,6 @@
 }
 
 /* ========================================
-   Newsletter Submit — Web Shoot
-   ======================================== */
-@keyframes web-shoot {
-  0% { transform: scale(1); }
-  40% { transform: scale(1.06); }
-  70% { transform: scale(0.98); }
-  100% { transform: scale(1); }
-}
-
-.animate-web-shoot {
-  animation: web-shoot 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* ========================================
    404 Page — Spot's Dimension Animations
    ======================================== */
 

@@ -5,7 +5,6 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { HomeContent } from "@/components/home/HomeContent";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { WhatIsSection } from "@/components/home/WhatIsSection";
-import { NewsletterSignup } from "@/components/content/NewsletterSignup";
 import { CurrentlyConsumingWidget } from "@/components/widgets/CurrentlyConsuming";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
@@ -60,13 +59,6 @@ export default async function HomePage() {
           <HomeContent articles={articles} tags={tags} />
         </ScrollReveal>
       </Container>
-
-      {/* Newsletter */}
-      <ScrollReveal>
-        <Container as="section" className="pb-20">
-          <NewsletterSignup variant="banner" />
-        </Container>
-      </ScrollReveal>
     </>
   );
 }

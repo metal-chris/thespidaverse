@@ -36,17 +36,6 @@
     "description": "Filmes. TV. Jogos. Anime. Livros. Música. Uma teia conecta tudo. Um blog de cultura pop por Spida-Mane.",
     "ogDescription": "Filmes. TV. Jogos. Anime. Livros. Música. Uma teia conecta tudo."
   },
-  "newsletter": {
-    "heading": "Entre na Teia",
-    "description": "Receba novos artigos direto na sua caixa de entrada. Sem spam, só conteúdo bom.",
-    "emailLabel": "Endereço de e-mail",
-    "emailPlaceholder": "seu@email.com",
-    "submit": "Grude na Teia",
-    "submitting": "...",
-    "successMessage": "Você tá dentro! Confira seu e-mail para confirmar.",
-    "errorDefault": "Algo deu errado. Tente de novo.",
-    "errorNetwork": "Erro de rede. Por favor, tente novamente."
-  },
   "share": {
     "groupLabel": "Compartilhar este artigo",
     "x": "Compartilhar no X",

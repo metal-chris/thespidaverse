@@ -36,17 +36,6 @@
     "description": "Películas. TV. Juegos. Anime. Libros. Música. Una red los conecta a todos. Un blog de cultura pop por Spida-Mane.",
     "ogDescription": "Películas. TV. Juegos. Anime. Libros. Música. Una red los conecta a todos."
   },
-  "newsletter": {
-    "heading": "Únete a la Red",
-    "description": "Recibe nuevos artículos directo en tu bandeja. Sin spam, solo buena vibra.",
-    "emailLabel": "Correo electrónico",
-    "emailPlaceholder": "tu@correo.com",
-    "submit": "Engánchate",
-    "submitting": "...",
-    "successMessage": "¡Estás dentro! Revisa tu correo para confirmar.",
-    "errorDefault": "Algo salió mal. Inténtalo de nuevo.",
-    "errorNetwork": "Error de red. Por favor, inténtalo de nuevo."
-  },
   "share": {
     "groupLabel": "Compartir este artículo",
     "x": "Compartir en X",

@@ -36,17 +36,6 @@
     "description": "Movies. TV. Games. Anime. Books. Music. One web connects them all. A pop culture blog by Spida-Mane.",
     "ogDescription": "Movies. TV. Games. Anime. Books. Music. One web connects them all."
   },
-  "newsletter": {
-    "heading": "Join the Web",
-    "description": "Get new articles delivered straight to your inbox. No spam, just vibes.",
-    "emailLabel": "Email address",
-    "emailPlaceholder": "your@email.com",
-    "submit": "Get Sticky",
-    "submitting": "...",
-    "successMessage": "You're in! Check your email to confirm.",
-    "errorDefault": "Something went wrong. Try again.",
-    "errorNetwork": "Network error. Please try again."
-  },
   "share": {
     "groupLabel": "Share this article",
     "x": "Share on X",

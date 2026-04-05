@@ -36,17 +36,6 @@
     "description": "映画。テレビ。ゲーム。アニメ。書籍。音楽。すべてをつなぐ一つのウェブ。Spida-Maneによるポップカルチャーブログ。",
     "ogDescription": "映画。テレビ。ゲーム。アニメ。書籍。音楽。すべてをつなぐ一つのウェブ。"
   },
-  "newsletter": {
-    "heading": "ウェブに参加",
-    "description": "新しい記事を直接お届けします。スパムなし、楽しさだけ。",
-    "emailLabel": "メールアドレス",
-    "emailPlaceholder": "your@email.com",
-    "submit": "ウェブにくっつく",
-    "submitting": "...",
-    "successMessage": "登録完了！確認メールをご確認ください。",
-    "errorDefault": "エラーが発生しました。もう一度お試しください。",
-    "errorNetwork": "ネットワークエラー。もう一度お試しください。"
-  },
   "share": {
     "groupLabel": "この記事をシェア",
     "x": "Xでシェア",

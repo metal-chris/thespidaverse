@@ -36,17 +36,6 @@
     "description": "Cinéma. Séries. Jeux vidéo. Anime. Livres. Musique. Une toile les relie tous. Un blog pop culture par Spida-Mane.",
     "ogDescription": "Cinéma. Séries. Jeux vidéo. Anime. Livres. Musique. Une toile les relie tous."
   },
-  "newsletter": {
-    "heading": "Rejoignez la toile",
-    "description": "Recevez les nouveaux articles directement dans votre boîte mail. Pas de spam, que du bon.",
-    "emailLabel": "Adresse e-mail",
-    "emailPlaceholder": "votre@email.com",
-    "submit": "S'accrocher",
-    "submitting": "...",
-    "successMessage": "C'est fait ! Vérifiez votre e-mail pour confirmer.",
-    "errorDefault": "Une erreur est survenue. Réessayez.",
-    "errorNetwork": "Erreur réseau. Veuillez réessayer."
-  },
   "share": {
     "groupLabel": "Partager cet article",
     "x": "Partager sur X",

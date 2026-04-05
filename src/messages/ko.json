@@ -36,17 +36,6 @@
     "description": "영화. TV. 게임. 애니메이션. 책. 음악. 하나의 웹이 모든 것을 연결합니다. Spida-Mane의 팝 컬처 블로그.",
     "ogDescription": "영화. TV. 게임. 애니메이션. 책. 음악. 하나의 웹이 모든 것을 연결합니다."
   },
-  "newsletter": {
-    "heading": "웹에 합류하기",
-    "description": "새 글을 받은편지함으로 바로 받아보세요. 스팸 없이, 좋은 것만.",
-    "emailLabel": "이메일 주소",
-    "emailPlaceholder": "your@email.com",
-    "submit": "구독하기",
-    "submitting": "...",
-    "successMessage": "완료! 이메일을 확인해서 구독을 인증해 주세요.",
-    "errorDefault": "문제가 발생했습니다. 다시 시도해 주세요.",
-    "errorNetwork": "네트워크 오류입니다. 다시 시도해 주세요."
-  },
   "share": {
     "groupLabel": "이 글 공유하기",
     "x": "X에 공유",

@@ -397,7 +397,7 @@ export default async function ArticlePage({ params }: Props) {
       {/* ── Article Content ── */}
       <Container as="article" className="pt-8 md:pt-12 pb-8 max-w-4xl">
 
-        {/* Client-side article body with WebRating, ShareBar, Spoilers, Newsletter */}
+        {/* Client-side article body with WebRating, ShareBar, Spoilers */}
         <ArticleBody
           body={article.body}
           webRating={article.webRating}
