@@ -12,6 +12,8 @@ interface LoreIndicatorProps {
   /** Visual style of the indicator dot */
   variant?: "pulse" | "static" | "glitch";
   className?: string;
+  /** Called when tooltip opens/closes */
+  onOpenChange?: (open: boolean) => void;
 }
 
 /**
@@ -24,6 +26,7 @@ export function LoreIndicator({
   attribution,
   variant = "pulse",
   className,
+  onOpenChange,
 }: LoreIndicatorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -55,10 +58,12 @@ export function LoreIndicator({
   const open = useCallback(() => {
     updatePosition();
     setIsOpen(true);
-  }, [updatePosition]);
+    onOpenChange?.(true);
+  }, [updatePosition, onOpenChange]);
 
   const close = useCallback(() => {
     setIsOpen(false);
+    onOpenChange?.(false);
   }, []);
 
   return (
@@ -145,9 +150,10 @@ export function LoreIndicator({
               <span className="block font-mono text-[9px] uppercase tracking-[0.2em] text-accent/60 mb-1.5">
                 Classified Lore Entry
               </span>
-              <span className="block text-xs text-foreground/90 leading-relaxed">
-                {lore}
-              </span>
+              <span
+                className="block text-xs text-foreground/90 leading-relaxed [&>strong]:text-accent [&>strong]:font-semibold"
+                dangerouslySetInnerHTML={{ __html: lore }}
+              />
               {attribution && (
                 <span className="block text-[10px] text-muted-foreground/60 mt-2 italic text-right">
                   &mdash; {attribution}

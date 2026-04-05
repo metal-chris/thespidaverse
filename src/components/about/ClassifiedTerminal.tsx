@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Shield, Link2, MessageCircleOff, Palette, Ban } from "lucide-react";
 import { LoreIndicator } from "./LoreIndicator";
+import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 
 interface PrincipleCard {
@@ -21,6 +23,7 @@ const PRINCIPLES: PrincipleCard[] = [
 
 export function ClassifiedTerminal() {
   const t = useTranslations("about");
+  const [activeCard, setActiveCard] = useState<string | null>(null);
 
   return (
     <div className="terminal-scanlines terminal-boot relative rounded-lg border border-accent/20 bg-black/40">
@@ -31,11 +34,14 @@ export function ClassifiedTerminal() {
       <span className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b border-r border-accent/30 z-10" />
 
       {/* Classification header bar */}
-      <div className="relative z-[2] bg-accent/5 border-b border-accent/15 px-4 py-2.5">
-        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-accent/50">
-          {t("terminalClearance")}
+      <div className="relative z-[2] bg-accent/5 border-b border-accent/15 px-4 py-2.5 font-mono text-[9px] uppercase tracking-[0.2em]">
+        <p className="text-accent/50">
+          <span>{t("terminalClearance1")}</span>
+          <span className="hidden md:inline"> // </span>
+          <br className="md:hidden" />
+          <span>{t("terminalClearance2")}</span>
         </p>
-        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-accent/40 mt-0.5">
+        <p className="text-accent/40 mt-0.5">
           <span>{t("terminalFile")}</span>
           <span className="hidden md:inline"> // </span>
           <br className="md:hidden" />
@@ -53,18 +59,38 @@ export function ClassifiedTerminal() {
 
         {/* Principle cards grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-2.5">
-          {PRINCIPLES.map(({ icon: Icon, titleKey, tooltipKey }) => (
-            <div
-              key={titleKey}
-              className="relative rounded-md border border-accent/15 bg-accent/5 p-4 flex flex-col items-center justify-center text-center gap-2.5 min-h-[100px] hover:border-accent/30 transition-all duration-200"
-            >
-              <Icon className="w-4 h-4 text-accent/60" strokeWidth={1.5} />
-              <span className="font-mono text-[10px] uppercase tracking-wider text-accent/80 font-semibold">
-                {t(titleKey)}
-              </span>
-              <LoreIndicator lore={t(tooltipKey)} />
-            </div>
-          ))}
+          {PRINCIPLES.map(({ icon: Icon, titleKey, tooltipKey }) => {
+            const isActive = activeCard === titleKey;
+            return (
+              <div
+                key={titleKey}
+                className={cn(
+                  "relative rounded-md border p-4 flex flex-col items-center justify-center text-center gap-2.5 min-h-[100px] transition-all duration-200",
+                  isActive
+                    ? "border-accent/50 bg-accent/15 shadow-md shadow-accent/10"
+                    : "border-accent/15 bg-accent/5 hover:border-accent/30"
+                )}
+              >
+                <Icon
+                  className={cn(
+                    "w-4 h-4 transition-colors duration-200",
+                    isActive ? "text-accent" : "text-accent/60"
+                  )}
+                  strokeWidth={1.5}
+                />
+                <span className={cn(
+                  "font-mono text-[10px] uppercase tracking-wider font-semibold transition-colors duration-200",
+                  isActive ? "text-accent" : "text-accent/80"
+                )}>
+                  {t(titleKey)}
+                </span>
+                <LoreIndicator
+                  lore={t(tooltipKey)}
+                  onOpenChange={(open) => setActiveCard(open ? titleKey : null)}
+                />
+              </div>
+            );
+          })}
         </div>
 
         {/* Signature footer */}
