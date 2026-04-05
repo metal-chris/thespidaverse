@@ -50,11 +50,34 @@ function FlagBR({ className = "" }: { className?: string }) {
   );
 }
 
+function FlagKR({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 18" className={className} aria-hidden="true">
+      <rect width="24" height="18" fill="#fff" rx="2" />
+      <rect width="24" height="18" fill="none" stroke="#e5e5e5" strokeWidth="0.5" rx="2" />
+      <circle cx="12" cy="9" r="4.5" fill="#C60C30" />
+      <path d="M12 4.5 A4.5 4.5 0 0 1 12 13.5 A2.25 2.25 0 0 1 12 9 A2.25 2.25 0 0 0 12 4.5" fill="#003478" />
+    </svg>
+  );
+}
+
+function FlagFR({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 18" className={className} aria-hidden="true">
+      <rect width="8" height="18" fill="#002395" rx="2" />
+      <rect x="8" width="8" height="18" fill="#fff" />
+      <rect x="16" width="8" height="18" fill="#ED2939" rx="2" />
+    </svg>
+  );
+}
+
 const FLAG_COMPONENTS: Record<string, React.FC<{ className?: string }>> = {
   en: FlagUS,
   es: FlagES,
   ja: FlagJP,
   pt: FlagBR,
+  ko: FlagKR,
+  fr: FlagFR,
 };
 
 const LOCALES = [
@@ -62,6 +85,8 @@ const LOCALES = [
   { code: "es", label: "Español" },
   { code: "ja", label: "日本語" },
   { code: "pt", label: "Português" },
+  { code: "ko", label: "한국어" },
+  { code: "fr", label: "Français" },
 ];
 
 /** Three rotating arcs matching the WebSpinner theme */
