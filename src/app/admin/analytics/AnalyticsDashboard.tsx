@@ -17,9 +17,15 @@ interface CategoryMetric {
   total_polls: number;
 }
 
+type PollBreakdown = Record<
+  string,
+  Record<string, Record<string, number>>
+>;
+
 interface DashboardData {
   posts: PostMetric[];
   categories: CategoryMetric[];
+  pollBreakdown: PollBreakdown;
   totals: {
     totalRatings: number;
     totalPolls: number;
@@ -34,6 +40,7 @@ export function AnalyticsDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"ratings" | "score" | "slug">("ratings");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/analytics")
@@ -206,36 +213,118 @@ export function AnalyticsDashboard() {
               </tr>
             </thead>
             <tbody>
-              {sortedPosts.map((post) => (
-                <tr
-                  key={post.article_slug}
-                  className="border-b border-border/50 hover:bg-card/30"
-                >
-                  <td className="px-4 py-2 font-medium truncate max-w-[200px]">
-                    {post.article_slug}
-                  </td>
-                  <td className="px-4 py-2 text-right tabular-nums">
-                    <span
-                      className={cn(
-                        "font-semibold",
-                        post.avg_score >= 80
-                          ? "text-green-400"
-                          : post.avg_score >= 50
-                            ? "text-accent"
-                            : "text-red-400"
+              {sortedPosts.map((post) => {
+                const breakdown = data.pollBreakdown?.[post.article_slug];
+                const hasBreakdown =
+                  breakdown && Object.keys(breakdown).length > 0;
+                const isExpanded = expandedRow === post.article_slug;
+
+                return (
+                  <tr key={post.article_slug} className="group">
+                    <td colSpan={4} className="p-0">
+                      <div
+                        className={cn(
+                          "grid grid-cols-[1fr_auto_auto_auto] border-b border-border/50 hover:bg-card/30",
+                          hasBreakdown && "cursor-pointer"
+                        )}
+                        onClick={() =>
+                          hasBreakdown &&
+                          setExpandedRow(isExpanded ? null : post.article_slug)
+                        }
+                      >
+                        <div className="px-4 py-2 font-medium truncate max-w-[200px] flex items-center gap-1">
+                          {post.article_slug}
+                          {hasBreakdown && (
+                            <svg
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              className={cn(
+                                "w-3 h-3 text-muted-foreground/50 transition-transform duration-200 shrink-0",
+                                isExpanded && "rotate-180"
+                              )}
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                        <div className="px-4 py-2 text-right tabular-nums">
+                          <span
+                            className={cn(
+                              "font-semibold",
+                              post.avg_score >= 80
+                                ? "text-green-400"
+                                : post.avg_score >= 50
+                                  ? "text-accent"
+                                  : "text-red-400"
+                            )}
+                          >
+                            {post.avg_score}
+                          </span>
+                        </div>
+                        <div className="px-4 py-2 text-right tabular-nums text-muted-foreground">
+                          {post.total_ratings}
+                        </div>
+                        <div className="px-4 py-2 text-right tabular-nums text-muted-foreground">
+                          {post.poll_responses}
+                        </div>
+                      </div>
+
+                      {/* Expandable poll breakdown */}
+                      {isExpanded && breakdown && (
+                        <div className="px-6 py-3 bg-card/20 border-b border-border/50 space-y-3">
+                          {Object.entries(breakdown).map(
+                            ([questionKey, answers]) => {
+                              const total = Object.values(answers).reduce(
+                                (a, b) => a + b,
+                                0
+                              );
+                              const sorted = Object.entries(answers).sort(
+                                ([, a], [, b]) => b - a
+                              );
+
+                              return (
+                                <div key={questionKey} className="space-y-1">
+                                  <p className="text-xs font-medium text-muted-foreground">
+                                    {questionKey}
+                                  </p>
+                                  {sorted.map(([answer, count]) => {
+                                    const pct = Math.round(
+                                      (count / total) * 100
+                                    );
+                                    return (
+                                      <div
+                                        key={answer}
+                                        className="flex items-center gap-2 text-xs"
+                                      >
+                                        <span className="w-24 truncate text-foreground">
+                                          {answer}
+                                        </span>
+                                        <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden">
+                                          <div
+                                            className="h-full rounded-full bg-accent transition-all"
+                                            style={{ width: `${pct}%` }}
+                                          />
+                                        </div>
+                                        <span className="text-muted-foreground tabular-nums w-12 text-right">
+                                          {pct}% ({count})
+                                        </span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              );
+                            }
+                          )}
+                        </div>
                       )}
-                    >
-                      {post.avg_score}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 text-right tabular-nums text-muted-foreground">
-                    {post.total_ratings}
-                  </td>
-                  <td className="px-4 py-2 text-right tabular-nums text-muted-foreground">
-                    {post.poll_responses}
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                  </tr>
+                );
+              })}
               {sortedPosts.length === 0 && (
                 <tr>
                   <td

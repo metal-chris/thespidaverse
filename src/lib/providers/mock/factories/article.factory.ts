@@ -267,6 +267,19 @@ const POLL_PRESETS: PollConfig[] = [
       { questionKey: "enjoyment", questionText: "How much did you enjoy this?", questionType: "slider" },
     ],
   },
+  {
+    enableCommunityRating: true,
+    pollQuestions: [
+      { questionKey: "team_pick", questionText: "Who you got?", questionType: "this_or_that", options: ["Team Miles", "Team Peter"] },
+      { questionKey: "hot_take_rating", questionText: "How hot is this take?", questionType: "hot_take" },
+    ],
+  },
+  {
+    enableCommunityRating: true,
+    pollQuestions: [
+      { questionKey: "rank_villains", questionText: "Rank these villains:", questionType: "ranking", rankingItems: ["Green Goblin", "Doc Ock", "Kingpin", "Venom"] },
+    ],
+  },
 ];
 
 export function createArticle(overrides: Partial<Article> = {}): Article {

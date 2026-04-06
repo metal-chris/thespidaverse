@@ -296,6 +296,9 @@ export default defineType({
                       },
                       { title: "Multiple Choice", value: "multiple_choice" },
                       { title: "Slider (1–10)", value: "slider" },
+                      { title: "This or That", value: "this_or_that" },
+                      { title: "Ranking", value: "ranking" },
+                      { title: "Hot Take Meter", value: "hot_take" },
                     ],
                     layout: "radio",
                   },
@@ -307,9 +310,42 @@ export default defineType({
                   title: "Options",
                   type: "array",
                   of: [{ type: "string" }],
-                  description: "Custom answer options (for multiple choice)",
+                  description:
+                    "Custom answer options (multiple choice: any number; this or that: exactly 2)",
                   hidden: ({ parent }) =>
-                    parent?.questionType !== "multiple_choice",
+                    parent?.questionType !== "multiple_choice" &&
+                    parent?.questionType !== "this_or_that",
+                  validation: (rule) =>
+                    rule.custom((value, context) => {
+                      const parent = context.parent as { questionType?: string };
+                      if (
+                        parent?.questionType === "this_or_that" &&
+                        (!value || value.length !== 2)
+                      ) {
+                        return "This or That requires exactly 2 options";
+                      }
+                      return true;
+                    }),
+                }),
+                defineField({
+                  name: "rankingItems",
+                  title: "Ranking Items",
+                  type: "array",
+                  of: [{ type: "string" }],
+                  description: "Items for readers to rank (3–5 items)",
+                  hidden: ({ parent }) =>
+                    parent?.questionType !== "ranking",
+                  validation: (rule) =>
+                    rule.custom((value, context) => {
+                      const parent = context.parent as { questionType?: string };
+                      if (parent?.questionType === "ranking") {
+                        if (!value || value.length < 3)
+                          return "Ranking needs at least 3 items";
+                        if (value.length > 5)
+                          return "Ranking supports at most 5 items";
+                      }
+                      return true;
+                    }),
                 }),
               ],
               preview: {

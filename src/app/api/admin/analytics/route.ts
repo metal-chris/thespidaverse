@@ -8,10 +8,10 @@ export async function GET() {
       .from("web_ratings")
       .select("article_slug, score");
 
-    // Per-post poll response counts
+    // Per-post poll response counts + answer breakdown
     const { data: pollRows } = await supabaseAdmin
       .from("poll_responses")
-      .select("article_slug, question_key");
+      .select("article_slug, question_key, answer");
 
     // Aggregate per-post rating stats
     const postMap = new Map<
@@ -28,6 +28,12 @@ export async function GET() {
       postMap.set(row.article_slug, entry);
     }
 
+    // Poll breakdown: { slug: { questionKey: { answer: count } } }
+    const pollBreakdown: Record<
+      string,
+      Record<string, Record<string, number>>
+    > = {};
+
     for (const row of pollRows ?? []) {
       const entry = postMap.get(row.article_slug) ?? {
         scores: [],
@@ -35,6 +41,16 @@ export async function GET() {
       };
       entry.pollCount++;
       postMap.set(row.article_slug, entry);
+
+      // Build breakdown
+      if (!pollBreakdown[row.article_slug]) {
+        pollBreakdown[row.article_slug] = {};
+      }
+      if (!pollBreakdown[row.article_slug][row.question_key]) {
+        pollBreakdown[row.article_slug][row.question_key] = {};
+      }
+      pollBreakdown[row.article_slug][row.question_key][row.answer] =
+        (pollBreakdown[row.article_slug][row.question_key][row.answer] ?? 0) + 1;
     }
 
     const posts = Array.from(postMap.entries()).map(([slug, { scores, pollCount }]) => {
@@ -64,6 +80,7 @@ export async function GET() {
     return NextResponse.json({
       posts,
       categories: [], // Populated when Sanity integration adds category data
+      pollBreakdown,
       totals: {
         totalRatings,
         totalPolls,

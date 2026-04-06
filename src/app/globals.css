@@ -1542,6 +1542,72 @@
 }
 
 /* ========================================
+   Hot Take Meter — ice-to-fire slider
+   ======================================== */
+.hot-take-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(to right, #3B82F6, #8B5CF6, #F59E0B, #EF4444);
+  border-radius: 9999px;
+  position: relative;
+}
+
+.hot-take-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid color-mix(in srgb, #3B82F6 calc(100% - var(--heat, 50%)), #EF4444 var(--heat, 50%));
+  box-shadow:
+    0 0 6px color-mix(in srgb, #3B82F6 calc(100% - var(--heat, 50%)), #EF4444 var(--heat, 50%)),
+    0 0 12px color-mix(in srgb, transparent calc(100% - var(--heat, 50%)), rgba(239, 68, 68, 0.3) var(--heat, 50%));
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.hot-take-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid color-mix(in srgb, #3B82F6 calc(100% - var(--heat, 50%)), #EF4444 var(--heat, 50%));
+  box-shadow:
+    0 0 6px color-mix(in srgb, #3B82F6 calc(100% - var(--heat, 50%)), #EF4444 var(--heat, 50%));
+  cursor: pointer;
+}
+
+.hot-take-slider::-moz-range-track {
+  background: linear-gradient(to right, #3B82F6, #8B5CF6, #F59E0B, #EF4444);
+  border-radius: 9999px;
+  height: 8px;
+}
+
+.hot-take-slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.4);
+}
+
+.hot-take-slider:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.4);
+}
+
+.hot-take-slider:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.hot-take-slider:disabled::-webkit-slider-thumb {
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hot-take-slider::-webkit-slider-thumb {
+    box-shadow: 0 0 4px color-mix(in srgb, #3B82F6 calc(100% - var(--heat, 50%)), #EF4444 var(--heat, 50%));
+    transition: none;
+  }
+}
+
+/* ========================================
    Sanity Studio — Full viewport takeover
    ======================================== */
 body.sanity-studio-active {

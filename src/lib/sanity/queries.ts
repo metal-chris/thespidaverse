@@ -49,7 +49,8 @@ export const articleBySlugQuery = groq`
         questionKey,
         questionText,
         questionType,
-        options
+        options,
+        rankingItems
       }
     },
     category->{

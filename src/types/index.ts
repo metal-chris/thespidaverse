@@ -148,13 +148,17 @@ export type PollQuestionType =
   | "yes_no"
   | "agree_scale"
   | "multiple_choice"
-  | "slider";
+  | "slider"
+  | "this_or_that"
+  | "ranking"
+  | "hot_take";
 
 export interface PollQuestion {
   questionKey: string;
   questionText: string;
   questionType: PollQuestionType;
   options?: string[];
+  rankingItems?: string[];
 }
 
 export interface PollConfig {
