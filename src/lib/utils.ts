@@ -28,3 +28,12 @@ export function capitalizeTag(tag: string): string {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(' ');
 }
+
+/** Generate a URL-safe slug from text, with optional index for deduplication. */
+export function slugify(text: string, index?: number): string {
+  const base = text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+  return index !== undefined ? `${base}-${index}` : base;
+}

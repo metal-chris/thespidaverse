@@ -160,6 +160,35 @@ export default defineType({
             },
           },
         },
+        {
+          type: "object",
+          name: "pullquote",
+          title: "Pullquote",
+          icon: () => "❝",
+          fields: [
+            defineField({
+              name: "text",
+              title: "Quote Text",
+              type: "text",
+              rows: 3,
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: "attribution",
+              title: "Attribution",
+              type: "string",
+              description: 'Optional source — e.g. "Character Name"',
+            }),
+          ],
+          preview: {
+            select: { text: "text" },
+            prepare({ text }: { text?: string }) {
+              return {
+                title: text ? `"${text.slice(0, 60)}${text.length > 60 ? "…" : ""}"` : "Pullquote",
+              };
+            },
+          },
+        },
       ],
     }),
     defineField({

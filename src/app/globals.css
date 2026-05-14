@@ -1542,6 +1542,39 @@
 }
 
 /* ========================================
+   Article prose — editorial constraints
+   ======================================== */
+.article-prose > p,
+.article-prose > ul,
+.article-prose > ol,
+.article-prose > blockquote {
+  max-width: 65ch;
+}
+
+.article-prose > p:first-of-type::first-letter {
+  float: left;
+  font-size: 3.5em;
+  line-height: 0.8;
+  padding-right: 0.1em;
+  padding-top: 0.05em;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.article-prose h2 {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.article-prose > h2:first-child,
+.article-prose > p:first-of-type + h2 {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+/* ========================================
    Hot Take Meter — ice-to-fire slider
    ======================================== */
 .hot-take-slider {

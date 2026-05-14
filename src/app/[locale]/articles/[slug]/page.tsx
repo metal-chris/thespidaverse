@@ -7,12 +7,14 @@ import { getProvider } from "@/lib/providers";
 import { urlFor } from "@/lib/sanity/image";
 import { Container } from "@/components/ui/Container";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { capitalizeTag, cn, formatDate, formatMediaType } from "@/lib/utils";
+import { capitalizeTag, cn, formatDate, formatMediaType, slugify } from "@/lib/utils";
 import { blogPostingJsonLd, breadcrumbJsonLd, reviewJsonLd } from "@/lib/seo/jsonLd";
 import { CategoryPlaceholder } from "@/components/ui/CategoryPlaceholder";
 import { getCategoryConfig } from "@/lib/categories";
+import { TableOfContents, MobileTOC, type TocHeading } from "@/components/content/TableOfContents";
+import { RelatedArticles } from "@/components/content/RelatedArticles";
 import { ArticleBody } from "./ArticleBody";
-import type { MediaType } from "@/types";
+import type { Article, MediaType } from "@/types";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://thespidaverse.com";
 
@@ -130,6 +132,44 @@ export default async function ArticlePage({ params }: Props) {
   const catColor =
     getCategoryConfig(article.category?.title).pill;
 
+  // Extract headings for TOC (IDs must match PortableTextComponents.tsx block renderers)
+  const headings: TocHeading[] = (article.body || [])
+    .filter((b: any) => ["h2", "h3"].includes(b.style))
+    .map((b: any) => ({
+      id: slugify(b.children?.map((c: any) => c.text).join("") || ""),
+      text: b.children?.map((c: any) => c.text).join("") || "",
+      level: (b.style === "h2" ? 2 : 3) as 2 | 3,
+    }));
+
+  // Related articles: prefer same tags, fall back to same category
+  let relatedArticles: Article[] = [];
+  try {
+    if (article.tags?.length) {
+      const tagArticles = await provider.getArticlesByTag(
+        article.tags[0].slug.current
+      );
+      relatedArticles = tagArticles
+        .filter((a) => a.slug.current !== slug)
+        .slice(0, 3);
+    }
+    if (relatedArticles.length < 3 && article.category) {
+      const catArticles = await provider.getArticlesByCategory(
+        article.category.slug.current
+      );
+      for (const a of catArticles) {
+        if (relatedArticles.length >= 3) break;
+        if (
+          a.slug.current !== slug &&
+          !relatedArticles.find((r) => r._id === a._id)
+        ) {
+          relatedArticles.push(a);
+        }
+      }
+    }
+  } catch {
+    // Graceful degradation — no related articles on error
+  }
+
   // JSON-LD structured data
   const jsonLdBlogPosting = blogPostingJsonLd({
     title: article.title,
@@ -188,7 +228,7 @@ export default async function ArticlePage({ params }: Props) {
 
       {/* ── Hero Image (full-bleed with overlay text) ── */}
       {heroUrl ? (
-        <div className="relative w-full h-[100vh] overflow-hidden">
+        <div className="relative w-full h-[calc(100dvh-4rem)] overflow-hidden">
           <Image
             src={heroUrl}
             alt={article.heroImage?.alt || article.title}
@@ -197,8 +237,8 @@ export default async function ArticlePage({ params }: Props) {
             priority
             sizes="100vw"
           />
-          {/* Gradient overlay - stronger to ensure text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/20" />
+          {/* Gradient overlay - stronger bottom to ensure text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background from-5% via-background/85 via-40% to-background/10" />
           <div className="absolute inset-0 bg-black/30" />
 
           {/* Content positioned at bottom of hero */}
@@ -296,7 +336,7 @@ export default async function ArticlePage({ params }: Props) {
         </div>
       ) : (
         /* ── Placeholder Hero (category pattern, no image) ── */
-        <div className="relative w-full h-[60vh] overflow-hidden">
+        <div className="relative w-full h-[calc(60dvh-4rem)] overflow-hidden">
           <CategoryPlaceholder
             category={article.category?.title}
             className="absolute inset-0"
@@ -394,22 +434,40 @@ export default async function ArticlePage({ params }: Props) {
         </div>
       )}
 
-      {/* ── Article Content ── */}
-      <Container as="article" className="pt-8 md:pt-12 pb-8 max-w-4xl">
+      {/* ── Article Content (3-column: TOC | body | space) ── */}
+      <Container className="pt-8 md:pt-12 pb-8">
+        <div className="max-w-6xl mx-auto lg:grid lg:grid-cols-[220px_minmax(0,1fr)_220px] lg:gap-8">
+          {/* Left sidebar: sticky TOC (desktop only) */}
+          <aside className="hidden lg:block">
+            <TableOfContents headings={headings} />
+          </aside>
 
-        {/* Client-side article body with WebRating, ShareBar, Spoilers */}
-        <ArticleBody
-          body={article.body}
-          webRating={article.webRating}
-          title={article.title}
-          slug={slug}
-          url={articleUrl}
-          category={article.category?.title}
-          format={article.format}
-          hasSpoilerBlocks={!!hasSpoilerBlocks}
-          ambientAudioUrl={article.ambientAudioUrl}
-          pollConfig={article.pollConfig}
-        />
+          {/* Center: article content */}
+          <article className="min-w-0">
+            {/* Mobile TOC (below lg) */}
+            <MobileTOC headings={headings} />
+
+            {/* Client-side article body with WebRating, ShareBar, Spoilers */}
+            <ArticleBody
+              body={article.body}
+              webRating={article.webRating}
+              title={article.title}
+              slug={slug}
+              url={articleUrl}
+              category={article.category?.title}
+              format={article.format}
+              hasSpoilerBlocks={!!hasSpoilerBlocks}
+              ambientAudioUrl={article.ambientAudioUrl}
+              pollConfig={article.pollConfig}
+            />
+
+            {/* Related articles */}
+            <RelatedArticles articles={relatedArticles} />
+          </article>
+
+          {/* Right spacer (desktop only) — balances the grid */}
+          <div className="hidden lg:block" aria-hidden="true" />
+        </div>
       </Container>
     </>
   );

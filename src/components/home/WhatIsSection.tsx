@@ -35,10 +35,8 @@ export function WhatIsSection() {
       <span className="absolute bottom-2 left-2 w-4 h-4 border-b border-l border-accent/25" aria-hidden="true" />
       <span className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-accent/25" aria-hidden="true" />
 
-      {/* Glassmorphism background */}
-      <div className="absolute inset-0 bg-card/40 backdrop-blur-sm" aria-hidden="true" />
-      <div className="absolute -top-20 -left-20 w-48 h-48 rounded-full bg-accent/5 blur-3xl" aria-hidden="true" />
-      <div className="absolute -bottom-16 -right-16 w-40 h-40 rounded-full bg-accent/3 blur-3xl" aria-hidden="true" />
+      {/* Card background */}
+      <div className="absolute inset-0 bg-card/40" aria-hidden="true" />
 
       {/* Header */}
       <h2 className="relative text-2xl font-bold mb-2 flex items-center gap-2">
