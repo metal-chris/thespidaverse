@@ -1,7 +1,7 @@
 import { groq } from "next-sanity";
 
 export const articlesQuery = groq`
-  *[_type == "article"] | order(coalesce(publishedAt, _createdAt) desc) {
+  *[_type == "article" && coalesce(publishedAt, _createdAt) <= now()] | order(coalesce(publishedAt, _createdAt) desc) {
     _id,
     _createdAt,
     publishedAt,
@@ -24,6 +24,9 @@ export const articlesQuery = groq`
   }
 `;
 
+// Note: articleBySlugQuery does NOT filter publishedAt <= now() — direct
+// URL access stays open so you can preview/share an unrevealed post before
+// its scheduled date. The list/graph queries above gate the surfacing.
 export const articleBySlugQuery = groq`
   *[_type == "article" && slug.current == $slug][0] {
     _id,
@@ -66,7 +69,7 @@ export const articleBySlugQuery = groq`
 `;
 
 export const articlesByCategoryQuery = groq`
-  *[_type == "article" && category->slug.current == $category] | order(coalesce(publishedAt, _createdAt) desc) {
+  *[_type == "article" && category->slug.current == $category && coalesce(publishedAt, _createdAt) <= now()] | order(coalesce(publishedAt, _createdAt) desc) {
     _id,
     _createdAt,
     publishedAt,
@@ -88,7 +91,7 @@ export const articlesByCategoryQuery = groq`
 `;
 
 export const articlesByTagQuery = groq`
-  *[_type == "article" && $tag in tags[]->slug.current] | order(coalesce(publishedAt, _createdAt) desc) {
+  *[_type == "article" && $tag in tags[]->slug.current && coalesce(publishedAt, _createdAt) <= now()] | order(coalesce(publishedAt, _createdAt) desc) {
     _id,
     _createdAt,
     publishedAt,
@@ -164,6 +167,48 @@ export const mediaDiaryQuery = groq`
   }
 `;
 
+// Stories — list (for Journal timeline)
+export const storiesQuery = groq`
+  *[_type == "story"] | order(coalesce(publishedAt, _createdAt) desc) {
+    _id,
+    _createdAt,
+    publishedAt,
+    title,
+    slug,
+    excerpt,
+    heroImage,
+    readingTime,
+    mediaType,
+    tags[]->{
+      _id, title, slug
+    }
+  }
+`;
+
+// Story by slug — full detail
+export const storyBySlugQuery = groq`
+  *[_type == "story" && slug.current == $slug][0] {
+    _id,
+    _createdAt,
+    _updatedAt,
+    publishedAt,
+    title,
+    slug,
+    excerpt,
+    body,
+    heroImage,
+    readingTime,
+    mediaType,
+    spoilerFree,
+    tags[]->{
+      _id, title, slug
+    },
+    relatedMedia[]->{
+      _id, title, mediaType, posterUrl, externalId
+    }
+  }
+`;
+
 // Collections
 export const collectionsQuery = groq`
   *[_type == "collection"] | order(_createdAt desc) {
@@ -208,7 +253,7 @@ export const collectionBySlugQuery = groq`
 
 // Mood-based articles
 export const articlesByMoodQuery = groq`
-  *[_type == "article" && $mood in moodTags] | order(coalesce(publishedAt, _createdAt) desc) {
+  *[_type == "article" && $mood in moodTags && coalesce(publishedAt, _createdAt) <= now()] | order(coalesce(publishedAt, _createdAt) desc) {
     _id,
     _createdAt,
     publishedAt,
@@ -282,7 +327,7 @@ export const gallerySpotlightQuery = groq`
 
 // Graph data — articles with relationships (for /the-web)
 export const graphDataQuery = groq`
-  *[_type == "article"] | order(coalesce(publishedAt, _createdAt) desc) {
+  *[_type == "article" && coalesce(publishedAt, _createdAt) <= now()] | order(coalesce(publishedAt, _createdAt) desc) {
     _id,
     _createdAt,
     publishedAt,

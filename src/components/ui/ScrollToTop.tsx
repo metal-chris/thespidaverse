@@ -48,10 +48,11 @@ export function ScrollToTop() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  // SVG progress ring
+  // SVG progress ring — round to 2dp so SSR-CSR attribute strings match
+  // (2 * Math.PI * 18 = 113.09733552923255 trips React 19 hydration otherwise)
   const radius = 18;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference * (1 - progress);
+  const circumference = Math.round(2 * Math.PI * radius * 100) / 100;
+  const strokeDashoffset = Math.round(circumference * (1 - progress) * 100) / 100;
 
   return (
     <button

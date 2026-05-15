@@ -18,6 +18,13 @@ interface CategoryPlaceholderProps {
  * Category-aware placeholder background with generative SVG patterns.
  * Server component — no client-side logic, pure SVG rendering.
  */
+
+// Round float SVG coords to 2 decimals so SSR and CSR agree on the attribute
+// string. Without this, Math.cos/sin/sqrt results can serialize at different
+// precisions (Node SSR vs browser V8), tripping React 19 hydration mismatches
+// that block streaming-Suspense content swap.
+const r2 = (n: number) => Math.round(n * 100) / 100;
+
 const INTENSITY_MAP = {
   subtle: { base: 0.18, strong: 0.28 },
   medium: { base: 0.35, strong: 0.5 },
@@ -229,10 +236,10 @@ function AnimePattern({ c, cStrong }: PatternProps) {
         const angle = (i / lineCount) * Math.PI * 2;
         const innerR = 40 + (i % 3) * 15;
         const outerR = 300;
-        const x1 = cx + Math.cos(angle) * innerR;
-        const y1 = cy + Math.sin(angle) * innerR;
-        const x2 = cx + Math.cos(angle) * outerR;
-        const y2 = cy + Math.sin(angle) * outerR;
+        const x1 = r2(cx + Math.cos(angle) * innerR);
+        const y1 = r2(cy + Math.sin(angle) * innerR);
+        const x2 = r2(cx + Math.cos(angle) * outerR);
+        const y2 = r2(cy + Math.sin(angle) * outerR);
         const width = i % 2 === 0 ? 3 : 1.5;
         return (
           <line
@@ -263,7 +270,7 @@ function BooksPattern({ c, cStrong }: PatternProps) {
           const dist = Math.sqrt(
             Math.pow((x - 400) / 400, 2) + Math.pow((y - 250) / 250, 2)
           );
-          const r = 1.5 + (1 - dist) * 3;
+          const r = r2(1.5 + (1 - dist) * 3);
           return (
             <circle
               key={`${row}-${col}`}
@@ -372,8 +379,8 @@ function DefaultPattern({ c }: { c: string }) {
       {/* Spokes */}
       {Array.from({ length: spokeCount }).map((_, i) => {
         const angle = (i / spokeCount) * Math.PI * 2;
-        const x2 = cx + Math.cos(angle) * 250;
-        const y2 = cy + Math.sin(angle) * 250;
+        const x2 = r2(cx + Math.cos(angle) * 250);
+        const y2 = r2(cy + Math.sin(angle) * 250);
         return <line key={i} x1={cx} y1={cy} x2={x2} y2={y2} stroke={c} strokeWidth={1} />;
       })}
       {/* Rings */}
