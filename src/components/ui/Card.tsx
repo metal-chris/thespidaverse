@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { cn, formatDate } from "@/lib/utils";
 import { urlFor } from "@/lib/sanity/image";
-import { WebRating } from "@/components/content/WebRating";
 import { CategoryPlaceholder } from "@/components/ui/CategoryPlaceholder";
 import { getCategoryConfig } from "@/lib/categories";
 import type { Article, MediaType } from "@/types";
@@ -142,12 +141,7 @@ export function Card({ article, featured = false }: CardProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
           )}
 
-          {/* Rating badge */}
-          {article.webRating != null && (
-            <div className="absolute top-3 right-3">
-              <WebRating score={article.webRating} variant="badge" />
-            </div>
-          )}
+          {/* Personal rating badge intentionally removed — data stays in Sanity. */}
 
           {/* Format badge */}
           {article.format && (
@@ -230,12 +224,7 @@ export function Card({ article, featured = false }: CardProps) {
           {/* Subtle gradient for badges */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
-          {/* Rating badge */}
-          {article.webRating != null && (
-            <div className="absolute top-3 right-3">
-              <WebRating score={article.webRating} variant="badge" />
-            </div>
-          )}
+          {/* Personal rating badge intentionally removed — data stays in Sanity. */}
 
           {/* Format badge */}
           {article.format && (

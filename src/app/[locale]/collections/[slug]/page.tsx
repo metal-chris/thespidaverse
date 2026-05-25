@@ -8,7 +8,6 @@ import { formatDate } from "@/lib/utils";
 import { Container } from "@/components/ui/Container";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { GlitchText } from "@/components/ui/GlitchText";
-import { WebRating } from "@/components/content/WebRating";
 import {
   getCollectionTemplate,
   getArticlesLabel,
@@ -230,10 +229,7 @@ function ArticleRow({
         </div>
       </div>
 
-      {/* Rating */}
-      {article.webRating != null && (
-        <WebRating score={article.webRating} variant="inline" className="flex-shrink-0" />
-      )}
+      {/* Personal rating intentionally not rendered. */}
     </Link>
   );
 }

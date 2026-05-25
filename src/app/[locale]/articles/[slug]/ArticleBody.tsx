@@ -1,18 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import { PortableText } from "@portabletext/react";
 import type { PortableTextBlock } from "@portabletext/react";
-import { WebRating } from "@/components/content/WebRating";
 import { SpoilerProvider, RevealAllToggle } from "@/components/content/SpoilerBlock";
 import { AmbientPlayer } from "@/components/audio/AmbientPlayer";
 import { EngagementSection } from "@/components/engagement/EngagementSection";
 import { portableTextComponents } from "@/components/content/PortableTextComponents";
-import type { PollConfig, WebRatingStats } from "@/types";
+import type { PollConfig } from "@/types";
 
 interface ArticleBodyProps {
   body: PortableTextBlock[];
-  webRating?: number;
   title: string;
   slug: string;
   url: string;
@@ -25,7 +22,6 @@ interface ArticleBodyProps {
 
 export function ArticleBody({
   body,
-  webRating,
   title,
   slug,
   url,
@@ -33,25 +29,12 @@ export function ArticleBody({
   ambientAudioUrl,
   pollConfig,
 }: ArticleBodyProps) {
-  const [communityStats, setCommunityStats] = useState<WebRatingStats | null>(null);
-
   return (
     <SpoilerProvider>
       {/* ── Controls Bar ── */}
       {hasSpoilerBlocks && (
         <div className="flex justify-end mb-8 pb-4 border-b-2 border-border">
           <RevealAllToggle />
-        </div>
-      )}
-
-      {/* ── Web Rating Block (author score + community teaser) ── */}
-      {webRating != null && webRating > 0 && (
-        <div className="mb-10 rounded-xl border border-border bg-card/50 relative overflow-hidden">
-          <WebRating
-            score={webRating}
-            variant="full"
-            communityStats={communityStats}
-          />
         </div>
       )}
 
@@ -74,9 +57,7 @@ export function ArticleBody({
         slug={slug}
         title={title}
         shareUrl={url}
-        authorWebRating={webRating}
         pollConfig={pollConfig}
-        onCommunityStatsLoaded={setCommunityStats}
       />
 
       {/* ── Ambient Audio Player ── */}

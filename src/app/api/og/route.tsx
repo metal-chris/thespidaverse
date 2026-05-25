@@ -7,7 +7,6 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const title = searchParams.get("title") || "The Spidaverse";
   const category = searchParams.get("category") || "";
-  const rating = searchParams.get("rating") || "";
 
   return new ImageResponse(
     (
@@ -97,28 +96,6 @@ export async function GET(request: NextRequest) {
           {title}
         </div>
 
-        {/* Rating */}
-        {rating && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              marginTop: "24px",
-            }}
-          >
-            <span
-              style={{
-                fontSize: "32px",
-                fontWeight: "bold",
-                color: "#E82334",
-              }}
-            >
-              {rating}
-            </span>
-            <span style={{ fontSize: "18px", color: "#666" }}>/100</span>
-          </div>
-        )}
       </div>
     ),
     {

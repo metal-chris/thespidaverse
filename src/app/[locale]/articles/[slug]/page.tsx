@@ -8,7 +8,7 @@ import { urlFor } from "@/lib/sanity/image";
 import { Container } from "@/components/ui/Container";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { capitalizeTag, cn, formatDate, formatMediaType, slugify } from "@/lib/utils";
-import { blogPostingJsonLd, breadcrumbJsonLd, reviewJsonLd } from "@/lib/seo/jsonLd";
+import { blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/seo/jsonLd";
 import { CategoryPlaceholder } from "@/components/ui/CategoryPlaceholder";
 import { getCategoryConfig } from "@/lib/categories";
 import { TableOfContents, MobileTOC, type TocHeading } from "@/components/content/TableOfContents";
@@ -94,7 +94,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!article) return { title: "Not Found" };
 
-  const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent(article.title)}${article.category ? `&category=${encodeURIComponent(article.category.title)}` : ""}${article.webRating ? `&rating=${article.webRating}` : ""}`;
+  const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent(article.title)}${article.category ? `&category=${encodeURIComponent(article.category.title)}` : ""}`;
 
   return {
     title: article.title,
@@ -199,21 +199,7 @@ export default async function ArticlePage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
       />
-      {article.webRating != null && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(
-              reviewJsonLd({
-                title: article.title,
-                url: articleUrl,
-                rating: article.webRating,
-                itemName: article.title,
-              })
-            ),
-          }}
-        />
-      )}
+      {/* Review JSON-LD intentionally omitted — personal rating is no longer public. */}
 
       {/* ── Breadcrumb (above hero, like collections) ── */}
       <Container className="pt-3 pb-3">
@@ -447,10 +433,9 @@ export default async function ArticlePage({ params }: Props) {
             {/* Mobile TOC (below lg) */}
             <MobileTOC headings={headings} />
 
-            {/* Client-side article body with WebRating, ShareBar, Spoilers */}
+            {/* Client-side article body — community Web Rating, ShareBar, Spoilers */}
             <ArticleBody
               body={article.body}
-              webRating={article.webRating}
               title={article.title}
               slug={slug}
               url={articleUrl}

@@ -7,7 +7,6 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import type { MediaDiaryEntry, MediaType } from "@/types";
 import { formatMediaType } from "@/lib/utils";
-import { WebRating } from "@/components/content/WebRating";
 import { useTheme } from "@/components/theme/ThemeProvider";
 
 // Theme-aware status colors
@@ -242,8 +241,6 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
             </h3>
             <div className="space-y-3">
               {items.map((entry) => {
-                const isCompleted = entry.status === "completed";
-
                 return (
                   <div key={entry._id} className="flex gap-4 pl-8 relative">
                     {/* Timeline dot — vertically centered to the card */}
@@ -288,16 +285,7 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
                           >
                             {STATUS_KEYS[entry.status] ? t(STATUS_KEYS[entry.status]) : entry.status}
                           </span>
-                          {entry.rating != null && isCompleted ? (
-                            <WebRating
-                              score={entry.rating}
-                              variant="inline"
-                            />
-                          ) : entry.rating != null ? (
-                            <span className="text-xs text-accent font-medium">
-                              {entry.rating}/100
-                            </span>
-                          ) : null}
+                          {/* Personal diary rating intentionally not rendered. */}
                           {entry.startedAt && (
                             <span className="text-xs text-muted-foreground">
                               {new Date(entry.startedAt).toLocaleDateString(
