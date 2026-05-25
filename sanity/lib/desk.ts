@@ -27,6 +27,10 @@ export const deskStructure = (S: StructureBuilder) =>
         .title("Journal")
         .schemaType("mediaDiary")
         .child(S.documentTypeList("mediaDiary").title("Journal")),
+      S.listItem()
+        .title("Stories")
+        .schemaType("story")
+        .child(S.documentTypeList("story").title("Stories")),
       S.divider(),
       S.listItem()
         .title("Media Library")

@@ -12,6 +12,7 @@ export function buildEmptyStatesScenario(): MockDataset {
     media: [],
     collections: [],
     journalEntries: [],
+    stories: [],
     categories: [],
     tags: [],
     moods: [],

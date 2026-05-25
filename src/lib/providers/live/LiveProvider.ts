@@ -3,6 +3,7 @@ import type {
   MediaEntry,
   Collection,
   MediaDiaryEntry,
+  Story,
   CurrentlyConsuming,
   ReactionCounts,
   SpotifyNowPlaying,
@@ -35,6 +36,8 @@ import {
   tagsQuery,
   moodTagsQuery,
   mediaDiaryQuery,
+  storiesQuery,
+  storyBySlugQuery,
   collectionsQuery,
   collectionBySlugQuery,
   currentlyConsumingQuery,
@@ -208,6 +211,28 @@ export class LiveProvider implements DataProvider {
       return entries.slice(0, limit);
     } catch {
       return [];
+    }
+  }
+
+  // ─── Stories ───────────────────────────────────────────────
+
+  async getStories(): Promise<Story[]> {
+    try {
+      return await sanityFetch<Story[]>(storiesQuery, undefined, []);
+    } catch {
+      return [];
+    }
+  }
+
+  async getStoryBySlug(slug: string): Promise<Story | null> {
+    try {
+      return await sanityFetch<Story | null>(
+        storyBySlugQuery,
+        { slug },
+        null
+      );
+    } catch {
+      return null;
     }
   }
 

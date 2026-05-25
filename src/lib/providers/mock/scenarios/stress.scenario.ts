@@ -114,6 +114,7 @@ export function buildStressScenario(): MockDataset {
     media,
     collections,
     journalEntries,
+    stories: [],
     categories,
     tags,
     moods,

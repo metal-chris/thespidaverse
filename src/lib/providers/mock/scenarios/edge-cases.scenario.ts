@@ -328,6 +328,7 @@ export function buildEdgeCasesScenario(): MockDataset {
     media,
     collections,
     journalEntries,
+    stories: [],
     categories: [category],
     tags,
     moods,

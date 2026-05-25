@@ -1236,6 +1236,7 @@ export function buildHappyPathScenario(): MockDataset {
     media,
     collections,
     journalEntries,
+    stories: [],
     categories,
     tags,
     moods,

@@ -3,6 +3,7 @@ import type {
   MediaEntry,
   Collection,
   MediaDiaryEntry,
+  Story,
   Category,
   Tag,
   CurrentlyConsuming,
@@ -19,6 +20,7 @@ export interface MockDataset {
   media: MediaEntry[];
   collections: Collection[];
   journalEntries: MediaDiaryEntry[];
+  stories: Story[];
   categories: Category[];
   tags: Tag[];
   moods: string[];

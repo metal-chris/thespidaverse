@@ -91,6 +91,24 @@ export interface Collection {
   featured?: boolean;
 }
 
+export interface Story {
+  _id: string;
+  _createdAt: string;
+  _updatedAt?: string;
+  title: string;
+  slug: { current: string };
+  publishedAt?: string;
+  excerpt?: string;
+  body?: PortableTextBlock[];
+  heroImage?: SanityImage;
+  heroImageUrl?: string;
+  tags?: Tag[];
+  mediaType?: MediaType;
+  relatedMedia?: MediaEntry[];
+  readingTime?: number;
+  spoilerFree?: boolean;
+}
+
 export interface MediaDiaryEntry {
   _id: string;
   _createdAt: string;

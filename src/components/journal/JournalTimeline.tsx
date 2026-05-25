@@ -5,8 +5,9 @@ import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import type { MediaDiaryEntry, MediaType } from "@/types";
+import type { MediaDiaryEntry, MediaType, Story } from "@/types";
 import { formatMediaType } from "@/lib/utils";
+import { urlFor } from "@/lib/sanity/image";
 import { useTheme } from "@/components/theme/ThemeProvider";
 
 // Theme-aware status colors
@@ -45,6 +46,7 @@ const DOT_COLORS: Record<string, Record<string, string>> = {
     reading: "bg-amber-500",
     completed: "bg-emerald-500",
     dropped: "bg-red-500",
+    story: "bg-accent",
   },
   peter: {
     watching: "bg-blue-500",
@@ -53,6 +55,7 @@ const DOT_COLORS: Record<string, Record<string, string>> = {
     reading: "bg-yellow-500",
     completed: "bg-teal-500",
     dropped: "bg-red-500",
+    story: "bg-accent",
   },
   venom: {
     watching: "bg-blue-400",
@@ -61,6 +64,7 @@ const DOT_COLORS: Record<string, Record<string, string>> = {
     reading: "bg-yellow-400",
     completed: "bg-emerald-400",
     dropped: "bg-red-400",
+    story: "bg-accent",
   },
 };
 
@@ -73,14 +77,20 @@ const STATUS_KEYS: Record<string, string> = {
   dropped: "journal.statusDropped",
 };
 
+// ─── Unified timeline item — discriminated union ───────────
+type TimelineItem =
+  | { kind: "diary"; date: string; entry: MediaDiaryEntry }
+  | { kind: "story"; date: string; story: Story };
+
 interface JournalTimelineProps {
   entries: MediaDiaryEntry[];
+  stories: Story[];
 }
 
-type FilterType = "all" | MediaType;
+type FilterType = "all" | "story" | MediaType;
 type FilterStatus = "all" | MediaDiaryEntry["status"];
 
-export function JournalTimeline({ entries }: JournalTimelineProps) {
+export function JournalTimeline({ entries, stories }: JournalTimelineProps) {
   const t = useTranslations();
   const { theme } = useTheme();
   const [typeFilter, setTypeFilter] = useState<FilterType>("all");
@@ -90,32 +100,61 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
   const statusColors = STATUS_COLORS[theme] || STATUS_COLORS.miles;
   const dotColors = DOT_COLORS[theme] || DOT_COLORS.miles;
 
-  const filtered = useMemo(
-    () =>
-      entries.filter((e) => {
-        if (typeFilter !== "all" && e.mediaType !== typeFilter) return false;
-        if (statusFilter !== "all" && e.status !== statusFilter) return false;
-        return true;
-      }),
-    [entries, typeFilter, statusFilter]
-  );
-
-  // Group by month and sort chronologically (newest first)
-  const grouped = useMemo(() => {
-    const map = new Map<string, MediaDiaryEntry[]>();
-    for (const entry of filtered) {
-      const date = entry.startedAt || entry._createdAt;
-      const key = date ? date.slice(0, 7) : "unknown";
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(entry);
+  // Merge diary entries + stories into one timeline, sorted by date desc.
+  const allItems = useMemo<TimelineItem[]>(() => {
+    const items: TimelineItem[] = [];
+    for (const entry of entries) {
+      items.push({
+        kind: "diary",
+        date: entry.startedAt || entry._createdAt,
+        entry,
+      });
     }
-    // Sort keys descending (newest month first)
-    const sorted = [...map.entries()].sort(([a], [b]) => b.localeCompare(a));
-    return sorted;
+    for (const story of stories) {
+      items.push({
+        kind: "story",
+        date: story.publishedAt || story._createdAt,
+        story,
+      });
+    }
+    items.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    return items;
+  }, [entries, stories]);
+
+  const filtered = useMemo(() => {
+    return allItems.filter((item) => {
+      if (typeFilter === "story") return item.kind === "story";
+      if (item.kind === "story") {
+        // When filtering by a media type, stories only match if they declare one
+        if (typeFilter !== "all" && item.story.mediaType !== typeFilter)
+          return false;
+        // Status filter only applies to diary entries
+        if (statusFilter !== "all") return false;
+        return true;
+      }
+      // diary entry
+      if (typeFilter !== "all" && item.entry.mediaType !== typeFilter)
+        return false;
+      if (statusFilter !== "all" && item.entry.status !== statusFilter)
+        return false;
+      return true;
+    });
+  }, [allItems, typeFilter, statusFilter]);
+
+  // Group by month
+  const grouped = useMemo(() => {
+    const map = new Map<string, TimelineItem[]>();
+    for (const item of filtered) {
+      const key = item.date ? item.date.slice(0, 7) : "unknown";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(item);
+    }
+    return [...map.entries()].sort(([a], [b]) => b.localeCompare(a));
   }, [filtered]);
 
   const mediaTypes: FilterType[] = [
     "all",
+    "story",
     "movie",
     "tv",
     "game",
@@ -192,7 +231,11 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
                       : "border-border text-muted-foreground hover:border-accent/50"
                   )}
                 >
-                  {mt === "all" ? t("journal.all") : formatMediaType(mt)}
+                  {mt === "all"
+                    ? t("journal.all")
+                    : mt === "story"
+                    ? t("journal.stories")
+                    : formatMediaType(mt)}
                 </button>
               ))}
             </div>
@@ -213,7 +256,11 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
                       : "border-border text-muted-foreground hover:border-accent/50"
                   )}
                 >
-                  {s === "all" ? t("journal.all") : (STATUS_KEYS[s] ? t(STATUS_KEYS[s]) : s)}
+                  {s === "all"
+                    ? t("journal.all")
+                    : STATUS_KEYS[s]
+                    ? t(STATUS_KEYS[s])
+                    : s}
                 </button>
               ))}
             </div>
@@ -223,101 +270,48 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
 
       {/* Timeline — single continuous line */}
       <div className="relative">
-        {/* Continuous timeline line */}
-        <div className="absolute left-[11px] top-0 bottom-0 w-0.5" style={{ backgroundColor: "rgba(255,255,255,0.3)" }} aria-hidden="true" />
-      {grouped.map(([month, items]) => {
-        const monthLabel =
-          month === "unknown"
-            ? t("journal.undated")
-            : new Date(month + "-01").toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-              });
+        <div
+          className="absolute left-[11px] top-0 bottom-0 w-0.5"
+          style={{ backgroundColor: "rgba(255,255,255,0.3)" }}
+          aria-hidden="true"
+        />
+        {grouped.map(([month, items]) => {
+          const monthLabel =
+            month === "unknown"
+              ? t("journal.undated")
+              : new Date(month + "-01").toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                });
 
-        return (
-          <div key={month} className="mb-6">
-            <h3 className="text-lg font-bold mb-3 sticky top-16 bg-background/90 backdrop-blur-sm py-2 z-10 pl-8">
-              {monthLabel}
-            </h3>
-            <div className="space-y-3">
-              {items.map((entry) => {
-                return (
-                  <div key={entry._id} className="flex gap-4 pl-8 relative">
-                    {/* Timeline dot — vertically centered to the card */}
-                    <div
-                      className={cn(
-                        "absolute left-1 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-background",
-                        dotColors[entry.status] || "bg-muted"
-                      )}
-                      title={STATUS_KEYS[entry.status] ? t(STATUS_KEYS[entry.status]) : entry.status}
+          return (
+            <div key={month} className="mb-6">
+              <h3 className="text-lg font-bold mb-3 sticky top-16 bg-background/90 backdrop-blur-sm py-2 z-10 pl-8">
+                {monthLabel}
+              </h3>
+              <div className="space-y-3">
+                {items.map((item) =>
+                  item.kind === "diary" ? (
+                    <DiaryCard
+                      key={item.entry._id}
+                      entry={item.entry}
+                      dotColors={dotColors}
+                      statusColors={statusColors}
+                      t={t}
                     />
-
-                    {/* Card */}
-                    <div className="flex-1 flex gap-3 p-3 rounded-lg border border-border bg-card hover:border-accent/30 transition-colors">
-                      {/* Poster — larger for better recognition */}
-                      {entry.media?.posterUrl && (
-                        <div className="relative w-14 h-20 md:w-16 md:h-22 rounded overflow-hidden flex-shrink-0">
-                          <Image
-                            src={entry.media.posterUrl}
-                            alt={entry.title}
-                            fill
-                            className="object-cover"
-                            sizes="64px"
-                          />
-                        </div>
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h4 className="font-medium text-sm text-foreground">
-                            {entry.title}
-                          </h4>
-                          <span className="text-xs text-muted-foreground">
-                            {formatMediaType(entry.mediaType)}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 mt-1 flex-wrap">
-                          <span
-                            className={cn(
-                              "text-xs px-1.5 py-0.5 rounded font-medium",
-                              statusColors[entry.status] ||
-                                "bg-muted text-muted-foreground"
-                            )}
-                          >
-                            {STATUS_KEYS[entry.status] ? t(STATUS_KEYS[entry.status]) : entry.status}
-                          </span>
-                          {/* Personal diary rating intentionally not rendered. */}
-                          {entry.startedAt && (
-                            <span className="text-xs text-muted-foreground">
-                              {new Date(entry.startedAt).toLocaleDateString(
-                                "en-US",
-                                { month: "short", day: "numeric" }
-                              )}
-                            </span>
-                          )}
-                        </div>
-                        {entry.notes && (
-                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                            {entry.notes}
-                          </p>
-                        )}
-                        {entry.linkedArticle && (
-                          <Link
-                            href={`/articles/${entry.linkedArticle.slug.current}`}
-                            className="inline-flex items-center gap-1 mt-2 px-2.5 py-1 rounded-full text-[11px] font-medium bg-accent/10 text-accent border border-accent/20 hover:bg-accent/20 transition-colors"
-                          >
-                            {t("journal.readReview")}
-                            <span aria-hidden="true">&rarr;</span>
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+                  ) : (
+                    <StoryCard
+                      key={item.story._id}
+                      story={item.story}
+                      dotColor={dotColors.story}
+                      t={t}
+                    />
+                  )
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
       </div>
 
       {filtered.length === 0 && (
@@ -349,6 +343,177 @@ export function JournalTimeline({ entries }: JournalTimelineProps) {
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Diary card (extracted from original render) ───────────
+function DiaryCard({
+  entry,
+  dotColors,
+  statusColors,
+  t,
+}: {
+  entry: MediaDiaryEntry;
+  dotColors: Record<string, string>;
+  statusColors: Record<string, string>;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  return (
+    <div className="flex gap-4 pl-8 relative">
+      <div
+        className={cn(
+          "absolute left-1 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-background",
+          dotColors[entry.status] || "bg-muted"
+        )}
+        title={
+          STATUS_KEYS[entry.status] ? t(STATUS_KEYS[entry.status]) : entry.status
+        }
+      />
+      <div className="flex-1 flex gap-3 p-3 rounded-lg border border-border bg-card hover:border-accent/30 transition-colors">
+        {entry.media?.posterUrl && (
+          <div className="relative w-14 h-20 md:w-16 md:h-22 rounded overflow-hidden flex-shrink-0">
+            <Image
+              src={entry.media.posterUrl}
+              alt={entry.title}
+              fill
+              className="object-cover"
+              sizes="64px"
+            />
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h4 className="font-medium text-sm text-foreground">
+              {entry.title}
+            </h4>
+            <span className="text-xs text-muted-foreground">
+              {formatMediaType(entry.mediaType)}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
+            <span
+              className={cn(
+                "text-xs px-1.5 py-0.5 rounded font-medium",
+                statusColors[entry.status] || "bg-muted text-muted-foreground"
+              )}
+            >
+              {STATUS_KEYS[entry.status]
+                ? t(STATUS_KEYS[entry.status])
+                : entry.status}
+            </span>
+            {/* Personal diary rating intentionally not rendered. */}
+            {entry.startedAt && (
+              <span className="text-xs text-muted-foreground">
+                {new Date(entry.startedAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })}
+              </span>
+            )}
+          </div>
+          {entry.notes && (
+            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+              {entry.notes}
+            </p>
+          )}
+          {entry.linkedArticle && (
+            <Link
+              href={`/articles/${entry.linkedArticle.slug.current}`}
+              className="inline-flex items-center gap-1 mt-2 px-2.5 py-1 rounded-full text-[11px] font-medium bg-accent/10 text-accent border border-accent/20 hover:bg-accent/20 transition-colors"
+            >
+              {t("journal.readReview")}
+              <span aria-hidden="true">&rarr;</span>
+            </Link>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Story card ────────────────────────────────────────────
+function StoryCard({
+  story,
+  dotColor,
+  t,
+}: {
+  story: Story;
+  dotColor: string;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  const heroSrc = story.heroImageUrl
+    ? story.heroImageUrl
+    : story.heroImage
+    ? urlFor(story.heroImage).width(128).height(180).url()
+    : null;
+
+  const date = story.publishedAt || story._createdAt;
+
+  return (
+    <div className="flex gap-4 pl-8 relative">
+      <div
+        className={cn(
+          "absolute left-1 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-background",
+          dotColor
+        )}
+        title={t("journal.story")}
+      />
+      <Link
+        href={`/stories/${story.slug.current}`}
+        className="flex-1 flex gap-3 p-3 rounded-lg border border-accent/20 bg-card hover:border-accent/50 transition-colors group"
+      >
+        {heroSrc && (
+          <div className="relative w-14 h-20 md:w-16 md:h-22 rounded overflow-hidden flex-shrink-0">
+            <Image
+              src={heroSrc}
+              alt={story.heroImage?.alt || story.title}
+              fill
+              className="object-cover"
+              sizes="64px"
+            />
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[10px] uppercase tracking-wider font-mono text-accent">
+              {t("journal.story")}
+            </span>
+            {story.mediaType && (
+              <span className="text-xs text-muted-foreground">
+                {formatMediaType(story.mediaType)}
+              </span>
+            )}
+          </div>
+          <h4 className="font-medium text-sm text-foreground mt-0.5 group-hover:text-accent transition-colors">
+            {story.title}
+          </h4>
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
+            {date && (
+              <span className="text-xs text-muted-foreground">
+                {new Date(date).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })}
+              </span>
+            )}
+            {story.readingTime != null && (
+              <span className="text-xs text-muted-foreground">
+                {t("article.minRead", { minutes: story.readingTime })}
+              </span>
+            )}
+          </div>
+          {story.excerpt && (
+            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+              {story.excerpt}
+            </p>
+          )}
+          <span className="inline-flex items-center gap-1 mt-2 text-[11px] font-medium text-accent group-hover:underline">
+            {t("journal.readStory")}
+            <span aria-hidden="true">&rarr;</span>
+          </span>
+        </div>
+      </Link>
     </div>
   );
 }

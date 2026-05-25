@@ -81,6 +81,7 @@ export function buildNewUserScenario(): MockDataset {
     media,
     collections: [],
     journalEntries,
+    stories: [],
     categories: [category],
     tags: [tag],
     moods,

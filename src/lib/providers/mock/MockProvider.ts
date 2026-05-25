@@ -3,6 +3,7 @@ import type {
   MediaEntry,
   Collection,
   MediaDiaryEntry,
+  Story,
   CurrentlyConsuming,
   ReactionCounts,
   SpotifyNowPlaying,
@@ -187,6 +188,28 @@ export class MockProvider implements DataProvider {
       return results.slice(0, limit);
     } catch {
       return [];
+    }
+  }
+
+  // ─── Stories ───────────────────────────────────────────────
+
+  async getStories(): Promise<Story[]> {
+    try {
+      const data = await this.getData();
+      return [...(data.stories ?? [])];
+    } catch {
+      return [];
+    }
+  }
+
+  async getStoryBySlug(slug: string): Promise<Story | null> {
+    try {
+      const data = await this.getData();
+      return (
+        (data.stories ?? []).find((s) => s.slug.current === slug) ?? null
+      );
+    } catch {
+      return null;
     }
   }
 

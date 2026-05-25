@@ -3,6 +3,7 @@ import type {
   MediaEntry,
   Collection,
   MediaDiaryEntry,
+  Story,
   CurrentlyConsuming,
   ReactionCounts,
   SpotifyNowPlaying,
@@ -133,6 +134,10 @@ export interface DataProvider {
 
   // Journal
   getJournalEntries(filters?: JournalFilters): Promise<MediaDiaryEntry[]>;
+
+  // Stories
+  getStories(): Promise<Story[]>;
+  getStoryBySlug(slug: string): Promise<Story | null>;
 
   // Collections
   getCollections(): Promise<Collection[]>;
