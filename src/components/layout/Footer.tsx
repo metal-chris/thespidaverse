@@ -92,6 +92,13 @@ export function Footer() {
               {t("footer.logo")}
             </Link>
             <span className="hidden sm:block w-px h-4 bg-border" />
+            <Link
+              href="/patch-notes"
+              className="text-xs text-muted-foreground hover:text-accent transition-colors"
+            >
+              {t("footer.patchNotes")}
+            </Link>
+            <span className="hidden sm:block w-px h-4 bg-border" />
             <DiscordButton label={t("footer.discord")} />
           </div>
 
