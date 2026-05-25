@@ -58,7 +58,9 @@ export function CommunityWebRating({
   }, [sliderValue, status, onSubmit]);
 
   const totalRatings = stats?.totalRatings ?? 0;
-  const hasStats = totalRatings > 0;
+  const PUBLIC_THRESHOLD = 5;
+  const aboveThreshold = totalRatings >= PUBLIC_THRESHOLD;
+  const remainingToThreshold = Math.max(0, PUBLIC_THRESHOLD - totalRatings);
 
   return (
     <div>
@@ -174,20 +176,26 @@ export function CommunityWebRating({
             You rated this a{" "}
             <span className="font-bold text-accent">{userScore}</span>
           </p>
-          {hasStats && (
+          {aboveThreshold ? (
             <p className="text-xs text-muted-foreground">
-              Community average:{" "}
+              Web Rating:{" "}
               <span className="font-semibold text-accent">
                 {stats?.avgScore}
               </span>{" "}
               ({totalRatings} rating{totalRatings !== 1 ? "s" : ""})
+            </p>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              {remainingToThreshold === 1
+                ? "1 more vote until the Web Rating shows."
+                : `${remainingToThreshold} more votes until the Web Rating shows.`}
             </p>
           )}
         </div>
       )}
 
       {/* ── Distribution bars (post-submit) ── */}
-      {status === "submitted" && hasStats && stats?.distribution && (
+      {status === "submitted" && aboveThreshold && stats?.distribution && (
         <div className="space-y-1.5 mt-3">
           {(["81-100", "61-80", "41-60", "21-40", "1-20"] as const).map(
             (bucket) => {

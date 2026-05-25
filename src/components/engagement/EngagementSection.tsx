@@ -16,7 +16,6 @@ interface EngagementSectionProps {
   slug: string;
   title: string;
   shareUrl: string;
-  authorWebRating?: number;
   pollConfig?: PollConfig;
   /** Called after engagement results load so parent can display community stats */
   onCommunityStatsLoaded?: (stats: WebRatingStats | null) => void;
@@ -26,15 +25,13 @@ export function EngagementSection({
   slug,
   title,
   shareUrl,
-  authorWebRating,
   pollConfig,
   onCommunityStatsLoaded,
 }: EngagementSectionProps) {
   const [results, setResults] = useState<EngagementResults | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const showRating =
-    pollConfig?.enableCommunityRating !== false && authorWebRating != null && authorWebRating > 0;
+  const showRating = pollConfig?.enableCommunityRating !== false;
   const questions = pollConfig?.pollQuestions ?? [];
   const hasEngagement = showRating || questions.length > 0;
 
