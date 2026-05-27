@@ -301,7 +301,6 @@
     "stories": "ストーリー",
     "story": "ストーリー",
     "readReview": "レビューを読む",
-    "readStory": "ストーリーを読む",
     "noEntries": "フィルターに一致するエントリがありません。",
     "clearFilters": "フィルターをクリア",
     "statusWatching": "視聴中",
@@ -312,8 +311,7 @@
     "statusDropped": "中断",
     "undated": "日付なし",
     "articles": "記事",
-    "article": "記事",
-    "readArticle": "記事を読む"
+    "article": "記事"
   },
   "collections": {
     "subtitle": "キュレーション",

@@ -301,7 +301,6 @@
     "stories": "Récits",
     "story": "Récit",
     "readReview": "Lire la critique",
-    "readStory": "Lire le récit",
     "noEntries": "Aucune entrée ne correspond à vos filtres.",
     "clearFilters": "Effacer les filtres",
     "statusWatching": "En visionnage",
@@ -312,8 +311,7 @@
     "statusDropped": "Abandonné",
     "undated": "Non daté",
     "articles": "Articles",
-    "article": "Article",
-    "readArticle": "Lire l'article"
+    "article": "Article"
   },
   "collections": {
     "subtitle": "Sélection",

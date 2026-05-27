@@ -301,7 +301,6 @@
     "stories": "스토리",
     "story": "스토리",
     "readReview": "리뷰 읽기",
-    "readStory": "스토리 읽기",
     "noEntries": "필터에 맞는 항목이 없습니다.",
     "clearFilters": "필터 초기화",
     "statusWatching": "시청 중",
@@ -312,8 +311,7 @@
     "statusDropped": "중단",
     "undated": "날짜 없음",
     "articles": "기사",
-    "article": "기사",
-    "readArticle": "기사 읽기"
+    "article": "기사"
   },
   "collections": {
     "subtitle": "큐레이션",

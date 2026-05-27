@@ -301,7 +301,6 @@
     "stories": "Stories",
     "story": "Story",
     "readReview": "Read review",
-    "readStory": "Read story",
     "noEntries": "No entries match your filters.",
     "clearFilters": "Clear filters",
     "statusWatching": "Watching",
@@ -312,8 +311,7 @@
     "statusDropped": "Dropped",
     "undated": "Undated",
     "articles": "Articles",
-    "article": "Article",
-    "readArticle": "Read article"
+    "article": "Article"
   },
   "collections": {
     "subtitle": "Curated",

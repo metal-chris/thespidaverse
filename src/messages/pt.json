@@ -301,7 +301,6 @@
     "stories": "Histórias",
     "story": "História",
     "readReview": "Ler resenha",
-    "readStory": "Ler história",
     "noEntries": "Nenhuma entrada corresponde aos seus filtros.",
     "clearFilters": "Limpar filtros",
     "statusWatching": "Assistindo",
@@ -312,8 +311,7 @@
     "statusDropped": "Abandonado",
     "undated": "Sem data",
     "articles": "Artigos",
-    "article": "Artigo",
-    "readArticle": "Ler artigo"
+    "article": "Artigo"
   },
   "collections": {
     "subtitle": "Curado",

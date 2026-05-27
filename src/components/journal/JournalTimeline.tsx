@@ -410,31 +410,17 @@ function DiaryCard({
           STATUS_KEYS[entry.status] ? t(STATUS_KEYS[entry.status]) : entry.status
         }
       />
-      <div className="flex-1 flex gap-3 p-3 rounded-lg border border-border bg-card hover:border-accent/30 transition-colors">
-        {entry.media?.posterUrl && (
-          <div className="relative w-14 h-20 md:w-16 md:h-22 rounded overflow-hidden flex-shrink-0">
-            <Image
-              src={entry.media.posterUrl}
-              alt={entry.title}
-              fill
-              className="object-cover"
-              sizes="64px"
-            />
-          </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h4 className="font-medium text-sm text-foreground">
-              {entry.title}
-            </h4>
-            <span className="text-xs text-muted-foreground">
-              {formatMediaType(entry.mediaType)}
-            </span>
-          </div>
-          <div className="flex items-center gap-2 mt-1 flex-wrap">
+      <div className={cn(CARD_CHROME, "border-border")}>
+        <CardThumb
+          src={entry.media?.posterUrl}
+          alt={entry.title}
+          categoryTitle={MEDIA_TYPE_TO_CATEGORY[entry.mediaType]}
+        />
+        <div className="min-w-0 flex-1 flex flex-col">
+          <div className="flex items-center gap-2 flex-wrap mb-1.5">
             <span
               className={cn(
-                "text-xs px-1.5 py-0.5 rounded font-medium",
+                "inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full",
                 statusColors[entry.status] || "bg-muted text-muted-foreground"
               )}
             >
@@ -442,28 +428,26 @@ function DiaryCard({
                 ? t(STATUS_KEYS[entry.status])
                 : entry.status}
             </span>
-            {/* Personal diary rating intentionally not rendered. */}
-            {entry.startedAt && (
-              <span className="text-xs text-muted-foreground">
-                {new Date(entry.startedAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })}
-              </span>
-            )}
+            <span className="text-[10px] uppercase tracking-wider font-mono text-muted-foreground">
+              {formatMediaType(entry.mediaType)}
+            </span>
           </div>
+          <h4 className="font-semibold text-base leading-snug text-foreground">
+            {entry.title}
+          </h4>
           {entry.notes && (
-            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+            <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2 leading-relaxed">
               {entry.notes}
             </p>
           )}
+          <CardMetaRow date={entry.startedAt} t={t} />
           {entry.linkedArticle && (
             <Link
               href={`/articles/${entry.linkedArticle.slug.current}`}
-              className="inline-flex items-center gap-1 mt-2 px-2.5 py-1 rounded-full text-[11px] font-medium bg-accent/10 text-accent border border-accent/20 hover:bg-accent/20 transition-colors"
+              className="inline-flex items-center gap-1.5 mt-3 self-start px-2.5 py-1 rounded-full text-[11px] font-medium bg-accent/10 text-accent border border-accent/25 hover:bg-accent/20 hover:border-accent/50 transition-colors"
             >
               {t("journal.readReview")}
-              <span aria-hidden="true">&rarr;</span>
+              <ArrowUpRight className="w-3 h-3" strokeWidth={2} aria-hidden="true" />
             </Link>
           )}
         </div>
@@ -513,9 +497,22 @@ function CardMetaRow({
   );
 }
 
+const CARD_CHROME =
+  "flex-1 flex gap-4 p-4 rounded-xl border bg-card relative group";
+
 const CARD_LINK_BASE =
-  "flex-1 flex gap-4 p-4 rounded-xl border bg-card transition-all duration-200 group relative " +
-  "hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/5";
+  CARD_CHROME +
+  " transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/5";
+
+/** mediaType ("movie", "tv", …) → category title for CategoryPlaceholder fallback */
+const MEDIA_TYPE_TO_CATEGORY: Record<string, string> = {
+  movie: "Movies",
+  tv: "TV",
+  game: "Video Games",
+  anime: "Anime",
+  books: "Books",
+  music: "Music",
+};
 
 function CardThumb({
   src,
