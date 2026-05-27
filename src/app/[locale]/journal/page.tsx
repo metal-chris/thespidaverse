@@ -15,9 +15,10 @@ export const revalidate = 60;
 export default async function JournalPage() {
   const t = await getTranslations();
   const provider = getProvider();
-  const [diaryEntries, stories] = await Promise.all([
+  const [diaryEntries, stories, articles] = await Promise.all([
     provider.getJournalEntries(),
     provider.getStories(),
+    provider.getArticles(),
   ]);
 
   return (
@@ -32,7 +33,7 @@ export default async function JournalPage() {
         </p>
       </header>
 
-      <JournalTimeline entries={diaryEntries} stories={stories} />
+      <JournalTimeline entries={diaryEntries} stories={stories} articles={articles} />
     </Container>
   );
 }

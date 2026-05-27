@@ -14,6 +14,7 @@
     "home": "ホーム",
     "about": "紹介",
     "journal": "ジャーナル",
+    "articles": "記事",
     "collections": "コレクション",
     "web": "ウェブ",
     "gallery": "ギャラリー",
@@ -309,7 +310,10 @@
     "statusReading": "読書中",
     "statusCompleted": "完了",
     "statusDropped": "中断",
-    "undated": "日付なし"
+    "undated": "日付なし",
+    "articles": "記事",
+    "article": "記事",
+    "readArticle": "記事を読む"
   },
   "collections": {
     "subtitle": "キュレーション",
@@ -376,6 +380,15 @@
     "intense": "ハラハラする緊張感"
   },
   "article": {
-    "minRead": "{minutes}分で読了"
+    "minRead": "{minutes}分で読了",
+    "openInWeb": "ウェブで探索する"
+  },
+  "articles": {
+    "subtitle": "レビューと考察",
+    "heading": "記事",
+    "description": "すべてのレビュー、分析、意見 — 新しい順に並べています。",
+    "spotlight": "最新",
+    "all": "すべての記事",
+    "empty": "まだ記事はありません。"
   }
 }

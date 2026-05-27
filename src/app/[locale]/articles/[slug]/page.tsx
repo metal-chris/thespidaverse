@@ -448,6 +448,21 @@ export default async function ArticlePage({ params }: Props) {
 
             {/* Related articles */}
             <RelatedArticles articles={relatedArticles} />
+
+            {/* Open in The Web — closes the article ↔ graph loop */}
+            <div className="mt-8 flex justify-center">
+              <Link
+                href="/the-web"
+                className="group inline-flex items-center gap-2 px-4 py-2 rounded-full border border-accent/30 bg-accent/5 text-sm text-accent hover:bg-accent/10 hover:border-accent/60 transition-colors"
+              >
+                <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.75} aria-hidden="true">
+                  <circle cx="8" cy="8" r="6.5" />
+                  <path d="M1.5 8h13M8 1.5a10 10 0 010 13M8 1.5a10 10 0 000 13" strokeLinecap="round" />
+                </svg>
+                <span>{t("article.openInWeb")}</span>
+                <span className="transition-transform group-hover:translate-x-0.5" aria-hidden="true">&rarr;</span>
+              </Link>
+            </div>
           </article>
 
           {/* Right spacer (desktop only) — balances the grid */}

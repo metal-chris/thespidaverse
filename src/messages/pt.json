@@ -14,6 +14,7 @@
     "home": "Início",
     "about": "Sobre",
     "journal": "Diário",
+    "articles": "Artigos",
     "collections": "Coleções",
     "web": "Rede",
     "gallery": "Galeria",
@@ -219,7 +220,6 @@
     "terminalRedacted": "██████████",
     "terminalFooter": "FILE CLOSED // SPIDA-MANE // 20XX",
     "terminalWelcome": "Bem-vindo ao The Spidaverse.",
-
     "skillWebDev": "Web Dev",
     "skillWebDevTagline": "Full-stack, de ponta a ponta",
     "skillProductDesign": "Design de Produto",
@@ -310,7 +310,10 @@
     "statusReading": "Lendo",
     "statusCompleted": "Concluído",
     "statusDropped": "Abandonado",
-    "undated": "Sem data"
+    "undated": "Sem data",
+    "articles": "Artigos",
+    "article": "Artigo",
+    "readArticle": "Ler artigo"
   },
   "collections": {
     "subtitle": "Curado",
@@ -377,6 +380,15 @@
     "intense": "Tensão à beira da cadeira"
   },
   "article": {
-    "minRead": "{minutes} min de leitura"
+    "minRead": "{minutes} min de leitura",
+    "openInWeb": "Explorar na Rede"
+  },
+  "articles": {
+    "subtitle": "Críticas e opiniões",
+    "heading": "Artigos",
+    "description": "Todas as críticas, análises e opiniões — do mais recente ao mais antigo.",
+    "spotlight": "Mais recente",
+    "all": "Todos os artigos",
+    "empty": "Ainda não há artigos."
   }
 }

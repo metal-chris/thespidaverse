@@ -3,11 +3,12 @@
 import { Link, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { Home, User, PenLine, LayoutGrid, Share2, Image, type LucideIcon } from "lucide-react";
+import { Home, User, PenLine, Newspaper, LayoutGrid, Share2, Image, type LucideIcon } from "lucide-react";
 
 const links: { href: string; labelKey: string; icon: LucideIcon }[] = [
   { href: "/", labelKey: "nav.home", icon: Home },
   { href: "/about", labelKey: "nav.about", icon: User },
+  { href: "/articles", labelKey: "nav.articles", icon: Newspaper },
   { href: "/journal", labelKey: "nav.journal", icon: PenLine },
   { href: "/collections", labelKey: "nav.collections", icon: LayoutGrid },
   { href: "/the-web", labelKey: "nav.web", icon: Share2 },

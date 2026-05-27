@@ -5,10 +5,13 @@ import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import type { MediaDiaryEntry, MediaType, Story } from "@/types";
+import type { Article, MediaDiaryEntry, MediaType, Story } from "@/types";
 import { formatMediaType } from "@/lib/utils";
 import { urlFor } from "@/lib/sanity/image";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { getCategoryConfig } from "@/lib/categories";
+import { CategoryPlaceholder } from "@/components/ui/CategoryPlaceholder";
+import { ArrowUpRight, Calendar, Clock, PenLine } from "lucide-react";
 
 // Theme-aware status colors
 const STATUS_COLORS: Record<string, Record<string, string>> = {
@@ -47,6 +50,7 @@ const DOT_COLORS: Record<string, Record<string, string>> = {
     completed: "bg-emerald-500",
     dropped: "bg-red-500",
     story: "bg-accent",
+    article: "bg-foreground",
   },
   peter: {
     watching: "bg-blue-500",
@@ -56,6 +60,7 @@ const DOT_COLORS: Record<string, Record<string, string>> = {
     completed: "bg-teal-500",
     dropped: "bg-red-500",
     story: "bg-accent",
+    article: "bg-foreground",
   },
   venom: {
     watching: "bg-blue-400",
@@ -65,6 +70,7 @@ const DOT_COLORS: Record<string, Record<string, string>> = {
     completed: "bg-emerald-400",
     dropped: "bg-red-400",
     story: "bg-accent",
+    article: "bg-foreground",
   },
 };
 
@@ -80,17 +86,19 @@ const STATUS_KEYS: Record<string, string> = {
 // ─── Unified timeline item — discriminated union ───────────
 type TimelineItem =
   | { kind: "diary"; date: string; entry: MediaDiaryEntry }
-  | { kind: "story"; date: string; story: Story };
+  | { kind: "story"; date: string; story: Story }
+  | { kind: "article"; date: string; article: Article };
 
 interface JournalTimelineProps {
   entries: MediaDiaryEntry[];
   stories: Story[];
+  articles?: Article[];
 }
 
-type FilterType = "all" | "story" | MediaType;
+type FilterType = "all" | "story" | "article" | MediaType;
 type FilterStatus = "all" | MediaDiaryEntry["status"];
 
-export function JournalTimeline({ entries, stories }: JournalTimelineProps) {
+export function JournalTimeline({ entries, stories, articles = [] }: JournalTimelineProps) {
   const t = useTranslations();
   const { theme } = useTheme();
   const [typeFilter, setTypeFilter] = useState<FilterType>("all");
@@ -117,16 +125,32 @@ export function JournalTimeline({ entries, stories }: JournalTimelineProps) {
         story,
       });
     }
+    for (const article of articles) {
+      items.push({
+        kind: "article",
+        date: article.publishedAt || article._createdAt,
+        article,
+      });
+    }
     items.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
     return items;
-  }, [entries, stories]);
+  }, [entries, stories, articles]);
 
   const filtered = useMemo(() => {
     return allItems.filter((item) => {
       if (typeFilter === "story") return item.kind === "story";
+      if (typeFilter === "article") return item.kind === "article";
       if (item.kind === "story") {
         // When filtering by a media type, stories only match if they declare one
         if (typeFilter !== "all" && item.story.mediaType !== typeFilter)
+          return false;
+        // Status filter only applies to diary entries
+        if (statusFilter !== "all") return false;
+        return true;
+      }
+      if (item.kind === "article") {
+        // When filtering by a media type, articles only match if they declare one
+        if (typeFilter !== "all" && item.article.mediaType !== typeFilter)
           return false;
         // Status filter only applies to diary entries
         if (statusFilter !== "all") return false;
@@ -154,6 +178,7 @@ export function JournalTimeline({ entries, stories }: JournalTimelineProps) {
 
   const mediaTypes: FilterType[] = [
     "all",
+    "article",
     "story",
     "movie",
     "tv",
@@ -235,6 +260,8 @@ export function JournalTimeline({ entries, stories }: JournalTimelineProps) {
                     ? t("journal.all")
                     : mt === "story"
                     ? t("journal.stories")
+                    : mt === "article"
+                    ? t("journal.articles")
                     : formatMediaType(mt)}
                 </button>
               ))}
@@ -290,24 +317,37 @@ export function JournalTimeline({ entries, stories }: JournalTimelineProps) {
                 {monthLabel}
               </h3>
               <div className="space-y-3">
-                {items.map((item) =>
-                  item.kind === "diary" ? (
-                    <DiaryCard
-                      key={item.entry._id}
-                      entry={item.entry}
-                      dotColors={dotColors}
-                      statusColors={statusColors}
+                {items.map((item) => {
+                  if (item.kind === "diary") {
+                    return (
+                      <DiaryCard
+                        key={item.entry._id}
+                        entry={item.entry}
+                        dotColors={dotColors}
+                        statusColors={statusColors}
+                        t={t}
+                      />
+                    );
+                  }
+                  if (item.kind === "story") {
+                    return (
+                      <StoryCard
+                        key={item.story._id}
+                        story={item.story}
+                        dotColor={dotColors.story}
+                        t={t}
+                      />
+                    );
+                  }
+                  return (
+                    <ArticleCard
+                      key={item.article._id}
+                      article={item.article}
+                      dotColor={dotColors.article}
                       t={t}
                     />
-                  ) : (
-                    <StoryCard
-                      key={item.story._id}
-                      story={item.story}
-                      dotColor={dotColors.story}
-                      t={t}
-                    />
-                  )
-                )}
+                  );
+                })}
               </div>
             </div>
           );
@@ -432,6 +472,94 @@ function DiaryCard({
   );
 }
 
+// ─── Shared card chrome (link wrapper + thumbnail + meta row) ───────────
+function CardMetaRow({
+  date,
+  readingTime,
+  t,
+}: {
+  date?: string;
+  readingTime?: number | null;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  return (
+    <div className="mt-3 flex items-center gap-3 text-[11px] text-muted-foreground">
+      {date && (
+        <span className="inline-flex items-center gap-1.5">
+          <Calendar className="w-3 h-3" strokeWidth={1.75} aria-hidden="true" />
+          <time dateTime={date} className="tabular-nums">
+            {new Date(date).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </time>
+        </span>
+      )}
+      {readingTime != null && (
+        <>
+          <span
+            className="w-px h-3 bg-foreground"
+            style={{ opacity: 0.3 }}
+            aria-hidden="true"
+          />
+          <span className="inline-flex items-center gap-1.5">
+            <Clock className="w-3 h-3" strokeWidth={1.75} aria-hidden="true" />
+            <span>{t("article.minRead", { minutes: readingTime })}</span>
+          </span>
+        </>
+      )}
+    </div>
+  );
+}
+
+const CARD_LINK_BASE =
+  "flex-1 flex gap-4 p-4 rounded-xl border bg-card transition-all duration-200 group relative " +
+  "hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/5";
+
+function CardThumb({
+  src,
+  alt,
+  categoryTitle,
+}: {
+  src?: string | null;
+  alt: string;
+  categoryTitle?: string;
+}) {
+  return (
+    <div
+      className="relative w-28 h-28 md:w-32 md:h-32 rounded-lg overflow-hidden flex-shrink-0 ring-1"
+      style={{ "--tw-ring-color": "rgba(255,255,255,0.08)" } as React.CSSProperties}
+    >
+      {src ? (
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+          sizes="128px"
+        />
+      ) : (
+        <CategoryPlaceholder
+          category={categoryTitle}
+          className="absolute inset-0"
+          intensity="medium"
+          iconVisible
+        />
+      )}
+    </div>
+  );
+}
+
+function CornerArrow() {
+  return (
+    <ArrowUpRight
+      className="w-4 h-4 text-muted-foreground opacity-60 group-hover:opacity-100 group-hover:text-accent transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 flex-shrink-0"
+      aria-hidden="true"
+    />
+  );
+}
+
 // ─── Story card ────────────────────────────────────────────
 function StoryCard({
   story,
@@ -445,7 +573,7 @@ function StoryCard({
   const heroSrc = story.heroImageUrl
     ? story.heroImageUrl
     : story.heroImage
-    ? urlFor(story.heroImage).width(128).height(180).url()
+    ? urlFor(story.heroImage).width(160).height(224).url()
     : null;
 
   const date = story.publishedAt || story._createdAt;
@@ -461,57 +589,124 @@ function StoryCard({
       />
       <Link
         href={`/stories/${story.slug.current}`}
-        className="flex-1 flex gap-3 p-3 rounded-lg border border-accent/20 bg-card hover:border-accent/50 transition-colors group"
+        className={cn(CARD_LINK_BASE, "border-accent/20 hover:border-accent/50")}
       >
-        {heroSrc && (
-          <div className="relative w-14 h-20 md:w-16 md:h-22 rounded overflow-hidden flex-shrink-0">
-            <Image
-              src={heroSrc}
-              alt={story.heroImage?.alt || story.title}
-              fill
-              className="object-cover"
-              sizes="64px"
-            />
-          </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] uppercase tracking-wider font-mono text-accent">
-              {t("journal.story")}
-            </span>
-            {story.mediaType && (
-              <span className="text-xs text-muted-foreground">
-                {formatMediaType(story.mediaType)}
+        <CardThumb src={heroSrc} alt={story.heroImage?.alt || story.title} />
+        <div className="min-w-0 flex-1 flex flex-col">
+          <div className="flex items-start justify-between gap-3 mb-1.5">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full bg-accent/15 text-accent border border-accent/30">
+                <PenLine className="w-2.5 h-2.5" strokeWidth={2.25} />
+                {t("journal.story")}
               </span>
-            )}
+              {story.mediaType && (
+                <span className="text-[10px] uppercase tracking-wider font-mono text-muted-foreground">
+                  {formatMediaType(story.mediaType)}
+                </span>
+              )}
+            </div>
+            <CornerArrow />
           </div>
-          <h4 className="font-medium text-sm text-foreground mt-0.5 group-hover:text-accent transition-colors">
+          <h4 className="font-semibold text-base leading-snug text-foreground group-hover:text-accent transition-colors">
             {story.title}
           </h4>
-          <div className="flex items-center gap-2 mt-1 flex-wrap">
-            {date && (
-              <span className="text-xs text-muted-foreground">
-                {new Date(date).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })}
-              </span>
-            )}
-            {story.readingTime != null && (
-              <span className="text-xs text-muted-foreground">
-                {t("article.minRead", { minutes: story.readingTime })}
-              </span>
-            )}
-          </div>
           {story.excerpt && (
-            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+            <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2 leading-relaxed">
               {story.excerpt}
             </p>
           )}
-          <span className="inline-flex items-center gap-1 mt-2 text-[11px] font-medium text-accent group-hover:underline">
-            {t("journal.readStory")}
-            <span aria-hidden="true">&rarr;</span>
-          </span>
+          <CardMetaRow date={date} readingTime={story.readingTime} t={t} />
+        </div>
+      </Link>
+    </div>
+  );
+}
+
+// ─── Article card ──────────────────────────────────────────
+const ARTICLE_FORMAT_LABELS: Record<string, string> = {
+  "first-bite": "First Bite",
+  "the-full-web": "The Full Web",
+  "spin-the-block": "Spin the Block",
+  "the-sinister-six": "The Sinister Six",
+  "the-gauntlet": "The Gauntlet",
+  versus: "Versus",
+  "the-daily-bugle": "The Daily Bugle",
+  "spida-sense": "Spida Sense",
+  "the-web-sling": "The Web Sling",
+  "state-of-the-game": "State of the Game",
+  "the-rotation": "The Rotation",
+  "one-year-later": "One Year Later",
+};
+
+function ArticleCard({
+  article,
+  dotColor,
+  t,
+}: {
+  article: Article;
+  dotColor: string;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  const heroSrc = article.heroImageUrl
+    ? article.heroImageUrl
+    : article.heroImage
+    ? urlFor(article.heroImage).width(128).height(180).url()
+    : null;
+
+  const date = article.publishedAt || article._createdAt;
+  const catConfig = article.category ? getCategoryConfig(article.category.title) : null;
+  const CatIcon = catConfig?.icon;
+  const formatLabel = article.format ? ARTICLE_FORMAT_LABELS[article.format] || article.format : null;
+
+  return (
+    <div className="flex gap-4 pl-8 relative">
+      <div
+        className={cn(
+          "absolute left-1 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-background",
+          dotColor
+        )}
+        title={t("journal.article")}
+      />
+      <Link
+        href={`/articles/${article.slug.current}`}
+        className={cn(CARD_LINK_BASE, "border-border hover:border-accent/40")}
+      >
+        <CardThumb
+          src={heroSrc}
+          alt={article.heroImage?.alt || article.title}
+          categoryTitle={article.category?.title}
+        />
+        <div className="min-w-0 flex-1 flex flex-col">
+          <div className="flex items-start justify-between gap-3 mb-1.5">
+            <div className="flex items-center gap-2 flex-wrap">
+              {article.category && catConfig && CatIcon && (
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full border",
+                    catConfig.pill
+                  )}
+                >
+                  <CatIcon className="w-2.5 h-2.5" strokeWidth={2} />
+                  {article.category.title}
+                </span>
+              )}
+              {formatLabel && (
+                <span className="text-[10px] uppercase tracking-wider font-mono text-muted-foreground">
+                  {formatLabel}
+                </span>
+              )}
+            </div>
+            <CornerArrow />
+          </div>
+          <h4 className="font-semibold text-base leading-snug text-foreground group-hover:text-accent transition-colors">
+            {article.title}
+          </h4>
+          {article.excerpt && (
+            <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2 leading-relaxed">
+              {article.excerpt}
+            </p>
+          )}
+          <CardMetaRow date={date} readingTime={article.readingTime} t={t} />
         </div>
       </Link>
     </div>

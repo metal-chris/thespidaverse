@@ -14,6 +14,7 @@
     "home": "Accueil",
     "about": "À propos",
     "journal": "Journal",
+    "articles": "Articles",
     "collections": "Collections",
     "web": "Toile",
     "gallery": "Galerie",
@@ -309,7 +310,10 @@
     "statusReading": "En lecture",
     "statusCompleted": "Terminé",
     "statusDropped": "Abandonné",
-    "undated": "Non daté"
+    "undated": "Non daté",
+    "articles": "Articles",
+    "article": "Article",
+    "readArticle": "Lire l'article"
   },
   "collections": {
     "subtitle": "Sélection",
@@ -376,6 +380,15 @@
     "intense": "Tension à couper le souffle"
   },
   "article": {
-    "minRead": "{minutes} min de lecture"
+    "minRead": "{minutes} min de lecture",
+    "openInWeb": "Explorer dans La Toile"
+  },
+  "articles": {
+    "subtitle": "Critiques & avis",
+    "heading": "Articles",
+    "description": "Toutes les critiques, analyses et opinions — du plus récent au plus ancien.",
+    "spotlight": "Le plus récent",
+    "all": "Tous les articles",
+    "empty": "Aucun article pour le moment."
   }
 }

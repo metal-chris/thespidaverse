@@ -14,6 +14,7 @@
     "home": "Home",
     "about": "About",
     "journal": "Journal",
+    "articles": "Articles",
     "collections": "Collections",
     "web": "Web",
     "gallery": "Gallery",
@@ -309,7 +310,10 @@
     "statusReading": "Reading",
     "statusCompleted": "Completed",
     "statusDropped": "Dropped",
-    "undated": "Undated"
+    "undated": "Undated",
+    "articles": "Articles",
+    "article": "Article",
+    "readArticle": "Read article"
   },
   "collections": {
     "subtitle": "Curated",
@@ -376,6 +380,15 @@
     "intense": "Edge-of-seat tension"
   },
   "article": {
-    "minRead": "{minutes} min read"
+    "minRead": "{minutes} min read",
+    "openInWeb": "Explore in The Web"
+  },
+  "articles": {
+    "subtitle": "Reviews & takes",
+    "heading": "Articles",
+    "description": "Every review, breakdown, and rant — sorted newest first.",
+    "spotlight": "Latest",
+    "all": "All articles",
+    "empty": "No articles yet."
   }
 }
