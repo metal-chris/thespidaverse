@@ -40,6 +40,7 @@ export const articleBySlugQuery = groq`
     excerpt,
     body,
     heroImage,
+    heroVideo,
     readingTime,
     mediaLength,
     mediaType,

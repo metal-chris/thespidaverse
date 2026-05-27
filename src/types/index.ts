@@ -27,6 +27,20 @@ export interface SanityImage {
   alt?: string;
 }
 
+export type VideoProvider = "youtube" | "vimeo" | "mp4";
+
+export interface VideoEmbed {
+  provider: VideoProvider;
+  url: string;
+  caption?: string;
+}
+
+export interface ImageGallery {
+  _type: "imageGallery";
+  images: (SanityImage & { caption?: string })[];
+  layout?: "grid" | "two-col" | "three-col";
+}
+
 export interface Category {
   _id: string;
   title: string;
@@ -57,6 +71,7 @@ export interface Article {
   webRating?: number;
   heroImage: SanityImage;
   heroImageUrl?: string;
+  heroVideo?: VideoEmbed;
   readingTime?: number;
   mediaLength?: string;
   ambientAudioUrl?: string;

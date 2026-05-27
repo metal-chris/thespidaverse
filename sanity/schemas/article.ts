@@ -82,6 +82,52 @@ export default defineType({
       ],
     }),
     defineField({
+      name: "heroVideo",
+      title: "Hero Video",
+      type: "object",
+      description:
+        "Optional hero video. When set, plays at the top of the article and takes priority over the hero image (which becomes the poster).",
+      fields: [
+        defineField({
+          name: "provider",
+          title: "Provider",
+          type: "string",
+          options: {
+            list: [
+              { title: "YouTube", value: "youtube" },
+              { title: "Vimeo", value: "vimeo" },
+              { title: "Direct MP4 / WebM URL", value: "mp4" },
+            ],
+            layout: "radio",
+          },
+          initialValue: "youtube",
+          validation: (rule) => rule.required(),
+        }),
+        defineField({
+          name: "url",
+          title: "Video URL",
+          type: "url",
+          description:
+            "YouTube/Vimeo watch URL (e.g. https://youtube.com/watch?v=…), or a direct MP4/WebM URL",
+          validation: (rule) => rule.required(),
+        }),
+        defineField({
+          name: "caption",
+          title: "Caption",
+          type: "string",
+        }),
+      ],
+      preview: {
+        select: { provider: "provider", url: "url" },
+        prepare({ provider, url }) {
+          return {
+            title: provider ? `🎬 ${provider}` : "Hero Video",
+            subtitle: url,
+          };
+        },
+      },
+    }),
+    defineField({
       name: "body",
       title: "Body",
       type: "array",
@@ -157,6 +203,94 @@ export default defineType({
             select: { label: "label" },
             prepare({ label }) {
               return { title: `🕷️ Spoiler: ${label || "Spoiler"}` };
+            },
+          },
+        },
+        {
+          type: "object",
+          name: "videoEmbed",
+          title: "Video Embed",
+          icon: () => "🎬",
+          fields: [
+            defineField({
+              name: "provider",
+              title: "Provider",
+              type: "string",
+              options: {
+                list: [
+                  { title: "YouTube", value: "youtube" },
+                  { title: "Vimeo", value: "vimeo" },
+                  { title: "Direct MP4 / WebM URL", value: "mp4" },
+                ],
+                layout: "radio",
+              },
+              initialValue: "youtube",
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: "url",
+              title: "Video URL",
+              type: "url",
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: "caption",
+              title: "Caption",
+              type: "string",
+            }),
+          ],
+          preview: {
+            select: { provider: "provider", caption: "caption", url: "url" },
+            prepare({ provider, caption, url }) {
+              return {
+                title: caption || `🎬 ${provider || "Video"}`,
+                subtitle: url,
+              };
+            },
+          },
+        },
+        {
+          type: "object",
+          name: "imageGallery",
+          title: "Image Gallery",
+          icon: () => "🖼️",
+          fields: [
+            defineField({
+              name: "images",
+              title: "Images",
+              type: "array",
+              of: [
+                {
+                  type: "image",
+                  options: { hotspot: true },
+                  fields: [
+                    defineField({ name: "alt", title: "Alt Text", type: "string" }),
+                    defineField({ name: "caption", title: "Caption", type: "string" }),
+                  ],
+                },
+              ],
+              validation: (rule) => rule.min(2).max(12),
+            }),
+            defineField({
+              name: "layout",
+              title: "Layout",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Grid (auto-fit)", value: "grid" },
+                  { title: "Two-column", value: "two-col" },
+                  { title: "Three-column", value: "three-col" },
+                ],
+                layout: "radio",
+              },
+              initialValue: "grid",
+            }),
+          ],
+          preview: {
+            select: { images: "images" },
+            prepare({ images }: { images?: unknown[] }) {
+              const count = images?.length || 0;
+              return { title: `🖼️ Gallery — ${count} image${count === 1 ? "" : "s"}` };
             },
           },
         },

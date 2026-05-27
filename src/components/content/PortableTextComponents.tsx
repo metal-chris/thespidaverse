@@ -5,6 +5,8 @@ import { PortableText, type PortableTextComponents as PTComponents } from "@port
 import { urlFor } from "@/lib/sanity/image";
 import { slugify } from "@/lib/utils";
 import { SpoilerBlock } from "./SpoilerBlock";
+import { VideoEmbed } from "./VideoEmbed";
+import { ImageGallery } from "./ImageGallery";
 
 export const portableTextComponents: PTComponents = {
   types: {
@@ -51,6 +53,20 @@ export const portableTextComponents: PTComponents = {
           <PortableText value={value.content} />
         </SpoilerBlock>
       );
+    },
+    videoEmbed: ({ value }) => {
+      if (!value?.url || !value?.provider) return null;
+      return (
+        <VideoEmbed
+          provider={value.provider}
+          url={value.url}
+          caption={value.caption}
+        />
+      );
+    },
+    imageGallery: ({ value }) => {
+      if (!value?.images || value.images.length === 0) return null;
+      return <ImageGallery images={value.images} layout={value.layout} />;
     },
     pullquote: ({ value }: any) => {
       if (!value?.text) return null;

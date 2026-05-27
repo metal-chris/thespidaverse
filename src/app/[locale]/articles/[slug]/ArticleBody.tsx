@@ -6,7 +6,8 @@ import { SpoilerProvider, RevealAllToggle } from "@/components/content/SpoilerBl
 import { AmbientPlayer } from "@/components/audio/AmbientPlayer";
 import { EngagementSection } from "@/components/engagement/EngagementSection";
 import { portableTextComponents } from "@/components/content/PortableTextComponents";
-import type { PollConfig } from "@/types";
+import { VideoEmbed } from "@/components/content/VideoEmbed";
+import type { PollConfig, VideoEmbed as VideoEmbedData } from "@/types";
 
 interface ArticleBodyProps {
   body: PortableTextBlock[];
@@ -18,6 +19,7 @@ interface ArticleBodyProps {
   hasSpoilerBlocks: boolean;
   ambientAudioUrl?: string;
   pollConfig?: PollConfig;
+  heroVideo?: VideoEmbedData;
 }
 
 export function ArticleBody({
@@ -28,6 +30,7 @@ export function ArticleBody({
   hasSpoilerBlocks,
   ambientAudioUrl,
   pollConfig,
+  heroVideo,
 }: ArticleBodyProps) {
   return (
     <SpoilerProvider>
@@ -36,6 +39,15 @@ export function ArticleBody({
         <div className="flex justify-end mb-8 pb-4 border-b-2 border-border">
           <RevealAllToggle />
         </div>
+      )}
+
+      {/* ── Hero Video (renders above prose when set; image hero remains) ── */}
+      {heroVideo?.url && heroVideo?.provider && (
+        <VideoEmbed
+          provider={heroVideo.provider}
+          url={heroVideo.url}
+          caption={heroVideo.caption}
+        />
       )}
 
       {/* ── Article Body ── */}
