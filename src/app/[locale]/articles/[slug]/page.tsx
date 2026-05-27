@@ -452,7 +452,7 @@ export default async function ArticlePage({ params }: Props) {
             {/* Open in The Web — closes the article ↔ graph loop */}
             <div className="mt-8 flex justify-center">
               <Link
-                href="/the-web"
+                href={`/the-web?focus=${slug}`}
                 className="group inline-flex items-center gap-2 px-4 py-2 rounded-full border border-accent/30 bg-accent/5 text-sm text-accent hover:bg-accent/10 hover:border-accent/60 transition-colors"
               >
                 <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.75} aria-hidden="true">

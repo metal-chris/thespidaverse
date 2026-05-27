@@ -284,6 +284,7 @@ export function WebGraphD3({ nodes, edges }: Props) {
   const gRef = useRef<SVGGElement | null>(null);
   const [mounted, setMounted] = useState(false);
   const [themeColors, setThemeColors] = useState<ThemeColors | null>(null);
+  const [focusSlug, setFocusSlug] = useState<string | null>(null);
 
   // Refs for D3 internals so handleNavClick can access them without re-render
   const rootRef = useRef<HierarchyNode | null>(null);
@@ -295,6 +296,10 @@ export function WebGraphD3({ nodes, edges }: Props) {
   useEffect(() => {
     setMounted(true);
     setThemeColors(getThemeColors());
+    // Read focus slug from URL — done in effect to avoid useSearchParams +
+    // Suspense ceremony on the parent server component.
+    const params = new URLSearchParams(window.location.search);
+    setFocusSlug(params.get("focus"));
     const observer = new MutationObserver(() => setThemeColors(getThemeColors()));
     observer.observe(document.documentElement, {
       attributes: true,
@@ -665,7 +670,54 @@ export function WebGraphD3({ nodes, edges }: Props) {
 
     // Initial render
     update(root);
-  }, [treeData, themeColors, router]);
+
+    // Focus on requested article node (from ?focus=<slug>)
+    if (focusSlug) {
+      const findArticle = (n: HierarchyNode): HierarchyNode | null => {
+        if (n.data.type === "article" && n.data.slug === focusSlug) return n;
+        const kids = [
+          ...((n.children as HierarchyNode[] | undefined) || []),
+          ...(((n as HierarchyNode)._children as HierarchyNode[] | undefined) || []),
+        ];
+        for (const c of kids) {
+          const found = findArticle(c);
+          if (found) return found;
+        }
+        return null;
+      };
+      const target = findArticle(root);
+      if (target) {
+        // Walk ancestors and expand any collapsed branches so the target
+        // becomes visible in the layout.
+        let p = target.parent as HierarchyNode | null;
+        while (p) {
+          const hp = p as HierarchyNode;
+          if (hp._children && !hp.children) {
+            hp.children = hp._children;
+            hp._children = undefined;
+          }
+          p = p.parent as HierarchyNode | null;
+        }
+        // Re-layout with branches now expanded
+        update(root);
+        // After the expand animation, center the viewport on the target node
+        // and zoom in slightly so it's the visual anchor.
+        setTimeout(() => {
+          if (!target.y && target.y !== 0) return;
+          const k = 1.4;
+          const tx = width / 2 - target.y * k;
+          const ty = height / 2 - target.x * k;
+          svg
+            .transition()
+            .duration(750)
+            .call(
+              zoomBehavior.transform,
+              d3Zoom.zoomIdentity.translate(tx, ty).scale(k)
+            );
+        }, DURATION + 80);
+      }
+    }
+  }, [treeData, themeColors, router, focusSlug]);
 
   // Render when mounted and theme ready
   useEffect(() => {
