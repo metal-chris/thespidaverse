@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useRef, useCallback } from "react";
 import Image from "next/image";
+import { ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface AdminArticle {
@@ -56,9 +57,21 @@ export function MediaBackfillTable({ articles }: { articles: AdminArticle[] }) {
   const uploadFor = useCallback(
     async (article: AdminArticle, file: File) => {
       setStatus(article._id, { kind: "uploading" });
+      // Defensive client-side cap: Netlify Functions reject sync request
+      // bodies over ~6 MB before our route runs. Only resize when the file
+      // would actually fail — pass small/in-spec files through untouched
+      // to avoid an extra lossy JPEG pass.
+      let upload: File;
+      try {
+        upload = await maybeDownscaleImage(file);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        setStatus(article._id, { kind: "error", message: `Resize failed: ${message}` });
+        return;
+      }
       const form = new FormData();
       form.append("articleId", article._id);
-      form.append("file", file);
+      form.append("file", upload);
 
       try {
         const res = await fetch("/api/admin/media-backfill", {
@@ -215,7 +228,17 @@ function ArticleRow({
 
       {/* Title + meta */}
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-base leading-snug">{article.title}</h3>
+        <h3 className="font-semibold text-base leading-snug">
+          <a
+            href={`/articles/${article.slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-foreground hover:text-accent transition-colors"
+          >
+            {article.title}
+            <ExternalLink className="w-3.5 h-3.5 opacity-60" strokeWidth={2} />
+          </a>
+        </h3>
         <div className="flex items-center gap-2 mt-1 text-[11px] text-muted-foreground">
           {article.categoryTitle && <span>{article.categoryTitle}</span>}
           <span className="opacity-50">·</span>
@@ -254,4 +277,50 @@ function ArticleRow({
       </div>
     </li>
   );
+}
+
+// Netlify Functions cap sync request bodies at ~6 MB; uploads over that
+// surface as a bare HTTP 500. Pass small in-spec files through untouched;
+// only re-encode when the file would otherwise fail or the source exceeds
+// 4K on its longest edge (no display path benefits from more pixels).
+const MAX_LONGEST_EDGE = 3840;
+const PLATFORM_LIMIT_BYTES = 5.5 * 1024 * 1024;
+
+async function maybeDownscaleImage(file: File): Promise<File> {
+  if (!file.type.startsWith("image/")) return file;
+  if (file.size <= PLATFORM_LIMIT_BYTES) {
+    // Probe dims before deciding — small bytes but huge dims is rare for
+    // JPEGs but possible for PNGs, and serving a 7000px PNG to the hero is
+    // wasteful regardless of bytes.
+    const bitmap = await createImageBitmap(file);
+    const longest = Math.max(bitmap.width, bitmap.height);
+    if (longest <= MAX_LONGEST_EDGE) return file;
+    return encodeAt(bitmap, MAX_LONGEST_EDGE / longest, 0.92, file.name);
+  }
+  const bitmap = await createImageBitmap(file);
+  const longest = Math.max(bitmap.width, bitmap.height);
+  const scale = Math.min(1, MAX_LONGEST_EDGE / longest);
+  return encodeAt(bitmap, scale, 0.92, file.name);
+}
+
+async function encodeAt(
+  bitmap: ImageBitmap,
+  scale: number,
+  quality: number,
+  originalName: string
+): Promise<File> {
+  const w = Math.round(bitmap.width * scale);
+  const h = Math.round(bitmap.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("canvas 2D context unavailable");
+  ctx.drawImage(bitmap, 0, 0, w, h);
+  const blob: Blob | null = await new Promise((resolve) =>
+    canvas.toBlob(resolve, "image/jpeg", quality)
+  );
+  if (!blob) throw new Error("canvas.toBlob returned null");
+  const newName = originalName.replace(/\.[^.]+$/, "") + ".jpg";
+  return new File([blob], newName, { type: "image/jpeg" });
 }
