@@ -303,13 +303,16 @@ export function JournalTimeline({ entries, stories, articles = [] }: JournalTime
           aria-hidden="true"
         />
         {grouped.map(([month, items]) => {
-          const monthLabel =
-            month === "unknown"
-              ? t("journal.undated")
-              : new Date(month + "-01").toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                });
+          let monthLabel: string;
+          if (month === "unknown") {
+            monthLabel = t("journal.undated");
+          } else {
+            const [year, monthNum] = month.split("-").map(Number);
+            monthLabel = new Date(year, monthNum - 1, 1).toLocaleDateString(
+              "en-US",
+              { year: "numeric", month: "long" }
+            );
+          }
 
           return (
             <div key={month} className="mb-6">
