@@ -118,11 +118,18 @@ export default async function ArticlePage({ params }: Props) {
 
   if (!article) notFound();
 
-  /* Prefer direct URL (mock data) → fall back to Sanity urlFor (live data) */
-  const sanityUrl = article.heroImage
+  /* Prefer direct URL (mock data) → fall back to Sanity urlFor (live data).
+   * Hero is rendered full-bleed (sizes="100vw") so request a wide source to
+   * stay sharp on 1080p-retina and 4K. OG/JSON-LD uses 1200x630 separately
+   * since social platforms expect that exact aspect. */
+  const sanityHeroUrl = article.heroImage
+    ? urlFor(article.heroImage).width(1920).url()
+    : null;
+  const sanityOgUrl = article.heroImage
     ? urlFor(article.heroImage).width(1200).height(630).url()
     : null;
-  const heroUrl = article.heroImageUrl || sanityUrl || null;
+  const heroUrl = article.heroImageUrl || sanityHeroUrl || null;
+  const ogImageUrl = article.heroImageUrl || sanityOgUrl || null;
 
   const articleUrl = `${process.env.NEXT_PUBLIC_SITE_URL || "https://thespidaverse.com"}/articles/${slug}`;
   const hasSpoilerBlocks = article.body?.some(
@@ -177,7 +184,7 @@ export default async function ArticlePage({ params }: Props) {
     url: articleUrl,
     publishedAt: article._createdAt,
     modifiedAt: article._updatedAt,
-    imageUrl: heroUrl || undefined,
+    imageUrl: ogImageUrl || undefined,
     category: article.category?.title,
   });
 
