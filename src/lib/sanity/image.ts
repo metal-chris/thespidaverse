@@ -15,5 +15,7 @@ export function urlFor(source: SanityImage) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any;
   }
-  return builder.image(source);
+  // Defaults: modern format (AVIF/WebP), high quality, retina-density source.
+  // Call sites still control width/height/crop; these only affect bytes & sharpness.
+  return builder.image(source).auto("format").quality(90).dpr(2);
 }
