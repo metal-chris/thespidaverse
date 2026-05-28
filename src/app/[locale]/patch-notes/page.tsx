@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
-import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { GlitchText } from "@/components/ui/GlitchText";
 import { getAllPatchNotes, renderMarkdown, type PatchNote } from "@/lib/patch-notes";
 
@@ -35,8 +34,6 @@ export default function PatchNotesPage() {
 
   return (
     <Container className="pt-3 pb-16 max-w-3xl">
-      <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Patch Notes" }]} />
-
       <header className="mt-6 mb-12 pb-8 border-b-2 border-border">
         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-2">
           // changelog
