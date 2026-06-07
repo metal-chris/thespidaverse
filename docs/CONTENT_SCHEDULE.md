@@ -1,10 +1,10 @@
-# Content Schedule — 2026-05-16 → 2026-06-10
+# Content Schedule — 2026-05-16 → 2026-06-18
 
 Forward-scheduled article slots for the next four weeks. Workflow is defined in [CONTENT_WORKFLOW.md](./CONTENT_WORKFLOW.md). Backfill (2026-03-30 → 2026-05-14) is tracked separately.
 
 ## Status
 
-All 12 slots have **unpublished drafts in Sanity Studio**. Each draft holds title, slug, format, full body, polls, mood tags, web rating, and `publishedAt` set to the slot date. Drafts will not appear on the live site until manually published.
+All 15 slots have **unpublished drafts in Sanity Studio**. Each draft holds title, slug, format, full body, polls, mood tags, web rating, and `publishedAt` set to the slot date. Drafts will not appear on the live site until manually published.
 
 Drafts live at `_id = drafts.scheduled-<slug>`. Open them in Studio at `/studio` under **Articles**.
 
@@ -24,8 +24,11 @@ Drafts live at `_id = drafts.scheduled-<slug>`. Open them in Studio at `/studio`
 | 2026-06-06 | Sat | cartoons-and-cereal  | Solo Leveling S3 Premiere                                          | Anime       | yes_no           |
 | 2026-06-08 | Mon | the-daily-bugle      | Summer 2026 Anime: 3 Shows                                         | Anime       | multiple_choice  |
 | 2026-06-10 | Wed | the-sinister-six     | Best Spider-Man Stories Across Every Medium                        | Culture     | ranking          |
+| 2026-06-13 | Sat | cartoons-and-cereal  | Assassination Classroom S2 Just Hit Netflix — Two Weeks In, the Class Has Not Missed | Anime | yes_no |
+| 2026-06-15 | Mon | the-daily-bugle      | The Supergirl Final Trailer Is Here and Milly Alcock Is Already Building Something Special | Movies | hot_take |
+| 2026-06-18 | Wed | versus               | Demon Slayer vs. Jujutsu Kaisen — Which Shonen Owns the 2020s?    | Anime       | this_or_that     |
 
-Wednesday long-form rotation continues `the-sinister-six` → `versus` → `the-full-web` → `the-sinister-six` from the backfill's last entry (`the-full-web` on 2026-05-13).
+Wednesday long-form rotation continues `the-sinister-six` → `versus` → `the-full-web` → `the-sinister-six` from the backfill's last entry (`the-full-web` on 2026-05-13). After 2026-06-18 (`versus`), the next Wed is `the-full-web` → `the-sinister-six` → `versus` → ...
 
 ## Publishing each slot
 
@@ -41,16 +44,16 @@ Article list queries in [src/lib/sanity/queries.ts](../src/lib/sanity/queries.ts
 - The **direct article URL stays open** (`articleBySlugQuery` does *not* filter). This is intentional: you can share a preview link to a future-scheduled article before its reveal date.
 - Drafts in Sanity (unpublished) are never visible publicly at all, by either route.
 
-This means you can **batch-publish all 12 drafts after editing** — the site will reveal each one on its own date. Or you can leave them as drafts and publish day-of. Either workflow works.
+This means you can **batch-publish all 15 drafts after editing** — the site will reveal each one on its own date. Or you can leave them as drafts and publish day-of. Either workflow works.
 
 ## Regenerating / extending the schedule
 
-The seed script is at [scripts/seed-articles-2026-05-to-06.ts](../scripts/seed-articles-2026-05-to-06.ts). Re-running it (`npx tsx scripts/seed-articles-2026-05-to-06.ts`) is **idempotent** — it uses `createOrReplace`, so the existing drafts get overwritten with the latest content from the script. Use `--dry` to preview without writing.
+The original seed script is at [scripts/seed-articles-2026-05-to-06.ts](../scripts/seed-articles-2026-05-to-06.ts). The extension script is at [scripts/seed-articles-2026-06-to-07.ts](../scripts/seed-articles-2026-06-to-07.ts). Re-running either (`npx tsx scripts/seed-articles-<period>.ts`) is **idempotent** — it uses `createOrReplace`, so existing drafts get overwritten with the latest content from the script. Use `--dry` to preview without writing.
 
-To extend the schedule past 2026-06-10:
+To extend the schedule past 2026-06-18:
 
-1. Copy the script to a new dated filename (e.g. `seed-articles-2026-06-to-07.ts`).
-2. Continue the Wed rotation: after 2026-06-10 (the-sinister-six), the next Wed is `versus` → `the-full-web` → `the-sinister-six` → ...
+1. Copy the latest script to a new dated filename (e.g. `seed-articles-2026-06-to-07b.ts`).
+2. Continue the Wed rotation: after 2026-06-18 (`versus`), the next Wed is `the-full-web` → `the-sinister-six` → `versus` → ...
 3. Keep Mon = `the-daily-bugle`, Sat = `cartoons-and-cereal`.
 4. Update slug, `publishedAt`, and draft `_id` per article.
 
