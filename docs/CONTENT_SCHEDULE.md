@@ -24,9 +24,9 @@ Drafts live at `_id = drafts.scheduled-<slug>`. Open them in Studio at `/studio`
 | 2026-06-06 | Sat | cartoons-and-cereal  | Solo Leveling S3 Premiere                                          | Anime       | yes_no           |
 | 2026-06-08 | Mon | the-daily-bugle      | Summer 2026 Anime: 3 Shows                                         | Anime       | multiple_choice  |
 | 2026-06-10 | Wed | the-sinister-six     | Best Spider-Man Stories Across Every Medium                        | Culture     | ranking          |
-| 2026-06-13 | Sat | cartoons-and-cereal  | Baki-Dou Part 2 Drops Thursday and Part 1 Already Set the Table    | Anime       | yes_no           |
-| 2026-06-15 | Mon | the-daily-bugle      | God of War Laufey Was the State of Play's Best Reveal              | Video Games | hot_take         |
-| 2026-06-17 | Wed | versus               | Versus: Toy Story 5 vs. Inside Out 2 — Which Pixar Universe Wins   | Movies      | this_or_that     |
+| 2026-06-13 | Sat | cartoons-and-cereal  | The Ghost in the Shell Is Back — and Science SARU Has the Keys     | Anime       | yes_no           |
+| 2026-06-15 | Mon | the-daily-bugle      | Nintendo Finally Confirmed the Zelda Remake and I Don't Know How to Process This | Video Games | hot_take |
+| 2026-06-17 | Wed | versus               | Versus: Xbox vs. PlayStation — Who Had the Better June 2026?       | Video Games | this_or_that     |
 
 Wednesday long-form rotation continues `the-sinister-six` → `versus` → `the-full-web` → `the-sinister-six` from the backfill's last entry (`the-full-web` on 2026-05-13).
 
@@ -48,11 +48,11 @@ This means you can **batch-publish all 12 drafts after editing** — the site wi
 
 ## Regenerating / extending the schedule
 
-The original seed script is at [scripts/seed-articles-2026-05-to-06.ts](../scripts/seed-articles-2026-05-to-06.ts). The extension script covering 2026-06-13 → 2026-06-17 is at [scripts/seed-articles-2026-06-to-07.ts](../scripts/seed-articles-2026-06-to-07.ts). Both use `createOrReplace` and are idempotent — re-running overwrites the draft with the latest content. Use `--dry` to preview without writing.
+The seed script is at [scripts/seed-articles-2026-05-to-06.ts](../scripts/seed-articles-2026-05-to-06.ts). Re-running it (`npx tsx scripts/seed-articles-2026-05-to-06.ts`) is **idempotent** — it uses `createOrReplace`, so the existing drafts get overwritten with the latest content from the script. Use `--dry` to preview without writing.
 
 To extend the schedule past 2026-06-17:
 
-1. Copy the script to a new dated filename (e.g. `seed-articles-2026-06-to-07b.ts` or `seed-articles-2026-07.ts`).
+1. Copy the script to a new dated filename (e.g. `seed-articles-2026-07.ts`).
 2. Continue the Wed rotation: after 2026-06-17 (versus), the next Wed is `the-full-web` → `the-sinister-six` → `versus` → ...
 3. Keep Mon = `the-daily-bugle`, Sat = `cartoons-and-cereal`.
 4. Update slug, `publishedAt`, and draft `_id` per article.
