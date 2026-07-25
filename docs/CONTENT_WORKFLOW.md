@@ -88,7 +88,7 @@ Wednesday long-form rotation is `the-full-web` → `the-sinister-six` → `versu
 
 | Date       | Day | Format             | Status    |
 | ---------- | --- | ------------------ | --------- |
-| 2026-03-30 | Mon | the-daily-bugle    | Backfill  |
+| 2026-03-30 | Mon | the-daily-bugle    | Drafted (seed-backfill-demon-slayer-infinity-castle-40-billion-yen.ts) |
 | 2026-04-01 | Wed | the-full-web       | Backfill  |
 | 2026-04-04 | Sat | cartoons-and-cereal| Backfill  |
 | 2026-04-06 | Mon | the-daily-bugle    | Backfill  |
