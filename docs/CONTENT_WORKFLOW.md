@@ -107,7 +107,7 @@ Wednesday long-form rotation is `the-full-web` → `the-sinister-six` → `versu
 | 2026-05-06 | Wed | versus             | Backfill  |
 | 2026-05-09 | Sat | cartoons-and-cereal| Backfill  |
 | 2026-05-11 | Mon | the-daily-bugle    | Backfill  |
-| 2026-05-13 | Wed | the-full-web       | Backfill  |
+| 2026-05-13 | Wed | the-full-web       | Drafted (seed-backfill-good-omens-s3-series-finale.ts) |
 
 **Suggested backfill order:** newest first. Filling 2026-05-13 → 2026-03-30 means the front page populates immediately with recent-looking content while the older slots get filled at a sustainable pace.
 
