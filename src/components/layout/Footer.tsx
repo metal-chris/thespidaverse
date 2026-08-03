@@ -100,6 +100,16 @@ export function Footer() {
             </Link>
             <span className="hidden sm:block w-px h-4 bg-border" />
             <DiscordButton label={t("footer.discord")} />
+            <span className="hidden sm:block w-px h-4 bg-border" />
+            {/* External — the community branch. Plain <a>, not the i18n Link. */}
+            <a
+              href="https://club.thespidaverse.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-muted-foreground hover:text-accent transition-colors"
+            >
+              {t("nav.kumoClub")}
+            </a>
           </div>
 
           {/* Right: copyright + transitions */}

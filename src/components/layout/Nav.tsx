@@ -3,9 +3,19 @@
 import { Link, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { Home, User, PenLine, Newspaper, LayoutGrid, Network, Image, ScrollText, type LucideIcon } from "lucide-react";
+import { Home, User, PenLine, Newspaper, LayoutGrid, Network, Image, ScrollText, Users, type LucideIcon } from "lucide-react";
 
-const links: { href: string; labelKey: string; icon: LucideIcon }[] = [
+type NavLink = {
+  href: string;
+  labelKey: string;
+  icon: LucideIcon;
+  /** Off-site destination. Renders a plain <a target="_blank">, never the
+   *  i18n <Link> (which is built for internal locale-prefixed routes), and
+   *  is excluded from the pathname.startsWith active-state logic. */
+  external?: boolean;
+};
+
+const links: NavLink[] = [
   { href: "/", labelKey: "nav.home", icon: Home },
   { href: "/about", labelKey: "nav.about", icon: User },
   { href: "/articles", labelKey: "nav.articles", icon: Newspaper },
@@ -14,6 +24,7 @@ const links: { href: string; labelKey: string; icon: LucideIcon }[] = [
   { href: "/the-web", labelKey: "nav.web", icon: Network },
   { href: "/gallery", labelKey: "nav.gallery", icon: Image },
   { href: "/patch-notes", labelKey: "nav.patchNotes", icon: ScrollText },
+  { href: "https://club.thespidaverse.com", labelKey: "nav.kumoClub", icon: Users, external: true },
 ];
 
 export function Nav({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
@@ -28,28 +39,28 @@ export function Nav({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () 
       )}
     >
       {links.map((link) => {
+        // External entries never match a local pathname, so they are simply
+        // never active — skip the prefix check rather than let an absolute
+        // URL fall through it.
         const isActive =
-          link.href === "/"
+          !link.external &&
+          (link.href === "/"
             ? pathname === "/"
-            : pathname.startsWith(link.href);
+            : pathname.startsWith(link.href));
 
         const Icon = link.icon;
         const label = t(link.labelKey);
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            onClick={onNavigate}
-            aria-label={!mobile ? label : undefined}
-            title={!mobile ? label : undefined}
-            className={cn(
-              "group relative flex items-center rounded-md text-sm font-medium transition-colors duration-200",
-              mobile ? "gap-3 px-3 py-2" : "px-2.5 py-2",
-              isActive
-                ? "text-accent"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
+
+        const className = cn(
+          "group relative flex items-center rounded-md text-sm font-medium transition-colors duration-200",
+          mobile ? "gap-3 px-3 py-2" : "px-2.5 py-2",
+          isActive
+            ? "text-accent"
+            : "text-muted-foreground hover:text-foreground"
+        );
+
+        const content = (
+          <>
             <Icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
             <span
               className={cn(
@@ -73,6 +84,36 @@ export function Nav({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () 
                 aria-hidden="true"
               />
             )}
+          </>
+        );
+
+        if (link.external) {
+          return (
+            <a
+              key={link.href}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={onNavigate}
+              aria-label={!mobile ? label : undefined}
+              title={!mobile ? label : undefined}
+              className={className}
+            >
+              {content}
+            </a>
+          );
+        }
+
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            onClick={onNavigate}
+            aria-label={!mobile ? label : undefined}
+            title={!mobile ? label : undefined}
+            className={className}
+          >
+            {content}
           </Link>
         );
       })}

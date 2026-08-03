@@ -19,7 +19,8 @@
     "web": "Toile",
     "gallery": "Galerie",
     "patchNotes": "Notes de version",
-    "toggleMenu": "Ouvrir/fermer le menu"
+    "toggleMenu": "Ouvrir/fermer le menu",
+    "kumoClub": "Kumo Club"
   },
   "header": {
     "logo": "The Spidaverse"

@@ -19,7 +19,8 @@
     "web": "웹",
     "gallery": "갤러리",
     "patchNotes": "패치 노트",
-    "toggleMenu": "메뉴 열기/닫기"
+    "toggleMenu": "메뉴 열기/닫기",
+    "kumoClub": "Kumo Club"
   },
   "header": {
     "logo": "The Spidaverse"

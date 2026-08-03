@@ -60,7 +60,7 @@ export function Header() {
       {/* Mobile/Tablet Menu */}
       <div
         className={`lg:hidden border-t border-border bg-background/95 backdrop-blur-md overflow-hidden transition-all duration-300 ease-out ${
-          mobileOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0 border-t-transparent"
+          mobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0 border-t-transparent"
         }`}
       >
         <Container className="py-4">
