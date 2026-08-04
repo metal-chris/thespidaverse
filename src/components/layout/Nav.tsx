@@ -3,12 +3,16 @@
 import { Link, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { Home, User, PenLine, Newspaper, LayoutGrid, Network, Image, ScrollText, Users, type LucideIcon } from "lucide-react";
+import { Home, User, PenLine, Newspaper, LayoutGrid, Network, Image, ScrollText, type LucideIcon } from "lucide-react";
+import { KumoWebMark } from "@/components/ui/KumoWebMark";
+
+/** Any lucide icon, or a lucide-shaped component (see KumoWebMark). */
+type NavIcon = LucideIcon | ((props: { className?: string }) => React.ReactElement);
 
 type NavLink = {
   href: string;
   labelKey: string;
-  icon: LucideIcon;
+  icon: NavIcon;
   /** Off-site destination. Renders a plain <a target="_blank">, never the
    *  i18n <Link> (which is built for internal locale-prefixed routes), and
    *  is excluded from the pathname.startsWith active-state logic. */
@@ -24,7 +28,7 @@ const links: NavLink[] = [
   { href: "/the-web", labelKey: "nav.web", icon: Network },
   { href: "/gallery", labelKey: "nav.gallery", icon: Image },
   { href: "/patch-notes", labelKey: "nav.patchNotes", icon: ScrollText },
-  { href: "https://club.thespidaverse.com", labelKey: "nav.kumoClub", icon: Users, external: true },
+  { href: "https://club.thespidaverse.com", labelKey: "nav.kumoClub", icon: KumoWebMark, external: true },
 ];
 
 export function Nav({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
