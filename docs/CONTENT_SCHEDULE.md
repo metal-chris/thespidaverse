@@ -1,29 +1,62 @@
-# The Spidaverse Content Schedule
+# Content Schedule — 2026-05-16 → 2026-06-20
 
-Maintained by the weekly schedule-extension routine. Each Sunday the next 3 slots are appended.
+Forward-scheduled article slots for the next four weeks. Workflow is defined in [CONTENT_WORKFLOW.md](./CONTENT_WORKFLOW.md). Backfill (2026-03-30 → 2026-05-14) is tracked separately.
 
-Current horizon: **2026-05-04 → 2026-06-13**
+## Status
 
-| Date | Day | Format | Series | Title | Slug | Status |
-|------|-----|--------|--------|-------|------|--------|
-| 2026-05-04 | Mon | the-daily-bugle | — | Marvel's Summer 2026 Is Here: Brand New Day Date Locked | marvel-summer-2026-just-got-real | seeded |
-| 2026-05-06 | Wed | the-full-web | — | Wano's Shadow: Why One Piece Has Never Had More Room to Breathe | one-piece-post-wano-full-web | seeded |
-| 2026-05-09 | Sat | first-bite | cartoons-and-cereal | Rewatching Fullmetal Alchemist Brotherhood in 2026: The Blueprint Still Hits | fmab-2026-rewatch-cartoons-cereal | seeded |
-| 2026-05-11 | Mon | the-daily-bugle | — | Pop Culture Rundown: May's Second Week Check-In | week-pop-culture-may-11 | seeded |
-| 2026-05-13 | Wed | the-sinister-six | — | Six Anime Sequels We've Been Waiting On Way Too Long | six-anime-sequels-overdue | seeded |
-| 2026-05-16 | Sat | one-year-later | cartoons-and-cereal | Jujutsu Kaisen Season 3, One Year Later: Did the Culling Game Deliver? | jjk-season-3-one-year-later-cartoons | seeded |
-| 2026-05-18 | Mon | the-daily-bugle | — | Summer 2026 at the Movies: Every Release That Could Change the Game | summer-2026-movie-preview-daily-bugle | seeded |
-| 2026-05-20 | Wed | versus | — | Into the Spider-Verse vs. Across the Spider-Verse: Which Miles Movie Actually Hits Harder? | spider-verse-vs-across-versus | seeded |
-| 2026-05-23 | Sat | first-bite | cartoons-and-cereal | Blue Lock Season 1 Revisit: Brushing Up Before VS U-20 Japan Drops | blue-lock-s1-revisit-cartoons-cereal | seeded |
-| 2026-05-25 | Mon | the-daily-bugle | — | Netflix's May 25 Anime Drop Is a Crisis of Riches | netflix-may-25-anime-drop-daily-bugle | seeded |
-| 2026-05-27 | Wed | the-full-web | — | Blue Lock's Anti-Team Philosophy Is Actually Correct (Hear Me Out) | blue-lock-philosophy-full-web | seeded |
-| 2026-05-30 | Sat | first-bite | cartoons-and-cereal | My Dress-Up Darling Season 2, One Week In: Already Obsessed | my-dress-up-darling-s2-first-impressions | seeded |
-| 2026-06-01 | Mon | the-daily-bugle | — | June Drop Season Begins: What You Should Actually Watch | june-drop-season-daily-bugle | seeded |
-| 2026-06-03 | Wed | the-sinister-six | — | Six Times Anime Ruined Us Emotionally and We're Still Not Over It | six-anime-emotional-gut-punches | seeded |
-| 2026-06-06 | Sat | first-bite | cartoons-and-cereal | Shangri-La Frontier Season 2 Review: The VRMMO That Actually Gets Gaming | shangri-la-frontier-s2-cartoons-cereal | seeded |
-| 2026-06-08 | Mon | the-daily-bugle | — | Brand New Day Update: Everything We Know Seven Weeks Out | brand-new-day-july-update-daily-bugle | seeded |
-| 2026-06-10 | Wed | versus | — | Satoru Gojo vs. Suguru Geto: JJK's Most Painful Versus Has No Real Winner | geto-vs-gojo-jjk-versus | seeded |
-| 2026-06-13 | Sat | first-bite | cartoons-and-cereal | Blue Lock VS U-20 Japan Full Review: Ego's Gamble Paid Off | blue-lock-vs-u20-full-review | seeded |
-| 2026-06-15 | Mon | the-daily-bugle | — | Brand New Day Briefing: Everything We Know About Spider-Man's July Return | brand-new-day-briefing-june-2026 | draft |
-| 2026-06-17 | Wed | the-full-web | — | The Weight of Being Forgotten: Peter Parker's Loneliness Is Brand New Day's Real Villain | brand-new-day-loneliness-full-web | draft |
-| 2026-06-20 | Sat | first-bite | cartoons-and-cereal | My Dress-Up Darling Season 2 Full Review: Marin Finally Says It | my-dress-up-darling-s2-full-review | draft |
+The original 12 slots (2026-05-16 → 2026-06-10) have **unpublished drafts in Sanity Studio**. The 3 extension slots (2026-06-13 → 2026-06-20) are scripted in `scripts/seed-articles-2026-06-to-07.ts` and must be materialized by running that script locally. Each draft holds title, slug, format, full body, polls, mood tags, web rating, and `publishedAt` set to the slot date. Drafts will not appear on the live site until manually published.
+
+Drafts live at `_id = drafts.scheduled-<slug>`. Open them in Studio at `/studio` under **Articles**.
+
+## Schedule
+
+| Date       | Day | Format               | Title                                                              | Category    | Poll type        |
+| ---------- | --- | -------------------- | ------------------------------------------------------------------ | ----------- | ---------------- |
+| 2026-05-16 | Sat | cartoons-and-cereal  | Dandadan S2 Is Already Eating                                      | Anime       | multiple_choice  |
+| 2026-05-18 | Mon | the-daily-bugle      | Switch 2 Just Crossed 20 Million / Joy-Con Pricing                 | Video Games | hot_take         |
+| 2026-05-20 | Wed | the-sinister-six     | 2026's Best Game Soundtracks (So Far)                              | Music       | ranking          |
+| 2026-05-23 | Sat | cartoons-and-cereal  | I Finally Finished Vinland Saga                                    | Anime       | yes_no           |
+| 2026-05-25 | Mon | the-daily-bugle      | Beyond the Spider-Verse Trailer Reaction                           | Movies      | hot_take         |
+| 2026-05-27 | Wed | versus               | Arcane vs. The Last of Us                                          | TV          | this_or_that     |
+| 2026-05-30 | Sat | cartoons-and-cereal  | Chainsaw Man: Reze Arc                                             | Anime       | yes_no           |
+| 2026-06-01 | Mon | the-daily-bugle      | Star Wars: Starfighter — Ryan Gosling Cast                         | Movies      | hot_take         |
+| 2026-06-03 | Wed | the-full-web         | GTA 6, Six Months In                                               | Video Games | agree_scale      |
+| 2026-06-06 | Sat | cartoons-and-cereal  | Solo Leveling S3 Premiere                                          | Anime       | yes_no           |
+| 2026-06-08 | Mon | the-daily-bugle      | Summer 2026 Anime: 3 Shows                                         | Anime       | multiple_choice  |
+| 2026-06-10 | Wed | the-sinister-six     | Best Spider-Man Stories Across Every Medium                        | Culture     | ranking          |
+| 2026-06-13 | Mon | the-daily-bugle      | Final Fantasy VII: Revelation Was the Last Slide at Summer Game Fest and I'm Still Processing | Video Games | hot_take    |
+| 2026-06-17 | Wed | versus               | Versus: Final Fantasy VII Rebirth vs Final Fantasy XVI — Two Visions of What Final Fantasy Is | Video Games | this_or_that |
+| 2026-06-20 | Sat | cartoons-and-cereal  | Dorohedoro Season 2 Is Exactly as Unhinged as You Were Hoping      | Anime       | yes_no           |
+
+Wednesday long-form rotation continues `the-sinister-six` → `versus` → `the-full-web` → `the-sinister-six` from the backfill's last entry (`the-full-web` on 2026-05-13).
+
+## Publishing each slot
+
+1. Open the draft in Studio (`/studio` → Articles → find the scheduled-`<slug>` entry).
+2. Edit pass: voice check, fact check, hero image, any spoiler blocks if needed.
+3. Hit **Publish**. The article will stay hidden on lists/feeds/graph until its `publishedAt` arrives — see "How forward-scheduling works" below.
+
+### How forward-scheduling works
+
+Article list queries in [src/lib/sanity/queries.ts](../src/lib/sanity/queries.ts) now filter on `coalesce(publishedAt, _createdAt) <= now()`. That means:
+
+- A **published article with a future `publishedAt`** is hidden from the homepage, category pages, tag pages, mood pages, and the web graph until the date arrives. Then it surfaces automatically — no day-of action needed.
+- The **direct article URL stays open** (`articleBySlugQuery` does *not* filter). This is intentional: you can share a preview link to a future-scheduled article before its reveal date.
+- Drafts in Sanity (unpublished) are never visible publicly at all, by either route.
+
+This means you can **batch-publish all 12 drafts after editing** — the site will reveal each one on its own date. Or you can leave them as drafts and publish day-of. Either workflow works.
+
+## Regenerating / extending the schedule
+
+The original seed script is at [scripts/seed-articles-2026-05-to-06.ts](../scripts/seed-articles-2026-05-to-06.ts). The extension script is at [scripts/seed-articles-2026-06-to-07.ts](../scripts/seed-articles-2026-06-to-07.ts). Both are **idempotent** — they use `createOrReplace`, so re-running overwrites the existing drafts. Use `--dry` to preview without writing.
+
+To extend the schedule past 2026-06-20:
+
+1. Copy the latest script to a new dated filename.
+2. Continue the Wed rotation: after 2026-06-17 (versus), the next Wed is `the-full-web` → `the-sinister-six` → `versus` → ...
+3. Keep Mon = `the-daily-bugle`, Sat = `cartoons-and-cereal`.
+4. Update slug, `publishedAt`, and draft `_id` per article.
+
+## Voice + draft quality note
+
+These drafts were generated programmatically and **need a voice pass before publishing**. Topics are real and the structure follows the workflow doc, but the prose hasn't been through a Spida Mane edit. Treat each slot as a strong scaffold, not a finished post.
