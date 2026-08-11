@@ -130,9 +130,29 @@ function textBlock(
       if (idx > 0) {
         children.push({ _key: k(), _type: "span", text: remaining.slice(0, idx), marks: [] });
       }
-      if (m.mark === "link") {
+      if (m.mark === "link" || m.mark === "source" || m.mark === "sourceSpoiler") {
         const defKey = k();
-        markDefs.push({ _key: defKey, _type: "link", href: "https://example.com" });
+        markDefs.push({
+          _key: defKey,
+          _type: "link",
+          href: "https://example.com/report",
+          // "link" stays bare so the unenriched path keeps local coverage.
+          ...(m.mark === "link"
+            ? { href: "https://example.com" }
+            : {
+                sourceName: "The Hollywood Reporter",
+                sourceTitle: "Opening weekend beats Endgame for the all-time record",
+                sourceType: "reporting",
+                sourceDate: "2026-08-03",
+                access: "paywalled",
+                archiveUrl: "https://web.archive.org/web/2026/example",
+                context:
+                  "The box-office breakdown cited throughout this piece: Thursday previews, single-Friday, and first-week records all in one report.\n\nLong enough to overflow the card and bring up the line-and-dot rail, which is the point of this fixture. Scroll it, tab into it, and the dot should track your position the whole way down.",
+                ...(m.mark === "sourceSpoiler"
+                  ? { spoilerSource: true, sourceTitle: "Ending explained: what that last shot means" }
+                  : {}),
+              }),
+        });
         children.push({ _key: k(), _type: "span", text: m.text, marks: [defKey] });
       } else {
         children.push({ _key: k(), _type: "span", text: m.text, marks: [m.mark] });

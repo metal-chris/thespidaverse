@@ -109,6 +109,13 @@ export function buildHappyPathScenario(): MockDataset {
           paragraphs: [
             "In an era of four-quadrant superhero fatigue, Dune: Part Two proves audiences are hungry for ambitious, challenging blockbusters that respect their intelligence. It is not a perfect film — the Baron Harkonnen arena sequence runs long — but it is a monumental one.",
           ],
+          // Fixtures for the source card: one enriched, one spoiler-covered,
+          // one bare link so the unenriched path keeps local coverage too.
+          marks: [
+            { text: "four-quadrant superhero fatigue", mark: "source" },
+            { text: "the Baron Harkonnen arena sequence", mark: "sourceSpoiler" },
+            { text: "a monumental one", mark: "link" },
+          ],
         },
       ]),
     }),
