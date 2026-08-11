@@ -1660,3 +1660,46 @@ body.sanity-studio-active #main-content {
   z-index: 50;
   overflow: auto;
 }
+
+/* ========================================
+   Source citation card
+   (see docs/SOURCE_TOOLTIP_SPEC.md)
+   ======================================== */
+
+/* Sourced links announce themselves with a dotted underline, so a reader
+   can tell which links carry a card before hovering anything. The `prose`
+   link rules in ArticleBody set a solid underline, so this overrides at
+   equal-or-higher specificity via the .article-prose ancestor. */
+.source-link,
+.article-prose .source-link {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+  cursor: pointer;
+}
+
+.source-link:hover,
+.article-prose .source-link:hover {
+  text-decoration-color: var(--color-accent);
+}
+
+/* The line-and-dot rail replaces the native scrollbar inside the card. */
+.source-scroll {
+  scrollbar-width: none;
+}
+
+.source-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.source-rail-dot {
+  transition: top 0.08s linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .source-rail-dot {
+    transition: none;
+  }
+}

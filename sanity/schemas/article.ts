@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { sourceLinkAnnotation } from "./objects/sourceLink";
 
 export default defineType({
   name: "article",
@@ -148,20 +149,7 @@ export default defineType({
               { title: "Code", value: "code" },
               { title: "Strikethrough", value: "strike-through" },
             ],
-            annotations: [
-              {
-                name: "link",
-                type: "object",
-                title: "Link",
-                fields: [
-                  {
-                    name: "href",
-                    type: "url",
-                    title: "URL",
-                  },
-                ],
-              },
-            ],
+            annotations: [sourceLinkAnnotation],
           },
         },
         {

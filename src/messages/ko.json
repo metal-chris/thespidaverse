@@ -390,5 +390,26 @@
     "spotlight": "최신",
     "all": "모든 기사",
     "empty": "아직 기사가 없습니다."
+  },
+  "source": {
+    "details": "출처 상세",
+    "context": "출처 설명, 스크롤 가능",
+    "openNewTab": "새 탭에서 열기",
+    "openOn": "{host}에서 열기",
+    "paywall": "유료 기사",
+    "metered": "제한 열람",
+    "archived": "보관된 사본",
+    "cited": "{count}회 인용",
+    "spoilerHeader": "스포일러가 포함된 출처",
+    "reveal": "출처 보기",
+    "types": {
+      "reporting": "보도",
+      "interview": "인터뷰",
+      "review": "리뷰",
+      "data": "데이터",
+      "primary": "1차 자료",
+      "reference": "참고 자료"
+    },
+    "dismiss": "닫기"
   }
 }

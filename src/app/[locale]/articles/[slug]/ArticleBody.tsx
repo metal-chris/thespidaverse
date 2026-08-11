@@ -3,6 +3,7 @@
 import { PortableText } from "@portabletext/react";
 import type { PortableTextBlock } from "@portabletext/react";
 import { SpoilerProvider, RevealAllToggle } from "@/components/content/SpoilerBlock";
+import { SourceCitationsProvider } from "@/components/content/SourceLink";
 import { AmbientPlayer } from "@/components/audio/AmbientPlayer";
 import { EngagementSection } from "@/components/engagement/EngagementSection";
 import { portableTextComponents } from "@/components/content/PortableTextComponents";
@@ -34,6 +35,7 @@ export function ArticleBody({
 }: ArticleBodyProps) {
   return (
     <SpoilerProvider>
+      <SourceCitationsProvider body={body}>
       {/* ── Controls Bar ── */}
       {hasSpoilerBlocks && (
         <div className="flex justify-end mb-8 pb-4 border-b-2 border-border">
@@ -74,6 +76,7 @@ export function ArticleBody({
 
       {/* ── Ambient Audio Player ── */}
       {ambientAudioUrl && <AmbientPlayer audioUrl={ambientAudioUrl} title={title} />}
+      </SourceCitationsProvider>
     </SpoilerProvider>
   );
 }

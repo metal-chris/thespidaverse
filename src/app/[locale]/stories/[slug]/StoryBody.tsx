@@ -3,6 +3,7 @@
 import { PortableText } from "@portabletext/react";
 import type { PortableTextBlock } from "@portabletext/react";
 import { SpoilerProvider, RevealAllToggle } from "@/components/content/SpoilerBlock";
+import { SourceCitationsProvider } from "@/components/content/SourceLink";
 import { ShareBar } from "@/components/content/ShareBar";
 import { portableTextComponents } from "@/components/content/PortableTextComponents";
 
@@ -16,6 +17,7 @@ interface StoryBodyProps {
 export function StoryBody({ body, title, url, hasSpoilerBlocks }: StoryBodyProps) {
   return (
     <SpoilerProvider>
+      <SourceCitationsProvider body={body}>
       {hasSpoilerBlocks && (
         <div className="flex justify-end mb-8 pb-4 border-b-2 border-border">
           <RevealAllToggle />
@@ -40,6 +42,7 @@ export function StoryBody({ body, title, url, hasSpoilerBlocks }: StoryBodyProps
       </div>
 
       <ShareBar title={title} url={url} layout="horizontal" />
+      </SourceCitationsProvider>
     </SpoilerProvider>
   );
 }

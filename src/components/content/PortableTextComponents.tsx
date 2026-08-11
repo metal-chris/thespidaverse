@@ -5,6 +5,7 @@ import { PortableText, type PortableTextComponents as PTComponents } from "@port
 import { urlFor } from "@/lib/sanity/image";
 import { slugify } from "@/lib/utils";
 import { SpoilerBlock } from "./SpoilerBlock";
+import { SourceLink } from "./SourceLink";
 import { VideoEmbed } from "./VideoEmbed";
 import { ImageGallery } from "./ImageGallery";
 
@@ -50,7 +51,10 @@ export const portableTextComponents: PTComponents = {
       if (!value?.content) return null;
       return (
         <SpoilerBlock label={value.label || "Spoiler"}>
-          <PortableText value={value.content} />
+          {/* Pass components through: without it, links and headings inside a
+              spoiler fall back to @portabletext/react defaults and lose the
+              external-link handling from `marks.link` below. */}
+          <PortableText value={value.content} components={portableTextComponents} />
         </SpoilerBlock>
       );
     },
@@ -85,19 +89,9 @@ export const portableTextComponents: PTComponents = {
     },
   },
   marks: {
-    link: ({ children, value }) => {
-      const href = value?.href || "#";
-      const isExternal = href.startsWith("http");
-      return (
-        <a
-          href={href}
-          className={isExternal ? "spidey-sense-hover" : ""}
-          {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-        >
-          {children}
-        </a>
-      );
-    },
+    link: ({ children, value }) => (
+      <SourceLink value={value}>{children}</SourceLink>
+    ),
   },
   block: {
     h2: ({ children, value }: any) => {

@@ -27,6 +27,36 @@ export interface SanityImage {
   alt?: string;
 }
 
+/** Source types for the citation card. Mirrors SOURCE_TYPES in sanity/schemas/objects/sourceLink.ts */
+export type SourceType =
+  | "reporting"
+  | "interview"
+  | "review"
+  | "data"
+  | "primary"
+  | "reference";
+
+export type SourceAccess = "free" | "metered" | "paywalled";
+
+/**
+ * The `link` annotation. Everything past `href` is optional — a link with no
+ * source metadata renders as an ordinary anchor with no card.
+ */
+export interface SourceLinkValue {
+  href?: string;
+  sourceName?: string;
+  sourceTitle?: string;
+  context?: string;
+  sourceDate?: string;
+  sourceType?: SourceType;
+  sourceImage?: SanityImage;
+  duration?: string;
+  access?: SourceAccess;
+  archiveUrl?: string;
+  artistCredit?: string;
+  spoilerSource?: boolean;
+}
+
 export type VideoProvider = "youtube" | "vimeo" | "mp4";
 
 export interface VideoEmbed {

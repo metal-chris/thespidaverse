@@ -390,5 +390,26 @@
     "spotlight": "Le plus récent",
     "all": "Tous les articles",
     "empty": "Aucun article pour le moment."
+  },
+  "source": {
+    "details": "Détails de la source",
+    "context": "Contexte de la source, défilement possible",
+    "openNewTab": "Ouvrir dans un nouvel onglet",
+    "openOn": "Ouvrir sur {host}",
+    "paywall": "Contenu payant",
+    "metered": "Accès limité",
+    "archived": "Copie archivée",
+    "cited": "Citée {count}×",
+    "spoilerHeader": "Source contenant des spoilers",
+    "reveal": "Afficher la source",
+    "types": {
+      "reporting": "Reportage",
+      "interview": "Entretien",
+      "review": "Critique",
+      "data": "Données",
+      "primary": "Source primaire",
+      "reference": "Référence"
+    },
+    "dismiss": "Fermer"
   }
 }

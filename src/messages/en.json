@@ -390,5 +390,26 @@
     "spotlight": "Latest",
     "all": "All articles",
     "empty": "No articles yet."
+  },
+  "source": {
+    "details": "Source details",
+    "context": "Source context, scrollable",
+    "openNewTab": "Open in new tab",
+    "openOn": "Open on {host}",
+    "paywall": "Paywall",
+    "metered": "Metered",
+    "archived": "Archived copy",
+    "cited": "Cited {count}×",
+    "spoilerHeader": "Spoiler-adjacent source",
+    "reveal": "Reveal source",
+    "types": {
+      "reporting": "Reporting",
+      "interview": "Interview",
+      "review": "Review",
+      "data": "Data",
+      "primary": "Primary source",
+      "reference": "Reference"
+    },
+    "dismiss": "Dismiss"
   }
 }

@@ -390,5 +390,26 @@
     "spotlight": "最新",
     "all": "すべての記事",
     "empty": "まだ記事はありません。"
+  },
+  "source": {
+    "details": "出典の詳細",
+    "context": "出典の解説（スクロールできます）",
+    "openNewTab": "新しいタブで開く",
+    "openOn": "{host} で開く",
+    "paywall": "有料記事",
+    "metered": "閲覧数制限あり",
+    "archived": "アーカイブ版",
+    "cited": "{count}回引用",
+    "spoilerHeader": "ネタバレを含む出典",
+    "reveal": "出典を表示",
+    "types": {
+      "reporting": "報道",
+      "interview": "インタビュー",
+      "review": "レビュー",
+      "data": "データ",
+      "primary": "一次資料",
+      "reference": "参考資料"
+    },
+    "dismiss": "閉じる"
   }
 }
