@@ -92,7 +92,8 @@
     "twitch": "Twitch",
     "instagram": "Instagram",
     "discord": "Discord: spida.mane (클릭하여 복사)",
-    "patchNotes": "패치 노트"
+    "patchNotes": "패치 노트",
+    "tmdb": "This product uses the TMDB API but is not endorsed or certified by TMDB."
   },
   "comingSoon": {
     "earlyAccess": "얼리 액세스",

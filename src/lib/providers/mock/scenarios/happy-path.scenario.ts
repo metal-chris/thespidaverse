@@ -117,6 +117,61 @@ export function buildHappyPathScenario(): MockDataset {
             { text: "a monumental one", mark: "link" },
           ],
         },
+      ]).concat([
+        // Fixture for the tier-list chart: three tiers, anchors pointing at
+        // this article's own headings, mockUrl posters (2:3).
+        {
+          _key: "tiermock01",
+          _type: "tierList",
+          title: "Every Dune Adaptation, Ranked",
+          tiers: [
+            {
+              _key: "tier-s",
+              label: "S",
+              entries: [
+                {
+                  _key: "te1",
+                  title: "Dune: Part Two",
+                  year: "2024",
+                  anchor: "the-desert-swallows-everything",
+                  image: { _type: "image", asset: { _ref: "image-mock-tier1-300x450-jpg", _type: "reference" }, mockUrl: "https://picsum.photos/seed/tier1/300/450" },
+                },
+                {
+                  _key: "te2",
+                  title: "Dune: Part One",
+                  year: "2021",
+                  anchor: "chalamet-finally-becomes-muad-dib",
+                  image: { _type: "image", asset: { _ref: "image-mock-tier2-300x450-jpg", _type: "reference" }, mockUrl: "https://picsum.photos/seed/tier2/300/450" },
+                },
+              ],
+            },
+            {
+              _key: "tier-b",
+              label: "B",
+              entries: [
+                {
+                  _key: "te3",
+                  title: "Dune (1984)",
+                  year: "1984",
+                  anchor: "a-new-standard-for-blockbusters",
+                  image: { _type: "image", asset: { _ref: "image-mock-tier3-300x450-jpg", _type: "reference" }, mockUrl: "https://picsum.photos/seed/tier3/300/450" },
+                },
+              ],
+            },
+            {
+              _key: "tier-f",
+              label: "F",
+              entries: [
+                {
+                  // No image and no anchor — exercises both fallbacks.
+                  _key: "te4",
+                  title: "Dune (2000 miniseries)",
+                  year: "2000",
+                },
+              ],
+            },
+          ],
+        } as any,
       ]),
     }),
 

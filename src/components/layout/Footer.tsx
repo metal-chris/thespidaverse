@@ -140,6 +140,12 @@ export function Footer() {
             </div>
           </div>
         </div>
+
+        {/* TMDB terms require this exact notice wherever their poster art or
+            data is used. Keep the canonical English string in every locale. */}
+        <p className="mt-4 text-center text-[10px] text-muted-foreground/70">
+          {t("footer.tmdb")}
+        </p>
       </Container>
     </footer>
   );

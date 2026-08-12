@@ -92,7 +92,8 @@
     "twitch": "Twitch",
     "instagram": "Instagram",
     "discord": "Discord: spida.mane (click to copy)",
-    "patchNotes": "Patch Notes"
+    "patchNotes": "Patch Notes",
+    "tmdb": "This product uses the TMDB API but is not endorsed or certified by TMDB."
   },
   "comingSoon": {
     "earlyAccess": "Early Access",

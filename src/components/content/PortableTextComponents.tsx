@@ -6,6 +6,7 @@ import { urlFor } from "@/lib/sanity/image";
 import { slugify } from "@/lib/utils";
 import { SpoilerBlock } from "./SpoilerBlock";
 import { SourceLink } from "./SourceLink";
+import { TierListChart } from "./TierListChart";
 import { VideoEmbed } from "./VideoEmbed";
 import { ImageGallery } from "./ImageGallery";
 
@@ -72,6 +73,7 @@ export const portableTextComponents: PTComponents = {
       if (!value?.images || value.images.length === 0) return null;
       return <ImageGallery images={value.images} layout={value.layout} />;
     },
+    tierList: ({ value }) => <TierListChart value={value} />,
     pullquote: ({ value }: any) => {
       if (!value?.text) return null;
       return (

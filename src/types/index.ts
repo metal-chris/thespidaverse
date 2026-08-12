@@ -65,6 +65,28 @@ export interface VideoEmbed {
   caption?: string;
 }
 
+/** One chip on a tier-list chart. `anchor` scrolls to that entry's heading. */
+export interface TierEntry {
+  _key: string;
+  title: string;
+  year?: string;
+  image?: SanityImage & { mockUrl?: string };
+  anchor?: string;
+}
+
+export interface TierRow {
+  _key: string;
+  label: string;
+  color?: string;
+  entries: TierEntry[];
+}
+
+export interface TierListBlock {
+  _type: "tierList";
+  title?: string;
+  tiers: TierRow[];
+}
+
 export interface ImageGallery {
   _type: "imageGallery";
   images: (SanityImage & { caption?: string })[];

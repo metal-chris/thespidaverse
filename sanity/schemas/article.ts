@@ -284,6 +284,102 @@ export default defineType({
         },
         {
           type: "object",
+          name: "tierList",
+          title: "Tier List",
+          icon: () => "🏆",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Title",
+              type: "string",
+              description: 'Optional caption, e.g. "The Full Ranking"',
+            }),
+            defineField({
+              name: "tiers",
+              title: "Tiers",
+              type: "array",
+              of: [
+                {
+                  type: "object",
+                  name: "tier",
+                  fields: [
+                    defineField({
+                      name: "label",
+                      title: "Label",
+                      type: "string",
+                      description: "S, A, B, C, D, F…",
+                      validation: (rule) => rule.required(),
+                    }),
+                    defineField({
+                      name: "color",
+                      title: "Color override",
+                      type: "string",
+                      description:
+                        "Optional hex. Defaults to the classic ramp by label.",
+                    }),
+                    defineField({
+                      name: "entries",
+                      title: "Entries",
+                      type: "array",
+                      of: [
+                        {
+                          type: "object",
+                          name: "tierEntry",
+                          fields: [
+                            defineField({
+                              name: "title",
+                              title: "Title",
+                              type: "string",
+                              validation: (rule) => rule.required(),
+                            }),
+                            defineField({
+                              name: "year",
+                              title: "Year",
+                              type: "string",
+                            }),
+                            defineField({
+                              name: "image",
+                              title: "Poster",
+                              type: "image",
+                              options: { hotspot: true },
+                            }),
+                            defineField({
+                              name: "anchor",
+                              title: "Anchor ID",
+                              type: "string",
+                              description:
+                                "Heading id the chip scrolls to, e.g. 4-spider-man-brand-new-day-2026",
+                            }),
+                          ],
+                          preview: {
+                            select: { title: "title", subtitle: "year", media: "image" },
+                          },
+                        },
+                      ],
+                    }),
+                  ],
+                  preview: {
+                    select: { label: "label", entries: "entries" },
+                    prepare({ label, entries }) {
+                      return {
+                        title: `Tier ${label}`,
+                        subtitle: `${entries?.length ?? 0} entries`,
+                      };
+                    },
+                  },
+                },
+              ],
+            }),
+          ],
+          preview: {
+            select: { title: "title" },
+            prepare({ title }) {
+              return { title: `🏆 ${title || "Tier List"}` };
+            },
+          },
+        },
+        {
+          type: "object",
           name: "pullquote",
           title: "Pullquote",
           icon: () => "❝",
