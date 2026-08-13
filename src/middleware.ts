@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { routing } from "@/i18n/routing";
 
-const COMING_SOON_PATH = "/coming-soon";
+const SPLASH_PATH = "/splash";
 const COOKIE_NAME = "spidaverse-access";
 const COOKIE_VALUE = "granted";
 
@@ -31,7 +31,7 @@ const BYPASS_EXTENSIONS = [".svg", ".png", ".jpg", ".ico", ".json", ".xml", ".js
  *
  * These bots fetch a URL once, read its meta tags, and render a static card —
  * they never execute JS, never carry cookies, and never click Connect. Gated,
- * every share on every platform unfurled as the same imageless coming-soon
+ * every share on every platform unfurled as the same imageless splash
  * stub (and `twitter:card` promised a large image that never came, the
  * ugliest render Twitter has). The splash is a threshold, not access
  * control — the Connect ritual grants a cookie to anyone who clicks — so
@@ -59,18 +59,18 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check for access cookie — if not granted, redirect to coming-soon
-  // (coming-soon itself is handled by locale routing, so allow it through)
-  const isComingSoon = pathname === COMING_SOON_PATH ||
-    routing.locales.some((l) => pathname === `/${l}${COMING_SOON_PATH}` || pathname === `/${l}/coming-soon`);
+  // Check for access cookie — if not granted, redirect to the splash
+  // (the splash itself is handled by locale routing, so allow it through)
+  const isSplash = pathname === SPLASH_PATH ||
+    routing.locales.some((l) => pathname === `/${l}${SPLASH_PATH}` || pathname === `/${l}/splash`);
 
   const isPreviewBot = PREVIEW_BOT_RE.test(request.headers.get("user-agent") ?? "");
 
-  if (!isComingSoon && !isPreviewBot) {
+  if (!isSplash && !isPreviewBot) {
     const accessCookie = request.cookies.get(COOKIE_NAME);
     if (accessCookie?.value !== COOKIE_VALUE) {
       const url = request.nextUrl.clone();
-      url.pathname = COMING_SOON_PATH;
+      url.pathname = SPLASH_PATH;
       // Carry the destination through the splash. Without this, someone
       // following a shared deep link lands on the splash, clicks Connect, and
       // is dumped at the homepage — the link they followed is simply lost.

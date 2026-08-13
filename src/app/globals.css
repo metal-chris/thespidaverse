@@ -3,15 +3,36 @@
 @tailwind utilities;
 
 /* ========================================
-   Miles Mode (Black & Red) — Default Theme
+   Theme surfaces — palette x mode
+   ========================================
+   TWO independent axes, not one list:
+
+     data-theme  →  palette (accent family):  (default) | peter | venom
+     data-mode   →  surface lightness:        dark (default) | light
+
+   They were one axis before, which is why the site had no light mode at all:
+   every "theme" was a dark surface with a different accent, so asking for
+   light and asking for a different colour were the same control. Splitting
+   them gives 3 x 2 = 6 surfaces and matches Kumo Club's model, so one
+   preference can travel between the two sites and mean the same thing.
+
+   Dark blocks come first and light blocks after: the single-attribute
+   selectors carry equal specificity, so order decides, while the combined
+   [data-theme][data-mode] selectors outrank both and win outright.
+
+   Every pair below (foreground/accent/muted on background and on card) is
+   verified at >= 4.5:1. Note the dark red accent moved #E82334 -> #FF3346:
+   the original measured 4.37:1 on #0D0D0D and failed for text.
    ======================================== */
+
+/* ---------- Dark (default mode) ---------- */
 :root {
   --color-background: #0D0D0D;
   --color-foreground: #F0F0F0;
-  --color-accent: #E82334;
-  --color-accent-hover: #FF2D40;
+  --color-accent: #FF3346;
+  --color-accent-hover: #FF5C6B;
   --color-muted: #1A1A1A;
-  --color-muted-foreground: #8A8A8A;
+  --color-muted-foreground: #9A9A9A;
   --color-border: #2A1015;
   --color-card: #161616;
   --color-card-foreground: #F0F0F0;
@@ -20,34 +41,65 @@
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
 }
 
-/* ========================================
-   Peter Parker Mode (Classic Red & Blue)
-   ======================================== */
 [data-theme="peter"] {
   --color-background: #3A0808;
   --color-foreground: #F5F5F5;
-  --color-accent: #1E50DC;
-  --color-accent-hover: #3C78FF;
+  --color-accent: #6E9BFF;
+  --color-accent-hover: #93B4FF;
   --color-muted: #2A0606;
-  --color-muted-foreground: #B08080;
+  --color-muted-foreground: #C9A5A5;
   --color-border: #5A1515;
   --color-card: #350808;
   --color-card-foreground: #F5F5F5;
 }
 
-/* ========================================
-   Venom Mode (Dark)
-   ======================================== */
 [data-theme="venom"] {
   --color-background: #0A0A0A;
   --color-foreground: #F5F5F5;
   --color-accent: #FFFFFF;
   --color-accent-hover: #E0E0E0;
   --color-muted: #1A1A1A;
-  --color-muted-foreground: #7A7A8A;
+  --color-muted-foreground: #9A9AA5;
   --color-border: #2A2A30;
   --color-card: #121218;
   --color-card-foreground: #F5F5F5;
+}
+
+/* ---------- Light ---------- */
+[data-mode="light"] {
+  --color-background: #FAF8F8;
+  --color-foreground: #14100F;
+  --color-accent: #B3121F;
+  --color-accent-hover: #8E0E19;
+  --color-muted: #F0EAEA;
+  --color-muted-foreground: #5A5450;
+  --color-border: #E4D9DA;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #14100F;
+}
+
+[data-theme="peter"][data-mode="light"] {
+  --color-background: #F6F7FB;
+  --color-foreground: #0F1320;
+  --color-accent: #12379E;
+  --color-accent-hover: #0D2B7E;
+  --color-muted: #E9ECF5;
+  --color-muted-foreground: #4E5566;
+  --color-border: #D8DCE8;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #0F1320;
+}
+
+[data-theme="venom"][data-mode="light"] {
+  --color-background: #F4F4F5;
+  --color-foreground: #141416;
+  --color-accent: #33333A;
+  --color-accent-hover: #1F1F25;
+  --color-muted: #E8E8EA;
+  --color-muted-foreground: #55555E;
+  --color-border: #DCDCE0;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #141416;
 }
 
 /* ========================================
@@ -647,7 +699,7 @@
 }
 
 /* ========================================
-   Ambient Glow Drift (shared: hero + coming-soon)
+   Ambient Glow Drift (shared: hero + splash)
    ======================================== */
 @keyframes ambientDrift1 {
   0%, 100% { transform: translate(-50%, -50%) scale(1); }

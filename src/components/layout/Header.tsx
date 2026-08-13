@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { SearchButton } from "@/components/search/SearchButton";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
+import { ModeToggle } from "@/components/theme/ModeToggle";
 import { Nav } from "./Nav";
 import { Container } from "@/components/ui/Container";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
@@ -32,6 +33,7 @@ export function Header() {
 
         {/* Desktop Actions (right) */}
         <div className="hidden lg:flex items-center gap-2">
+          <ModeToggle />
           <LocaleSwitcher />
           <SearchButton />
           <ThemeToggle />
@@ -39,6 +41,7 @@ export function Header() {
 
         {/* Mobile/Tablet Controls */}
         <div className="flex items-center gap-2 lg:hidden">
+          <ModeToggle />
           <LocaleSwitcher />
           <SearchButton />
           <ThemeToggle />

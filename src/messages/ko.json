@@ -95,18 +95,6 @@
     "patchNotes": "패치 노트",
     "tmdb": "This product uses the TMDB API but is not endorsed or certified by TMDB."
   },
-  "comingSoon": {
-    "earlyAccess": "얼리 액세스",
-    "headline": "The Spidaverse",
-    "subline": "웹이 준비되었습니다. 당신은요?",
-    "leapOfFaith": "믿음의 도약",
-    "swinging": "스윙 중...",
-    "accessGranted": "접근 승인",
-    "welcomeToTheWeb": "웹에 오신 것을 환영합니다.",
-    "milesMode": "Miles 모드",
-    "peterMode": "Peter 모드",
-    "venomMode": "Venom 모드"
-  },
   "consuming": {
     "heading": "지금 즐기는 중",
     "nowPlaying": "지금 재생 중",
@@ -450,5 +438,20 @@
       "diffCount": "{n}개가 다르게 배치됨.",
       "keyboardHint": "키보드: 포스터에 포커스한 뒤 티어 첫 글자로 배치, 0으로 미배치."
     }
+  },
+  "splash": {
+    "earlyAccess": "얼리 액세스",
+    "headline": "The Spidaverse",
+    "subline": "읽을 가치가 있는 리뷰, 전 작품 랭킹, 그리고 나눌 만한 이야기들.",
+    "connect": "연결하기",
+    "connecting": "연결 중…",
+    "connected": "입장 완료",
+    "welcome": "웹에 오신 것을 환영합니다. 와주셔서 반가워요.",
+    "paletteLabel": "색상 변경",
+    "modeLabel": "명암 변경",
+    "languageLabel": "언어 변경",
+    "palette_miles": "레드 색상",
+    "palette_peter": "블루 색상",
+    "palette_venom": "모노크롬 색상"
   }
 }

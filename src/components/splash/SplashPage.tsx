@@ -1,15 +1,25 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { SpiderWebCanvas } from "./NeuralNetworkCanvas";
-import { ComingSoonContent } from "./ComingSoonContent";
-import type { Palette } from "./particle-config";
+import { SpiderWebCanvas } from "@/components/web-canvas/NeuralNetworkCanvas";
+import { SplashContent } from "./SplashContent";
+import type { Palette } from "@/components/web-canvas/particle-config";
+import { useTheme } from "@/components/theme/ThemeProvider";
 
-export function ComingSoonPage() {
+export function SplashPage() {
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [palette, setPaletteState] = useState<Palette>("miles");
   const [accessGranted, setAccessGranted] = useState(false);
   const strikeTriggerRef = useRef<((x: number, y: number) => void) | null>(null);
+
+  // Palette comes from ThemeProvider, not local state.
+  //
+  // This page used to keep its own copy and write it straight to storage,
+  // which meant choosing a colour here updated the web canvas but never
+  // stamped `data-theme` — so the site's own tokens did not change until the
+  // next full page load, and the splash could disagree with the header it was
+  // about to hand you to. One source of truth removes that skew, and the
+  // provider already owns persistence (localStorage + the shared cookie).
+  const { theme: palette, setTheme } = useTheme();
 
   const handleRendererReady = useCallback((trigger: (x: number, y: number) => void) => {
     strikeTriggerRef.current = trigger;
@@ -31,23 +41,6 @@ export function ComingSoonPage() {
       }
     }
   }, [reducedMotion]);
-
-  // Sync palette with main site's theme in localStorage
-  const setPalette = useCallback((p: Palette | ((prev: Palette) => Palette)) => {
-    setPaletteState(prev => {
-      const next = typeof p === "function" ? p(prev) : p;
-      localStorage.setItem("spidaverse-theme", next);
-      return next;
-    });
-  }, []);
-
-  useEffect(() => {
-    // Read stored theme so coming soon matches any prior selection
-    const stored = localStorage.getItem("spidaverse-theme");
-    if (stored === "miles" || stored === "peter" || stored === "venom") {
-      setPaletteState(stored);
-    }
-  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -149,7 +142,7 @@ export function ComingSoonPage() {
       <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} onRendererReady={handleRendererReady} />
 
       {/* Content overlay */}
-      <ComingSoonContent palette={palette} onTogglePalette={() => setPalette(p => p === "miles" ? "peter" : p === "peter" ? "venom" : "miles")} onAccessGranted={handleAccessGranted} />
+      <SplashContent palette={palette} onSetPalette={setTheme} onAccessGranted={handleAccessGranted} />
 
       {/* Portal wipe overlay — covers screen before redirect */}
       {accessGranted && (

@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { Container } from "@/components/ui/Container";
-import { SpiderWebCanvas } from "@/components/coming-soon/NeuralNetworkCanvas";
+import { SpiderWebCanvas } from "@/components/web-canvas/NeuralNetworkCanvas";
 import { GlitchText } from "@/components/ui/GlitchText";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { useTranslations } from "next-intl";
 import { ArrowDown } from "lucide-react";
-import type { Palette } from "@/components/coming-soon/particle-config";
+import type { Palette } from "@/components/web-canvas/particle-config";
 
 interface HeroSectionProps {
   className?: string;

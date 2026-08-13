@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { SpiderWebCanvas } from "@/components/coming-soon/NeuralNetworkCanvas";
-import type { Palette } from "@/components/coming-soon/particle-config";
+import { SpiderWebCanvas } from "@/components/web-canvas/NeuralNetworkCanvas";
+import type { Palette } from "@/components/web-canvas/particle-config";
 
 /**
  * WebRating — Spider-web shaped rating visualization.

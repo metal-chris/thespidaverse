@@ -95,18 +95,6 @@
     "patchNotes": "Notes de Patch",
     "tmdb": "This product uses the TMDB API but is not endorsed or certified by TMDB."
   },
-  "comingSoon": {
-    "earlyAccess": "Accès anticipé",
-    "headline": "The Spidaverse",
-    "subline": "La toile est prête. Et vous ?",
-    "leapOfFaith": "Saut de la foi",
-    "swinging": "En vol...",
-    "accessGranted": "Accès accordé",
-    "welcomeToTheWeb": "Bienvenue sur la toile.",
-    "milesMode": "Mode Miles",
-    "peterMode": "Mode Peter",
-    "venomMode": "Mode Venom"
-  },
   "consuming": {
     "heading": "En ce moment",
     "nowPlaying": "En écoute",
@@ -450,5 +438,20 @@
       "diffCount": "{n} placés différemment.",
       "keyboardHint": "Clavier : ciblez une affiche puis appuyez sur la lettre d'un rang pour la placer, ou 0 pour la retirer."
     }
+  },
+  "splash": {
+    "earlyAccess": "Accès Anticipé",
+    "headline": "The Spidaverse",
+    "subline": "Des critiques qui valent le détour, chaque film classé, et les débats qui comptent.",
+    "connect": "Se connecter",
+    "connecting": "Connexion…",
+    "connected": "Vous y êtes",
+    "welcome": "Bienvenue sur la toile. Ravis de vous voir.",
+    "paletteLabel": "Changer la couleur",
+    "modeLabel": "Changer le contraste",
+    "languageLabel": "Changer de langue",
+    "palette_miles": "Palette rouge",
+    "palette_peter": "Palette bleue",
+    "palette_venom": "Palette monochrome"
   }
 }

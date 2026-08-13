@@ -95,18 +95,6 @@
     "patchNotes": "Notas de Parche",
     "tmdb": "This product uses the TMDB API but is not endorsed or certified by TMDB."
   },
-  "comingSoon": {
-    "earlyAccess": "Acceso Anticipado",
-    "headline": "The Spidaverse",
-    "subline": "La red está lista. ¿Y tú?",
-    "leapOfFaith": "Salto de Fe",
-    "swinging": "Columpiándose...",
-    "accessGranted": "Acceso Concedido",
-    "welcomeToTheWeb": "Bienvenido a la red.",
-    "milesMode": "Miles Mode",
-    "peterMode": "Peter Mode",
-    "venomMode": "Venom Mode"
-  },
   "consuming": {
     "heading": "Vibrando Ahora",
     "nowPlaying": "Reproduciendo",
@@ -450,5 +438,20 @@
       "diffCount": "{n} colocadas de otra forma.",
       "keyboardHint": "Teclado: enfoca un póster y pulsa la letra de un nivel para colocarlo, o 0 para quitarlo."
     }
+  },
+  "splash": {
+    "earlyAccess": "Acceso Anticipado",
+    "headline": "The Spidaverse",
+    "subline": "Reseñas que merecen tu tiempo, cada película clasificada y los debates que valen la pena.",
+    "connect": "Conectar",
+    "connecting": "Conectando…",
+    "connected": "Ya estás dentro",
+    "welcome": "Bienvenido a la red. Nos alegra que hayas llegado.",
+    "paletteLabel": "Cambiar color",
+    "modeLabel": "Cambiar contraste",
+    "languageLabel": "Cambiar idioma",
+    "palette_miles": "Paleta roja",
+    "palette_peter": "Paleta azul",
+    "palette_venom": "Paleta monocroma"
   }
 }

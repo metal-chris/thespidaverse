@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ComingSoonPage } from "@/components/coming-soon/ComingSoonPage";
+import { SplashPage } from "@/components/splash/SplashPage";
 
 export const metadata: Metadata = {
   title: "The Spidaverse",
@@ -13,5 +13,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ComingSoonPage />;
+  return <SplashPage />;
 }

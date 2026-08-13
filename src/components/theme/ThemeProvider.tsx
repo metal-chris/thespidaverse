@@ -2,8 +2,11 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { TransitionOverlay } from "@/components/transitions/TransitionOverlay";
+import { PALETTE_KEY, MODE_KEY, readPref, writePref } from "@/lib/theme-cookie";
 
 type Theme = "miles" | "peter" | "venom";
+/** The second axis. Surface lightness, independent of accent palette. */
+export type Mode = "dark" | "light";
 type TransitionDirection = "to-venom" | "to-miles" | "to-peter";
 
 /** Theme swaps during spinner hold phase (after 3s character animation) */
@@ -18,8 +21,12 @@ const QUICK_SWAP_DELAY = 500;
 
 interface ThemeContextValue {
   theme: Theme;
+  /** Surface lightness — the axis that used to be tangled into `theme`. */
+  mode: Mode;
   toggleTheme: (e?: React.MouseEvent) => void;
   setTheme: (theme: Theme) => void;
+  setMode: (mode: Mode) => void;
+  toggleMode: () => void;
   toggleRef: React.RefObject<HTMLElement | null>;
 }
 
@@ -33,6 +40,7 @@ export function useTheme() {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("miles");
+  const [mode, setModeState] = useState<Mode>("dark");
   const [mounted, setMounted] = useState(false);
   const [transition, setTransition] = useState<{
     direction: TransitionDirection;
@@ -42,18 +50,52 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggleRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("spidaverse-theme") as Theme | null;
-    if (stored && (stored === "miles" || stored === "peter" || stored === "venom")) {
+    // Palette: prefer the shared cookie (a sibling site under
+    // .thespidaverse.com may have set it), then this origin's localStorage
+    // for anyone who chose before the cookie existed.
+    const cookiePalette = readPref(PALETTE_KEY);
+    const stored = (cookiePalette ?? localStorage.getItem(PALETTE_KEY)) as Theme | null;
+    if (stored === "miles" || stored === "peter" || stored === "venom") {
       setThemeState(stored);
       document.documentElement.setAttribute("data-theme", stored === "miles" ? "" : stored);
+      if (!cookiePalette) writePref(PALETTE_KEY, stored);
     }
-    // Miles is the default — no system preference override needed (all themes are dark)
+
+    // Mode: an explicit choice wins; otherwise follow the OS. Every surface
+    // was dark before this axis existed, so an unset preference must NOT
+    // silently flip a returning visitor to light — only the OS asking for
+    // light does that.
+    const storedMode = readPref(MODE_KEY) ?? localStorage.getItem(MODE_KEY);
+    const resolved: Mode =
+      storedMode === "light" || storedMode === "dark"
+        ? storedMode
+        : window.matchMedia("(prefers-color-scheme: light)").matches
+          ? "light"
+          : "dark";
+    setModeState(resolved);
+    document.documentElement.setAttribute("data-mode", resolved);
     setMounted(true);
   }, []);
 
+  const setMode = useCallback((next: Mode) => {
+    setModeState(next);
+    localStorage.setItem(MODE_KEY, next);
+    writePref(MODE_KEY, next);
+    document.documentElement.setAttribute("data-mode", next);
+  }, []);
+
+  const toggleMode = useCallback(() => {
+    // Deliberately instant. The palette swap runs a character transition
+    // because changing accent is a statement; flipping lightness is a comfort
+    // control, and making someone sit through 3.2s of animation to dim a
+    // screen would be hostile.
+    setMode(mode === "dark" ? "light" : "dark");
+  }, [mode, setMode]);
+
   const setTheme = useCallback((newTheme: Theme) => {
     setThemeState(newTheme);
-    localStorage.setItem("spidaverse-theme", newTheme);
+    localStorage.setItem(PALETTE_KEY, newTheme);
+    writePref(PALETTE_KEY, newTheme);
     document.documentElement.setAttribute(
       "data-theme",
       newTheme === "miles" ? "" : newTheme
@@ -104,7 +146,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, toggleRef }}>
+    <ThemeContext.Provider
+      value={{ theme, mode, toggleTheme, setTheme, setMode, toggleMode, toggleRef }}
+    >
       {children}
       {mounted && transition && (
         <TransitionOverlay

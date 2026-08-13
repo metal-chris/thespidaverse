@@ -95,18 +95,6 @@
     "patchNotes": "パッチノート",
     "tmdb": "This product uses the TMDB API but is not endorsed or certified by TMDB."
   },
-  "comingSoon": {
-    "earlyAccess": "先行アクセス",
-    "headline": "The Spidaverse",
-    "subline": "ウェブの準備はできた。君は？",
-    "leapOfFaith": "信じて飛べ",
-    "swinging": "スウィング中...",
-    "accessGranted": "アクセス許可",
-    "welcomeToTheWeb": "ウェブへようこそ。",
-    "milesMode": "Miles Mode",
-    "peterMode": "Peter Mode",
-    "venomMode": "Venom Mode"
-  },
   "consuming": {
     "heading": "いまノッてるもの",
     "nowPlaying": "再生中",
@@ -450,5 +438,20 @@
       "diffCount": "{n} 件が異なる配置です。",
       "keyboardHint": "キーボード：ポスターを選び、ティアの頭文字キーで配置、0 で未配置に戻します。"
     }
+  },
+  "splash": {
+    "earlyAccess": "アーリーアクセス",
+    "headline": "The Spidaverse",
+    "subline": "読む価値のあるレビュー、全作品のランキング、そして語り合う価値のある議論を。",
+    "connect": "つながる",
+    "connecting": "接続中…",
+    "connected": "ようこそ",
+    "welcome": "ウェブへようこそ。来てくれてうれしいです。",
+    "paletteLabel": "配色を変更",
+    "modeLabel": "コントラストを変更",
+    "languageLabel": "言語を変更",
+    "palette_miles": "レッドの配色",
+    "palette_peter": "ブルーの配色",
+    "palette_venom": "モノクロの配色"
   }
 }

@@ -1,33 +1,33 @@
 /* ========================================
    Coming Soon Page — Hide site chrome
    ======================================== */
-body:has(.coming-soon-layout) header {
+body:has(.splash-layout) header {
   display: none !important;
 }
 
-body:has(.coming-soon-layout) footer {
+body:has(.splash-layout) footer {
   display: none !important;
 }
 
-body:has(.coming-soon-layout) {
+body:has(.splash-layout) {
   overflow: hidden;
 }
 
-body:has(.coming-soon-layout) #main-content {
+body:has(.splash-layout) #main-content {
   flex: unset;
   padding: 0;
   margin: 0;
 }
 
-body:has(.coming-soon-layout) .sr-only[href="#main-content"] {
+body:has(.splash-layout) .sr-only[href="#main-content"] {
   display: none !important;
 }
 
 /* ========================================
    Spider Cursor
    ======================================== */
-.coming-soon-layout,
-.coming-soon-layout * {
+.splash-layout,
+.splash-layout * {
   cursor: url('/spider-cursor.svg') 16 16, auto;
 }
 
@@ -315,4 +315,74 @@ body:has(.coming-soon-layout) .sr-only[href="#main-content"] {
     0% { opacity: 0; }
     100% { opacity: 1; }
   }
+}
+
+/* ============================================================
+   Cursor-tracked accent edge
+   ============================================================
+   The web canvas behind the card lights up around the pointer. A border
+   pinned to one edge ignored that, so the card read as a flat plate on a
+   reactive background. This traces the whole perimeter, lit from wherever
+   the cursor is — the same light source as the web.
+
+   The ring is a radial gradient clipped to a 1.5px border band by two
+   stacked masks (`xor` composite punches out the interior). Painting a
+   gradient and masking it, rather than animating a border-color, keeps the
+   whole effect on the compositor: JS writes two custom properties and
+   nothing re-renders.
+*/
+.cs-card-edge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  background: radial-gradient(
+    240px circle at var(--edge-x, 0%) var(--edge-y, 50%),
+    rgba(var(--edge-accent-rgb), 0.95) 0%,
+    rgba(var(--edge-accent-rgb), 0.45) 35%,
+    rgba(var(--edge-accent-rgb), 0) 70%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* A soft bloom just inside the edge, echoing the canvas glow's falloff. */
+.cs-card-edge::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  background: radial-gradient(
+    200px circle at var(--edge-x, 0%) var(--edge-y, 50%),
+    rgba(var(--edge-accent-rgb), 0.10) 0%,
+    rgba(var(--edge-accent-rgb), 0) 65%
+  );
+  z-index: 1;
+}
+
+.cs-card-edge-live::after,
+.cs-card-edge-live::before { opacity: 1; }
+
+/* The static bar hands off once the pointer takes over. */
+.cs-card-edge-live .cs-card-edge-static { opacity: 0; }
+
+/* No pointer to follow: keep the original edge and skip the ring entirely. */
+@media (hover: none) {
+  .cs-card-edge::after,
+  .cs-card-edge::before { display: none; }
+  .cs-card-edge-live .cs-card-edge-static { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-card-edge::after,
+  .cs-card-edge::before { transition: none; }
 }

@@ -95,18 +95,6 @@
     "patchNotes": "Patch Notes",
     "tmdb": "This product uses the TMDB API but is not endorsed or certified by TMDB."
   },
-  "comingSoon": {
-    "earlyAccess": "Early Access",
-    "headline": "The Spidaverse",
-    "subline": "The web is ready. Are you?",
-    "leapOfFaith": "Leap of Faith",
-    "swinging": "Swinging...",
-    "accessGranted": "Access Granted",
-    "welcomeToTheWeb": "Welcome to the web.",
-    "milesMode": "Miles Mode",
-    "peterMode": "Peter Mode",
-    "venomMode": "Venom Mode"
-  },
   "consuming": {
     "heading": "Currently Vibing",
     "nowPlaying": "Now Playing",
@@ -450,5 +438,20 @@
       "diffCount": "{n} placed differently.",
       "keyboardHint": "Keyboard: focus a poster, then press a tier's letter to place it, or 0 to unrank."
     }
+  },
+  "splash": {
+    "earlyAccess": "Early Access",
+    "headline": "The Spidaverse",
+    "subline": "Reviews worth reading, every film ranked, and the arguments worth having.",
+    "connect": "Connect",
+    "connecting": "Connecting…",
+    "connected": "You're in",
+    "welcome": "Welcome to the web. Glad you made it.",
+    "paletteLabel": "Change colour",
+    "modeLabel": "Change contrast",
+    "languageLabel": "Change language",
+    "palette_miles": "Red palette",
+    "palette_peter": "Blue palette",
+    "palette_venom": "Monochrome palette"
   }
 }

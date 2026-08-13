@@ -95,18 +95,6 @@
     "patchNotes": "Notas de Patch",
     "tmdb": "This product uses the TMDB API but is not endorsed or certified by TMDB."
   },
-  "comingSoon": {
-    "earlyAccess": "Acesso Antecipado",
-    "headline": "The Spidaverse",
-    "subline": "A teia tá pronta. E você?",
-    "leapOfFaith": "Salto de Fé",
-    "swinging": "Balançando...",
-    "accessGranted": "Acesso Concedido",
-    "welcomeToTheWeb": "Bem-vindo à teia.",
-    "milesMode": "Miles Mode",
-    "peterMode": "Peter Mode",
-    "venomMode": "Venom Mode"
-  },
   "consuming": {
     "heading": "Na Vibe Agora",
     "nowPlaying": "Tocando Agora",
@@ -450,5 +438,20 @@
       "diffCount": "{n} posicionados de outra forma.",
       "keyboardHint": "Teclado: foque um pôster e pressione a letra de um nível para posicionar, ou 0 para remover."
     }
+  },
+  "splash": {
+    "earlyAccess": "Acesso Antecipado",
+    "headline": "The Spidaverse",
+    "subline": "Críticas que valem a leitura, cada filme classificado e os debates que importam.",
+    "connect": "Conectar",
+    "connecting": "Conectando…",
+    "connected": "Você entrou",
+    "welcome": "Bem-vindo à teia. Que bom que você veio.",
+    "paletteLabel": "Mudar cor",
+    "modeLabel": "Mudar contraste",
+    "languageLabel": "Mudar idioma",
+    "palette_miles": "Paleta vermelha",
+    "palette_peter": "Paleta azul",
+    "palette_venom": "Paleta monocromática"
   }
 }
