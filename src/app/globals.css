@@ -1574,6 +1574,20 @@
   border-top: none;
 }
 
+/* A caption that is also a heading. The tier chart titles itself with a real
+   <h2> so the TOC can offer it, but it is a caption inside the chart's own
+   frame — not a section break in the article. Left to inherit the rule above
+   it took a 3rem lead, 1.5rem of padding and a top border, which tore open the
+   chart's header (110px tall, with a stray rule floating above the title).
+   `not-prose` cannot prevent this: it neutralises Tailwind Typography, not our
+   own descendant selectors. Scoped one level deeper so it wins on specificity
+   without !important. */
+.article-prose figcaption h2 {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
 /* ========================================
    Hot Take Meter — ice-to-fire slider
    ======================================== */
