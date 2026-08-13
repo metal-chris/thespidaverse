@@ -156,6 +156,10 @@ function CapsuleBody({
   const [scrollable, setScrollable] = useState(false);
   const [progress, setProgress] = useState(0);
   const [atEnd, setAtEnd] = useState(false);
+  /** Visible fraction of the content — the thumb's share of the track, exactly
+   *  as a native scrollbar sizes itself. A fixed-size dot cannot say how much
+   *  is left to read; a proportional thumb says it at a glance. */
+  const [ratio, setRatio] = useState(1);
 
   const sync = useCallback(() => {
     const el = ref.current;
@@ -165,6 +169,7 @@ function CapsuleBody({
     setScrollable(can);
     setProgress(can ? el.scrollTop / range : 0);
     setAtEnd(!can || range - el.scrollTop <= 4);
+    setRatio(el.scrollHeight > 0 ? el.clientHeight / el.scrollHeight : 1);
   }, []);
 
   useEffect(() => {
@@ -197,12 +202,24 @@ function CapsuleBody({
       </div>
       {scrollable && (
         <div
-          className="pointer-events-none absolute bottom-1 right-1 top-1 w-px bg-border"
+          className="pointer-events-none absolute bottom-1.5 right-1.5 top-1.5 w-1.5 rounded-full bg-muted-foreground/20"
           aria-hidden="true"
         >
+          {/* Thumb height and offset are driven by one custom property so the
+              two can never disagree: `top` has to subtract the thumb's own
+              height to land flush with the track's end at progress 1, and the
+              height is `max()`-clamped so a very long write-up still leaves
+              something big enough to see. Doing that arithmetic in calc keeps
+              it exact at every ratio instead of approximating in JS. */}
           <span
-            className="source-rail-dot absolute left-1/2 block h-[7px] w-[7px] -translate-x-1/2 rounded-full bg-accent"
-            style={{ top: `calc(${progress * 100}% - ${progress * 7}px)` }}
+            className="source-rail-thumb absolute inset-x-0 rounded-full bg-accent"
+            style={
+              {
+                "--thumb": `max(1.75rem, ${(ratio * 100).toFixed(2)}%)`,
+                height: "var(--thumb)",
+                top: `calc(${progress.toFixed(4)} * (100% - var(--thumb)))`,
+              } as React.CSSProperties
+            }
           />
         </div>
       )}
@@ -587,6 +604,19 @@ export function TierListChart({ value }: { value: TierListBlock }) {
                 }}
                 className="absolute inset-x-0 bottom-0 flex max-h-[86%] touch-none flex-col rounded-t-[0.9rem] border-t border-border bg-card"
               >
+                {/* The sheet previously closed only by swiping down or tapping
+                    the backdrop. Both are invisible affordances, and neither is
+                    reachable by keyboard or a switch device — the drag handle
+                    below is `aria-hidden` decoration, not a control. An explicit
+                    button is the only close path that announces itself. */}
+                <button
+                  type="button"
+                  onClick={close}
+                  aria-label={t("close")}
+                  className="absolute right-2 top-2 z-10 grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-card-foreground hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                >
+                  ✕
+                </button>
                 <span
                   className="mx-auto mb-0.5 mt-2 h-1 w-10 flex-none rounded-full bg-muted-foreground/55"
                   aria-hidden="true"

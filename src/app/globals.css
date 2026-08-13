@@ -1694,12 +1694,21 @@ body.sanity-studio-active #main-content {
   display: none;
 }
 
+/* Two rails, deliberately different. SourceLink's citation card keeps the
+   fixed dot — its content is short and the dot is a position marker. The
+   capsule's thumb is proportional because a long write-up needs to show how
+   much is left, not just where you are. */
 .source-rail-dot {
   transition: top 0.08s linear;
 }
 
+.source-rail-thumb {
+  transition: top 0.08s linear, height 0.12s ease-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .source-rail-dot {
+  .source-rail-dot,
+  .source-rail-thumb {
     transition: none;
   }
 }
