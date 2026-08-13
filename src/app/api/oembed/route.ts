@@ -18,7 +18,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://thespidaverse.com";
 
 // /articles/<slug>, /<locale>/articles/<slug>, optionally /r/<tl>
 const PATH_RE =
-  /^(?:\/(?:en|es|ja|pt|ko|fr))?\/articles\/([a-z0-9-]+)(?:\/r\/([A-Za-z0-9|%_-]+))?\/?$/;
+  /^(?:\/(?:en|es|ja|pt|ko|fr|zh-CN|zh-TW))?\/articles\/([a-z0-9-]+)(?:\/r\/([A-Za-z0-9|%_-]+))?\/?$/;
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

@@ -71,6 +71,31 @@ function FlagFR({ className = "" }: { className?: string }) {
   );
 }
 
+function FlagCN({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 18" className={className} aria-hidden="true">
+      <rect width="24" height="18" fill="#DE2910" rx="2" />
+      <path d="M4 3.1l.66 2.03h2.13l-1.72 1.25.65 2.03L4 7.16 2.28 8.41l.65-2.03L1.21 5.13h2.13z" fill="#FFDE00" />
+      <circle cx="8.6" cy="2.6" r="0.72" fill="#FFDE00" />
+      <circle cx="10.3" cy="4.3" r="0.72" fill="#FFDE00" />
+      <circle cx="10.3" cy="6.6" r="0.72" fill="#FFDE00" />
+      <circle cx="8.6" cy="8.2" r="0.72" fill="#FFDE00" />
+    </svg>
+  );
+}
+
+function FlagTW({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 18" className={className} aria-hidden="true">
+      <rect width="24" height="18" fill="#FE0000" rx="2" />
+      <path d="M0 2a2 2 0 0 1 2-2h10v9H0z" fill="#000095" />
+      <circle cx="6" cy="4.5" r="2.6" fill="#FFFFFF" />
+      <circle cx="6" cy="4.5" r="1.7" fill="#000095" />
+      <circle cx="6" cy="4.5" r="1.4" fill="#FFFFFF" />
+    </svg>
+  );
+}
+
 const FLAG_COMPONENTS: Record<string, React.FC<{ className?: string }>> = {
   en: FlagUS,
   es: FlagES,
@@ -78,6 +103,8 @@ const FLAG_COMPONENTS: Record<string, React.FC<{ className?: string }>> = {
   pt: FlagBR,
   ko: FlagKR,
   fr: FlagFR,
+  "zh-CN": FlagCN,
+  "zh-TW": FlagTW,
 };
 
 const LOCALES = [
@@ -87,6 +114,8 @@ const LOCALES = [
   { code: "pt", label: "Português" },
   { code: "ko", label: "한국어" },
   { code: "fr", label: "Français" },
+  { code: "zh-CN", label: "简体中文" },
+  { code: "zh-TW", label: "繁體中文" },
 ];
 
 /** Three rotating arcs matching the WebSpinner theme */

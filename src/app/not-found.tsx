@@ -23,7 +23,7 @@ const TRANSLATIONS: Record<string, {
 
 function detectLocale(): string {
   if (typeof window === "undefined") return "en";
-  const match = window.location.pathname.match(/^\/(es|ja|pt|ko|fr)(\/|$)/);
+  const match = window.location.pathname.match(/^\/(es|ja|pt|ko|fr|zh-CN|zh-TW)(\/|$)/);
   return match ? match[1] : "en";
 }
 
