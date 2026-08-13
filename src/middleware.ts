@@ -21,6 +21,24 @@ const BYPASS_PREFIXES = [
 
 const BYPASS_EXTENSIONS = [".svg", ".png", ".jpg", ".ico", ".json", ".xml", ".js", ".css", ".woff", ".woff2"];
 
+/**
+ * Link-preview crawlers skip the splash and read the real page.
+ *
+ * These bots fetch a URL once, read its meta tags, and render a static card —
+ * they never execute JS, never carry cookies, and never click Connect. Gated,
+ * every share on every platform unfurled as the same imageless coming-soon
+ * stub (and `twitter:card` promised a large image that never came, the
+ * ugliest render Twitter has). The splash is a threshold, not access
+ * control — the Connect ritual grants a cookie to anyone who clicks — so
+ * letting preview bots through leaks nothing the first click wouldn't.
+ *
+ * Search crawlers (Googlebot etc.) are deliberately NOT listed: whether the
+ * pre-launch site should be indexed is an SEO decision to make explicitly,
+ * not a side effect of fixing link unfurls.
+ */
+const PREVIEW_BOT_RE =
+  /twitterbot|facebookexternalhit|facebookcatalog|discordbot|slackbot|linkedinbot|whatsapp|telegrambot|pinterestbot|redditbot|embedly|bluesky|mastodon|iframely/i;
+
 const intlMiddleware = createMiddleware(routing);
 
 export function middleware(request: NextRequest) {
@@ -41,11 +59,21 @@ export function middleware(request: NextRequest) {
   const isComingSoon = pathname === COMING_SOON_PATH ||
     routing.locales.some((l) => pathname === `/${l}${COMING_SOON_PATH}` || pathname === `/${l}/coming-soon`);
 
-  if (!isComingSoon) {
+  const isPreviewBot = PREVIEW_BOT_RE.test(request.headers.get("user-agent") ?? "");
+
+  if (!isComingSoon && !isPreviewBot) {
     const accessCookie = request.cookies.get(COOKIE_NAME);
     if (accessCookie?.value !== COOKIE_VALUE) {
       const url = request.nextUrl.clone();
       url.pathname = COMING_SOON_PATH;
+      // Carry the destination through the splash. Without this, someone
+      // following a shared deep link lands on the splash, clicks Connect, and
+      // is dumped at the homepage — the link they followed is simply lost.
+      // Path + query only (never a full URL), so it cannot become an open
+      // redirect; the client validates the same way before navigating.
+      const dest = request.nextUrl.pathname + request.nextUrl.search;
+      url.search = "";
+      if (dest !== "/") url.searchParams.set("next", dest);
       return NextResponse.redirect(url);
     }
   }

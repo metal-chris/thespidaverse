@@ -28,8 +28,14 @@ export function ComingSoonContent({ palette, onTogglePalette, onAccessGranted }:
       if (res.ok) {
         setStatus("success");
         onAccessGranted?.();
+        // Return to wherever the visitor was headed before the splash caught
+        // them (middleware carries it in ?next=). Same-origin paths only —
+        // reject anything not starting with a single "/" so a crafted link
+        // cannot turn the splash into an open redirect.
+        const next = new URLSearchParams(window.location.search).get("next");
+        const dest = next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
         setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = dest;
         }, 3200);
       } else {
         setStatus("error");
