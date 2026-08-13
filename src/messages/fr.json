@@ -422,6 +422,8 @@
     "fullReview": "Critique complète",
     "textList": "Version texte de cette liste",
     "open": "Voir l'entrée : {title}",
+    "tierNote": "À propos du palier {label}",
+    "tierHeading": "Palier {label}",
     "maker": {
       "ctaTitle": "Pas d'accord avec ce classement ?",
       "ctaBlurb": "Réorganisez-le et partagez votre version. Sans compte.",

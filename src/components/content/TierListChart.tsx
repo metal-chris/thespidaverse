@@ -233,6 +233,138 @@ function CapsuleBody({
   );
 }
 
+/* ── The tier badge, and the note it can carry ───────────────────── */
+
+/**
+ * The tier badge. Inert unless the tier carries a `description`, in which case
+ * it becomes a disclosure for that note.
+ *
+ * Three input models, one control. A hover-only tooltip would be invisible on
+ * every phone and tablet — touch has no hover — and unreachable by keyboard, so
+ * the note is a real <button>: pointer-enter opens it for a MOUSE only (gated
+ * on pointerType, or a tap would both open it via enter and close it via the
+ * click that follows), focus opens it for the keyboard, and click toggles it
+ * for touch and for anyone who prefers clicking. Escape and an outside press
+ * close it.
+ *
+ * The panel is portalled to the body because the chart's <figure> clips its
+ * overflow — rendered in place, the note would be cropped at the row edge — and
+ * it is positioned from the badge's own rect, flipping above the badge when
+ * there is no room below and clamping to the viewport so it never hangs off a
+ * narrow screen.
+ */
+function TierBadge({ tier }: { tier: TierRow }) {
+  const t = useTranslations("tierList");
+  const note = tier.description;
+  const hasNote = Array.isArray(note) && note.length > 0;
+
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  const panelId = `tier-note-${tier._key}`;
+
+  const place = useCallback(() => {
+    const el = btnRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const width = Math.min(320, window.innerWidth - 16);
+    const left = Math.max(8, Math.min(r.left, window.innerWidth - width - 8));
+    // Flip above when the space below cannot hold a reasonable panel.
+    const below = window.innerHeight - r.bottom;
+    const top = below < 180 && r.top > below ? Math.max(8, r.top - 8) : r.bottom + 8;
+    setPos({ top, left });
+  }, []);
+
+  const show = useCallback(() => {
+    place();
+    setOpen(true);
+  }, [place]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    const onDown = (e: PointerEvent) => {
+      const target = e.target as Node;
+      if (btnRef.current?.contains(target) || panelRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    // Reposition rather than drift: the panel is fixed, so a scroll would
+    // otherwise leave it stranded away from its badge.
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("pointerdown", onDown);
+    window.addEventListener("scroll", place, true);
+    window.addEventListener("resize", place);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("scroll", place, true);
+      window.removeEventListener("resize", place);
+    };
+  }, [open, place]);
+
+  const swatch = {
+    backgroundColor: tierColor(tier),
+    color: "#141414",
+  } as React.CSSProperties;
+
+  if (!hasNote) {
+    return (
+      <div
+        className="grid w-12 flex-none place-items-center text-xl font-black sm:w-16"
+        style={swatch}
+      >
+        {tier.label}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <button
+        ref={btnRef}
+        type="button"
+        aria-expanded={open}
+        aria-controls={open ? panelId : undefined}
+        aria-label={t("tierNote", { label: tier.label })}
+        onPointerEnter={(e) => {
+          if (e.pointerType === "mouse") show();
+        }}
+        onPointerLeave={(e) => {
+          if (e.pointerType === "mouse") setOpen(false);
+        }}
+        onFocus={show}
+        onBlur={() => setOpen(false)}
+        onClick={() => (open ? setOpen(false) : show())}
+        className="grid w-12 flex-none cursor-help place-items-center text-xl font-black underline decoration-black/35 decoration-dotted underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-black sm:w-16"
+        style={swatch}
+      >
+        {tier.label}
+      </button>
+      {open &&
+        pos &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            ref={panelRef}
+            id={panelId}
+            role="note"
+            className="fixed z-[110] w-[min(20rem,calc(100vw-1rem))] rounded-lg border border-border bg-card p-3 text-[0.85rem] leading-[1.6] text-card-foreground shadow-[0_16px_44px_rgba(0,0,0,0.55)] [&_p]:m-0 [&_p]:mb-[0.6em] [&_p:last-child]:mb-0 [&_strong]:text-accent"
+            style={{ top: pos.top, left: pos.left }}
+          >
+            <p className="mb-1.5 text-[0.7rem] font-bold uppercase tracking-widest text-muted-foreground">
+              {t("tierHeading", { label: tier.label })}
+            </p>
+            <PortableText value={note} components={capsuleComponents} />
+          </div>,
+          document.body
+        )}
+    </>
+  );
+}
+
 /* ── The capsule (shared by dialog and sheet shells) ────────────── */
 
 function CapsuleContent({
@@ -511,12 +643,7 @@ export function TierListChart({ value }: { value: TierListBlock }) {
         <div className="flex flex-col gap-px bg-border">
           {value.tiers.map((tier) => (
             <div key={tier._key} className="flex items-stretch gap-px">
-              <div
-                className="grid w-12 flex-none place-items-center text-xl font-black sm:w-16"
-                style={{ backgroundColor: tierColor(tier), color: "#141414" }}
-              >
-                {tier.label}
-              </div>
+              <TierBadge tier={tier} />
               <div className="flex flex-1 flex-wrap gap-2 bg-card p-2">
                 {tier.entries?.map((entry) => {
                   rank += 1;

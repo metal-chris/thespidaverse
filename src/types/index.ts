@@ -90,6 +90,9 @@ export interface TierRow {
   _key: string;
   label: string;
   color?: string;
+  /** What the tier means — rank criteria or general prose. Rendered in a
+   *  popover off the tier badge; absent leaves the badge inert. */
+  description?: PortableTextBlock[];
   entries: TierEntry[];
 }
 

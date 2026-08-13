@@ -422,6 +422,8 @@
     "fullReview": "Full review",
     "textList": "Text version of this list",
     "open": "View entry: {title}",
+    "tierNote": "About {label} tier",
+    "tierHeading": "{label} tier",
     "maker": {
       "ctaTitle": "Disagree with this ranking?",
       "ctaBlurb": "Rearrange it and share your version. No account needed.",

@@ -422,6 +422,8 @@
     "fullReview": "전체 리뷰",
     "textList": "이 목록의 텍스트 버전",
     "open": "항목 보기: {title}",
+    "tierNote": "{label} 티어 정보",
+    "tierHeading": "{label} 티어",
     "maker": {
       "ctaTitle": "이 순위에 동의하지 않나요?",
       "ctaBlurb": "직접 재배열하고 공유하세요. 계정이 필요 없습니다.",

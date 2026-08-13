@@ -345,6 +345,26 @@ export default defineType({
                         "Optional hex. Defaults to the classic ramp by label.",
                     }),
                     defineField({
+                      name: "description",
+                      title: "Tier note",
+                      type: "array",
+                      of: [
+                        {
+                          type: "block",
+                          styles: [{ title: "Normal", value: "normal" }],
+                          marks: {
+                            decorators: [
+                              { title: "Bold", value: "strong" },
+                              { title: "Italic", value: "em" },
+                            ],
+                            annotations: [],
+                          },
+                        },
+                      ],
+                      description:
+                        "What this tier means — the criteria for landing in it, or any prose about the tier. Shown in a popover from the tier badge. Leave empty and the badge stays inert.",
+                    }),
+                    defineField({
                       name: "entries",
                       title: "Entries",
                       type: "array",

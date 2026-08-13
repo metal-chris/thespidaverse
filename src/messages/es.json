@@ -422,6 +422,8 @@
     "fullReview": "Reseña completa",
     "textList": "Versión en texto de esta lista",
     "open": "Ver entrada: {title}",
+    "tierNote": "Sobre el nivel {label}",
+    "tierHeading": "Nivel {label}",
     "maker": {
       "ctaTitle": "¿No estás de acuerdo con esta clasificación?",
       "ctaBlurb": "Reorganízala y comparte tu versión. Sin cuenta.",

@@ -132,6 +132,17 @@ export function buildHappyPathScenario(): MockDataset {
             {
               _key: "tier-s",
               label: "S",
+              // Exercises the tier-note popover: present on S, absent on the
+              // rest, so one chart covers both the interactive badge and the
+              // inert one.
+              description: [
+                { _key: "tier-s-d1", _type: "block", style: "normal", markDefs: [], children: [{ _key: "tier-s-d1-s", _type: "span", marks: [], text: "Reserved for adaptations that justify their own existence — the ones that answer why film, and not the page." }] },
+                { _key: "tier-s-d2", _type: "block", style: "normal", markDefs: [], children: [
+                  { _key: "tier-s-d2-a", _type: "span", marks: [], text: "The bar is simple: " },
+                  { _key: "tier-s-d2-b", _type: "span", marks: ["strong"], text: "it has to cost the protagonist something" },
+                  { _key: "tier-s-d2-c", _type: "span", marks: [], text: ", and the film has to make you feel the price." },
+                ] },
+              ],
               entries: [
                 {
                   _key: "te1",

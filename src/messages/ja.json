@@ -422,6 +422,8 @@
     "fullReview": "レビュー全文",
     "textList": "このリストのテキスト版",
     "open": "エントリーを見る：{title}",
+    "tierNote": "{label} ティアについて",
+    "tierHeading": "{label} ティア",
     "maker": {
       "ctaTitle": "このランキングに異議あり？",
       "ctaBlurb": "並べ替えて自分の版を共有できます。登録不要。",
