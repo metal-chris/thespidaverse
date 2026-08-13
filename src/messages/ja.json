@@ -426,7 +426,8 @@
     "tierHeading": "{label} ティア",
     "maker": {
       "ctaTitle": "このランキングに異議あり？",
-      "ctaBlurb": "並べ替えて自分の版を共有できます。登録不要。",
+      "ctaBlurb": "並べ替えて自分の版を共有できます。",
+      "ctaNoAccount": "登録不要。",
       "ctaButton": "自分で作る",
       "boardTitle": "あなたのランキング",
       "unranked": "未配置",

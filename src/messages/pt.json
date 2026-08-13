@@ -426,7 +426,8 @@
     "tierHeading": "Nível {label}",
     "maker": {
       "ctaTitle": "Discorda deste ranking?",
-      "ctaBlurb": "Reorganize e compartilhe a sua versão. Sem conta.",
+      "ctaBlurb": "Reorganize e compartilhe a sua versão.",
+      "ctaNoAccount": "Sem conta.",
       "ctaButton": "Faça o seu",
       "boardTitle": "Seu ranking",
       "unranked": "Sem classificação",

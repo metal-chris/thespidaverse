@@ -426,7 +426,8 @@
     "tierHeading": "Palier {label}",
     "maker": {
       "ctaTitle": "Pas d'accord avec ce classement ?",
-      "ctaBlurb": "Réorganisez-le et partagez votre version. Sans compte.",
+      "ctaBlurb": "Réorganisez-le et partagez votre version.",
+      "ctaNoAccount": "Sans compte.",
       "ctaButton": "Créez le vôtre",
       "boardTitle": "Votre classement",
       "unranked": "Non classé",

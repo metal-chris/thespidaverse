@@ -426,7 +426,8 @@
     "tierHeading": "{label} tier",
     "maker": {
       "ctaTitle": "Disagree with this ranking?",
-      "ctaBlurb": "Rearrange it and share your version. No account needed.",
+      "ctaBlurb": "Rearrange it and share your version.",
+      "ctaNoAccount": "No account needed.",
       "ctaButton": "Make your own",
       "boardTitle": "Your ranking",
       "unranked": "Unranked",

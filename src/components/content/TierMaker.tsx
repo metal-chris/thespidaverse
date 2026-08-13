@@ -308,10 +308,16 @@ export function TierMaker({ value }: { value: TierListBlock }) {
   /* ── Collapsed: the CTA ── */
   if (!open) {
     return (
-      <div className="not-prose my-8 flex flex-col items-start gap-2 rounded-lg border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-0.5">
+      // One row at every width. The blurb used to carry "No account needed."
+      // inline, which made the text block wide enough that the button had to
+      // drop below it on phones. With the reassurance on its own line the
+      // text column is narrow enough for the button to sit beside it — so
+      // the sm: stacking variants are gone rather than tuned.
+      <div className="not-prose my-8 flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-4">
+        <div className="flex min-w-0 flex-col gap-0.5">
           <p className="text-sm font-bold text-foreground">{t("maker.ctaTitle")}</p>
           <p className="text-xs text-muted-foreground">{t("maker.ctaBlurb")}</p>
+          <p className="text-xs text-muted-foreground">{t("maker.ctaNoAccount")}</p>
         </div>
         <button
           type="button"

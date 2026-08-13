@@ -426,7 +426,8 @@
     "tierHeading": "{label} 티어",
     "maker": {
       "ctaTitle": "이 순위에 동의하지 않나요?",
-      "ctaBlurb": "직접 재배열하고 공유하세요. 계정이 필요 없습니다.",
+      "ctaBlurb": "직접 재배열하고 공유하세요.",
+      "ctaNoAccount": "계정이 필요 없습니다.",
       "ctaButton": "직접 만들기",
       "boardTitle": "내 순위",
       "unranked": "미배치",
