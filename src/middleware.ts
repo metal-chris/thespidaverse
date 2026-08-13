@@ -17,6 +17,11 @@ const BYPASS_PREFIXES = [
   "/pagefind",
   "/studio",
   "/admin",
+  // The iframe embed surface. It renders on other people's pages, where
+  // neither a locale-prefixed redirect nor the splash can ever make sense —
+  // an embed that greets readers with a Connect ritual is just broken. It
+  // handles its own locale via ?locale= and shows only public chart content.
+  "/embed",
 ];
 
 const BYPASS_EXTENSIONS = [".svg", ".png", ".jpg", ".ico", ".json", ".xml", ".js", ".css", ".woff", ".woff2"];

@@ -17,6 +17,10 @@ import { WebRating } from "./WebRating";
 import { SourceLink } from "./SourceLink";
 import { TierMaker } from "./TierMaker";
 import type { TierChipAspect, TierEntry, TierListBlock, TierRow } from "@/types";
+import { TIER_COLORS, tierColor } from "@/lib/tierlist/arrangement";
+// Re-exported: existing imports of the ramp from this module keep working.
+export { TIER_COLORS, tierColor };
+
 
 /**
  * Tier list chart + capsules (`_type: "tierList"`).
@@ -33,19 +37,6 @@ import type { TierChipAspect, TierEntry, TierListBlock, TierRow } from "@/types"
  * inspection surface, the sheet's gestures seed drag-to-rearrange, and the
  * `#tl-<key>` deep links grow into URL-encoded arrangements.
  */
-
-// The classic tier ramp. Fixed rather than theme-derived on purpose: this is
-// recognizable tier-list iconography, and it sits on the dark card in all
-// three site themes. Schema `color` overrides per tier.
-export const TIER_COLORS: Record<string, string> = {
-  S: "#E85A4F",
-  A: "#E8944F",
-  B: "#E8C94F",
-  C: "#6FC46F",
-  D: "#5FA8DC",
-  E: "#4FC4B0",
-  F: "#A66FC4",
-};
 
 export const ASPECT_CHIP: Record<TierChipAspect, string> = {
   poster: "w-16 sm:w-20 aspect-[2/3]",
@@ -116,9 +107,6 @@ function flatten(tiers: TierRow[]): FlatEntry[] {
   return out;
 }
 
-export function tierColor(tier: TierRow): string {
-  return tier.color || TIER_COLORS[tier.label] || "#8A8A8A";
-}
 
 export function entryImageUrl(entry: TierEntry, width: number): string {
   let url = "";

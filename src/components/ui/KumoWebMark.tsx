@@ -5,7 +5,13 @@
  * mark, reproduced here so the nav/footer link to it carries the real brand
  * instead of a generic lucide glyph. The canonical source is
  * `mc-v4/src/components/ui/logo.tsx` (WebMark) — keep the geometry in sync
- * if that changes. Deliberately NOT added to this site's own icon set.
+ * if that changes.
+ *
+ * ALSO serves as The Spidaverse's own mark for now — embed attribution
+ * (/embed footer) and the tier-list OG card draw it as this site's identity
+ * by explicit decision (Aug 2026): the sites are siblings and may read as
+ * such. A dedicated Spidaverse mark is being explored; if adopted, swap the
+ * embed/OG usages to it and restore this file to link-icon-only duty.
  *
  * Radials stop ON the outer ring with butt caps: extending past it with
  * round caps reads as a ship's wheel rather than a web.

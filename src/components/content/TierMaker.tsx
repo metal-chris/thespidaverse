@@ -6,6 +6,16 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { ASPECT_CHIP, entryImageUrl, tierColor } from "./TierListChart";
 import type { TierChipAspect, TierEntry, TierListBlock, TierRow } from "@/types";
+import {
+  UNRANKED,
+  flatten,
+  canonicalArrangement,
+  encodeArrangement,
+  decodeArrangement,
+  type Arrangement,
+  type FlatItem,
+} from "@/lib/tierlist/arrangement";
+
 
 /**
  * The Maker (phase 2): the published chart becomes a board the reader can
@@ -26,74 +36,6 @@ import type { TierChipAspect, TierEntry, TierListBlock, TierRow } from "@/types"
  * address the block's canonical order, so adding an entry later leaves old
  * links valid — the new entry simply arrives unranked.
  */
-
-const UNRANKED = "_";
-
-type Arrangement = Record<string, string[]>;
-
-interface FlatItem {
-  entry: TierEntry;
-  tier: TierRow;
-  index: number;
-}
-
-/** Canonical flat order — the index space the URL encodes against. */
-function flatten(tiers: TierRow[]): FlatItem[] {
-  const out: FlatItem[] = [];
-  for (const tier of tiers) {
-    for (const entry of tier.entries ?? []) {
-      out.push({ entry, tier, index: out.length });
-    }
-  }
-  return out;
-}
-
-function canonicalArrangement(tiers: TierRow[]): Arrangement {
-  const a: Arrangement = { [UNRANKED]: [] };
-  for (const tier of tiers) {
-    a[tier._key] = (tier.entries ?? []).map((e) => e._key);
-  }
-  return a;
-}
-
-function encode(arr: Arrangement, tiers: TierRow[], keyToIndex: Map<string, number>): string {
-  return tiers
-    .map((t) =>
-      (arr[t._key] ?? [])
-        .map((k) => keyToIndex.get(k))
-        .filter((i): i is number => i !== undefined)
-        .map((i) => i.toString(36))
-        .join("")
-    )
-    .join("|");
-}
-
-/**
- * Decode defensively: a hand-edited or stale link must never throw or produce a
- * board with duplicated/missing chips. Anything unparseable falls back to the
- * author's ranking; anything simply absent lands unranked.
- */
-function decode(param: string, tiers: TierRow[], items: FlatItem[]): Arrangement | null {
-  const groups = param.split("|");
-  if (groups.length !== tiers.length) return null;
-
-  const arr: Arrangement = { [UNRANKED]: [] };
-  const seen = new Set<number>();
-
-  for (let g = 0; g < groups.length; g++) {
-    const keys: string[] = [];
-    for (const ch of groups[g]) {
-      const idx = parseInt(ch, 36);
-      if (Number.isNaN(idx) || idx < 0 || idx >= items.length || seen.has(idx)) return null;
-      seen.add(idx);
-      keys.push(items[idx].entry._key);
-    }
-    arr[tiers[g]._key] = keys;
-  }
-  // Entries added to the block after the link was made.
-  arr[UNRANKED] = items.filter((it) => !seen.has(it.index)).map((it) => it.entry._key);
-  return arr;
-}
 
 /* ── Chip ───────────────────────────────────────────────────────── */
 
@@ -197,7 +139,7 @@ export function TierMaker({ value }: { value: TierListBlock }) {
   useEffect(() => {
     const param = new URLSearchParams(window.location.search).get("tl");
     if (!param) return;
-    const decoded = decode(param, tiers, items);
+    const decoded = decodeArrangement(param, tiers, items);
     if (decoded) {
       setArr(decoded);
       setOpen(true);
@@ -237,10 +179,15 @@ export function TierMaker({ value }: { value: TierListBlock }) {
 
   const shareUrl = useMemo(() => {
     if (typeof window === "undefined") return "";
-    const u = new URL(window.location.href);
-    u.searchParams.set("tl", encode(arr, tiers, keyToIndex));
-    u.hash = "";
-    return u.toString();
+    // Share the PATH form (/articles/…/r/<tl>), not the ?tl= query form the
+    // address bar uses. Metadata for a query param would force every article
+    // page out of ISR (generateMetadata would have to read searchParams); a
+    // path segment gets its own route with its own OG card — the person's
+    // actual arrangement drawn as an image — while article pages stay static.
+    // The /r/ page bounces humans straight back to the ?tl= form on load.
+    const code = encodeArrangement(arr, tiers, keyToIndex);
+    const base = window.location.pathname.split("/r/")[0].replace(/\/$/, "");
+    return `${window.location.origin}${base}/r/${encodeURIComponent(code)}`;
   }, [arr, tiers, keyToIndex]);
 
   /* Keep the address bar in step without pushing history entries or scrolling. */
@@ -248,7 +195,7 @@ export function TierMaker({ value }: { value: TierListBlock }) {
     if (!open) return;
     const u = new URL(window.location.href);
     if (moves === 0 && (arr[UNRANKED] ?? []).length === 0) u.searchParams.delete("tl");
-    else u.searchParams.set("tl", encode(arr, tiers, keyToIndex));
+    else u.searchParams.set("tl", encodeArrangement(arr, tiers, keyToIndex));
     window.history.replaceState(null, "", u.toString());
   }, [arr, open, moves, tiers, keyToIndex]);
 
