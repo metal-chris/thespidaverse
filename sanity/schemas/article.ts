@@ -295,6 +295,33 @@ export default defineType({
               description: 'Optional caption, e.g. "The Full Ranking"',
             }),
             defineField({
+              name: "mode",
+              title: "Mode",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Index — chips jump to headings in the body", value: "index" },
+                  { title: "Capsule — write-ups live in the entries", value: "capsule" },
+                ],
+                layout: "radio",
+              },
+              initialValue: "index",
+            }),
+            defineField({
+              name: "chipAspect",
+              title: "Chip aspect",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Poster (2:3)", value: "poster" },
+                  { title: "Square (1:1)", value: "square" },
+                  { title: "Wide (16:9)", value: "wide" },
+                ],
+              },
+              initialValue: "poster",
+              description: "Per block, never per entry — films 2:3, albums 1:1, key art 16:9.",
+            }),
+            defineField({
               name: "tiers",
               title: "Tiers",
               type: "array",
@@ -344,11 +371,50 @@ export default defineType({
                               options: { hotspot: true },
                             }),
                             defineField({
+                              name: "subtitle",
+                              title: "Subtitle",
+                              type: "string",
+                              description:
+                                'Generalizes Year: "Season 2", an artist. Chart uses subtitle, falling back to year.',
+                            }),
+                            defineField({
                               name: "anchor",
                               title: "Anchor ID",
                               type: "string",
                               description:
                                 "Heading id the chip scrolls to, e.g. 4-spider-man-brand-new-day-2026",
+                            }),
+                            defineField({
+                              name: "content",
+                              title: "Capsule write-up",
+                              type: "array",
+                              of: [
+                                {
+                                  type: "block",
+                                  styles: [{ title: "Normal", value: "normal" }],
+                                  marks: {
+                                    decorators: [
+                                      { title: "Bold", value: "strong" },
+                                      { title: "Italic", value: "em" },
+                                    ],
+                                    annotations: [sourceLinkAnnotation],
+                                  },
+                                },
+                              ],
+                              description:
+                                "The entry's write-up, shown in the capsule. Source citations work here.",
+                            }),
+                            defineField({
+                              name: "rating",
+                              title: "Web Rating",
+                              type: "number",
+                              validation: (rule) => rule.min(0).max(100),
+                            }),
+                            defineField({
+                              name: "href",
+                              title: "Full review link",
+                              type: "string",
+                              description: "Internal path or URL when the entry has its own article.",
                             }),
                           ],
                           preview: {

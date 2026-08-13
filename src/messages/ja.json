@@ -412,5 +412,15 @@
       "reference": "参考資料"
     },
     "dismiss": "閉じる"
+  },
+  "tierList": {
+    "close": "閉じる",
+    "previous": "前へ",
+    "next": "次へ",
+    "counter": "{total}件中{n}件目",
+    "readFull": "全文を読む",
+    "fullReview": "レビュー全文",
+    "textList": "このリストのテキスト版",
+    "open": "エントリーを見る：{title}"
   }
 }

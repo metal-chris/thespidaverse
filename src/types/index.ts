@@ -65,14 +65,26 @@ export interface VideoEmbed {
   caption?: string;
 }
 
-/** One chip on a tier-list chart. `anchor` scrolls to that entry's heading. */
+/** One chip on a tier-list chart. Everything past the phase-0 fields is
+ * optional: `content` powers the capsule write-up, `rating`/`href` its footer. */
 export interface TierEntry {
   _key: string;
   title: string;
   year?: string;
+  /** Generalizes `year`: "Season 2", an artist. Chart label uses subtitle ?? year. */
+  subtitle?: string;
   image?: SanityImage & { mockUrl?: string };
   anchor?: string;
+  /** Capsule write-up. Renders through portableTextComponents, so source cards work here. */
+  content?: PortableTextBlock[];
+  /** Optional per-entry Web Rating shown in the capsule header. */
+  rating?: number;
+  /** "Full review" link when the entry has its own article. */
+  href?: string;
 }
+
+export type TierListMode = "index" | "capsule";
+export type TierChipAspect = "poster" | "square" | "wide";
 
 export interface TierRow {
   _key: string;
@@ -85,6 +97,10 @@ export interface TierListBlock {
   _type: "tierList";
   title?: string;
   tiers: TierRow[];
+  /** index (default): body keeps the write-ups; capsule: they live in the entries. */
+  mode?: TierListMode;
+  /** Chip shape per block: poster 2:3, square 1:1, wide 16:9. */
+  chipAspect?: TierChipAspect;
 }
 
 export interface ImageGallery {

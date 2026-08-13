@@ -412,5 +412,15 @@
       "reference": "Reference"
     },
     "dismiss": "Dismiss"
+  },
+  "tierList": {
+    "close": "Close",
+    "previous": "Previous",
+    "next": "Next",
+    "counter": "{n} of {total}",
+    "readFull": "Read the full entry",
+    "fullReview": "Full review",
+    "textList": "Text version of this list",
+    "open": "View entry: {title}"
   }
 }

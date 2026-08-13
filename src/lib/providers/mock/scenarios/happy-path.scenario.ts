@@ -118,12 +118,16 @@ export function buildHappyPathScenario(): MockDataset {
           ],
         },
       ]).concat([
-        // Fixture for the tier-list chart: three tiers, anchors pointing at
-        // this article's own headings, mockUrl posters (2:3).
+        // Fixture for the tier-list capsules: capsule mode, per-entry content
+        // (te1 long enough to trigger the scroll rail), a rating, an href, a
+        // subtitle override, and te4 with no content/image/anchor to exercise
+        // every fallback at once.
         {
           _key: "tiermock01",
           _type: "tierList",
           title: "Every Dune Adaptation, Ranked",
+          mode: "capsule",
+          chipAspect: "poster",
           tiers: [
             {
               _key: "tier-s",
@@ -133,13 +137,24 @@ export function buildHappyPathScenario(): MockDataset {
                   _key: "te1",
                   title: "Dune: Part Two",
                   year: "2024",
+                  rating: 96,
                   anchor: "the-desert-swallows-everything",
                   image: { _type: "image", asset: { _ref: "image-mock-tier1-300x450-jpg", _type: "reference" }, mockUrl: "https://picsum.photos/seed/tier1/300/450" },
+                  content: [
+                    { _key: "te1c1", _type: "block", style: "normal", markDefs: [], children: [{ _key: "te1c1-s", _type: "span", marks: [], text: "There is a moment about forty minutes in where Paul rides a sandworm for the first time, and the theater went silent. Not movie-quiet. Actually silent." }] },
+                    { _key: "te1c2", _type: "block", style: "normal", markDefs: [], children: [{ _key: "te1c2-s", _type: "span", marks: [], text: "That is what Villeneuve does better than almost anyone working: he makes spectacle feel earned. Every wide shot of the desert carries weight because the intimate moments that precede them carry weight too." }] },
+                    { _key: "te1c3", _type: "block", style: "normal", markDefs: [], children: [{ _key: "te1c3-s", _type: "span", marks: [], text: "This paragraph exists to overflow the capsule body so the line-and-dot rail appears. Scroll it, tab into it, and the dot should track the whole way down, exactly like a source card." }] },
+                  ],
                 },
                 {
                   _key: "te2",
                   title: "Dune: Part One",
                   year: "2021",
+                  subtitle: "Director's Cut",
+                  href: "/articles/dune-part-two-is-a-masterclass-in-sci-fi-filmmaking",
+                  content: [
+                    { _key: "te2c1", _type: "block", style: "normal", markDefs: [], children: [{ _key: "te2c1-s", _type: "span", marks: [], text: "Restrained to a fault, intentionally so. The href below renders as the full-review link because this entry points at its own article." }] },
+                  ],
                   anchor: "chalamet-finally-becomes-muad-dib",
                   image: { _type: "image", asset: { _ref: "image-mock-tier2-300x450-jpg", _type: "reference" }, mockUrl: "https://picsum.photos/seed/tier2/300/450" },
                 },
@@ -153,6 +168,9 @@ export function buildHappyPathScenario(): MockDataset {
                   _key: "te3",
                   title: "Dune (1984)",
                   year: "1984",
+                  content: [
+                    { _key: "te3c1", _type: "block", style: "normal", markDefs: [], children: [{ _key: "te3c1-s", _type: "span", marks: [], text: "Lynch took his name off it and he was right to. One short capsule, no rating, no link: the minimal entry." }] },
+                  ],
                   anchor: "a-new-standard-for-blockbusters",
                   image: { _type: "image", asset: { _ref: "image-mock-tier3-300x450-jpg", _type: "reference" }, mockUrl: "https://picsum.photos/seed/tier3/300/450" },
                 },
