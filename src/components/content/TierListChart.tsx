@@ -73,10 +73,20 @@ const DIALOG_COLS: Record<TierChipAspect, string> = {
   wide: "sm:grid-cols-[minmax(15rem,19rem)_1fr]",
 };
 
-const ASPECT_THUMB: Record<TierChipAspect, string> = {
-  poster: "w-11 aspect-[2/3]",
-  square: "w-12 aspect-square",
-  wide: "w-16 aspect-video",
+/**
+ * The sheet's art, which sits beside the details rather than above them.
+ *
+ * The sheet has no equivalent of the dialog's art panel, so this is the only
+ * place the poster reads at a usable size on touch. It is deliberately ~2x the
+ * old thumbnail: at `w-11` the art was a bullet point next to the title, which
+ * wastes the one axis a bottom sheet has to spare. Kept under ~7rem so the
+ * title column beside it never collapses to two words a line on a 360px
+ * screen — the narrowest phone worth designing for.
+ */
+const ASPECT_SHEET: Record<TierChipAspect, string> = {
+  poster: "w-24 aspect-[2/3]",
+  square: "w-24 aspect-square",
+  wide: "w-32 aspect-video",
 };
 
 /** Capsule write-ups allow normal text, bold/italic, and links — so source
@@ -128,9 +138,19 @@ export function entryImageUrl(entry: TierEntry, width: number): string {
 function CapsuleBody({
   children,
   labelledBy,
+  shell,
 }: {
   children: React.ReactNode;
   labelledBy: string;
+  /** Which shell owns the scroll box — the two bound their height differently.
+   *  Dialog: the grid row is `minmax(0,1fr)`, so a definite track height flows
+   *  down and `h-full` resolves. Sheet: the panel is sized by its CONTENT under
+   *  a `max-h-[86%]` cap, so no ancestor has a definite height and a percentage
+   *  height silently resolves to `auto` — the box grows to its content, the
+   *  panel clips it, and it never scrolls. A viewport-relative max-height is the
+   *  only bound that holds there, and it keeps short capsules hugging their
+   *  content instead of forcing a full-height sheet. */
+  shell: "dialog" | "sheet";
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [scrollable, setScrollable] = useState(false);
@@ -164,7 +184,14 @@ function CapsuleBody({
         tabIndex={scrollable ? 0 : -1}
         role={scrollable ? "region" : undefined}
         aria-labelledby={labelledBy}
-        className="source-scroll h-full overflow-y-auto px-4 pb-3 pt-1 text-[0.9rem] leading-[1.62] text-card-foreground focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent [&_p]:m-0 [&_p]:mb-[0.7em] [&_p:last-child]:mb-0 [&_strong]:text-accent"
+        className={cn(
+          "source-scroll overflow-y-auto overscroll-contain px-4 pb-3 pt-1 text-[0.9rem] leading-[1.62] text-card-foreground focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent [&_p]:m-0 [&_p]:mb-[0.7em] [&_p:last-child]:mb-0 [&_strong]:text-accent",
+          // `touch-pan-y` re-grants vertical touch scrolling inside the sheet,
+          // whose panel sets `touch-none` so the swipe-to-close / swipe-to-nav
+          // pointer gestures work. Without it the body is unscrollable by
+          // finger — the gesture handler swallows the drag.
+          shell === "sheet" ? "max-h-[60vh] touch-pan-y" : "h-full"
+        )}
       >
         {children}
       </div>
@@ -214,7 +241,7 @@ function CapsuleContent({
   const label = entry.subtitle ?? entry.year;
   const excerpt = mode === "index" ? entry.content?.slice(0, 1) : undefined;
   const bodyContent = mode === "capsule" ? entry.content : excerpt;
-  const posterUrl = entryImageUrl(entry, shell === "dialog" ? 480 : 160);
+  const posterUrl = entryImageUrl(entry, shell === "dialog" ? 480 : 288);
 
   return (
     <>
@@ -242,44 +269,51 @@ function CapsuleContent({
       )}
 
       <div className="flex min-h-0 flex-1 flex-col">
-        <div className="flex flex-wrap items-center gap-2 px-4 pb-2 pt-3.5">
+        {/* Art beside the details, not above them. The details were previously
+            siblings of the poster in one wrap container, so the `basis-full`
+            title always broke to the line below the art and pinned the art to
+            thumbnail width. Nesting them in their own column frees the poster
+            to take real space while the title still wraps within what is left. */}
+        <div className="flex items-start gap-3 px-4 pb-2 pt-3.5">
           {shell === "sheet" && (
             <span
               className={cn(
                 "relative flex-none overflow-hidden rounded bg-muted ring-1 ring-border",
-                ASPECT_THUMB[aspect]
+                ASPECT_SHEET[aspect]
               )}
             >
               {posterUrl ? (
-                <Image src={posterUrl} alt="" fill sizes="64px" className="object-cover" />
+                <Image src={posterUrl} alt="" fill sizes="128px" className="object-cover" />
               ) : (
-                <span className="absolute inset-0 grid place-items-center p-0.5 text-center text-[8px] leading-tight text-muted-foreground">
+                <span className="absolute inset-0 grid place-items-center p-1 text-center text-[10px] leading-tight text-muted-foreground">
                   {entry.title}
                 </span>
               )}
             </span>
           )}
-          <span
-            className="rounded px-1.5 py-1 text-sm font-black leading-none"
-            style={{ backgroundColor: tierColor(tier), color: "#141414" }}
-          >
-            {tier.label}
-          </span>
-          <span className="font-mono text-xs font-bold tabular-nums text-muted-foreground">
-            #{rank}
-          </span>
-          {typeof entry.rating === "number" && (
-            <span className="ml-auto">
-              <WebRating score={entry.rating} variant="badge" />
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+            <span
+              className="rounded px-1.5 py-1 text-sm font-black leading-none"
+              style={{ backgroundColor: tierColor(tier), color: "#141414" }}
+            >
+              {tier.label}
             </span>
-          )}
-          <span id={titleId} className="basis-full text-[1.02rem] font-bold leading-snug text-card-foreground">
-            {entry.title}
-          </span>
-          {label && <span className="-mt-1.5 text-xs text-muted-foreground">{label}</span>}
+            <span className="font-mono text-xs font-bold tabular-nums text-muted-foreground">
+              #{rank}
+            </span>
+            {typeof entry.rating === "number" && (
+              <span className="ml-auto">
+                <WebRating score={entry.rating} variant="badge" />
+              </span>
+            )}
+            <span id={titleId} className="basis-full text-[1.02rem] font-bold leading-snug text-card-foreground">
+              {entry.title}
+            </span>
+            {label && <span className="-mt-1.5 text-xs text-muted-foreground">{label}</span>}
+          </div>
         </div>
 
-        <CapsuleBody labelledBy={titleId}>
+        <CapsuleBody labelledBy={titleId} shell={shell}>
           {bodyContent?.length ? (
             <PortableText value={bodyContent} components={capsuleComponents} />
           ) : null}
@@ -580,7 +614,16 @@ export function TierListChart({ value }: { value: TierListBlock }) {
                 role="dialog"
                 aria-modal="true"
                 className={cn(
-                  "relative grid max-h-[min(34rem,92vh)] w-full max-w-3xl grid-cols-1 overflow-hidden rounded-lg border border-border bg-card shadow-[0_24px_70px_rgba(0,0,0,0.6)]",
+                  // `grid-rows-[minmax(0,1fr)]` is load-bearing, not cosmetic: a
+                  // grid row defaults to `auto`, which sizes to content and grows
+                  // straight past the panel's max-height. The `min-h-0` already on
+                  // the inner column cannot help while the TRACK itself refuses to
+                  // shrink, so the scroll box inherited the full content height,
+                  // `overflow-y-auto` never engaged, and `overflow-hidden` here
+                  // simply cropped the tail — taking the Previous/Next footer with
+                  // it. Letting the row shrink below content is what hands the
+                  // scroll box a real height.
+                  "relative grid max-h-[min(34rem,92vh)] w-full max-w-3xl grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden rounded-lg border border-border bg-card shadow-[0_24px_70px_rgba(0,0,0,0.6)]",
                   DIALOG_COLS[aspect]
                 )}
               >
