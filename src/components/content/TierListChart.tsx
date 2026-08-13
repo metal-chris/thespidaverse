@@ -52,6 +52,26 @@ const ASPECT_CHIP: Record<TierChipAspect, string> = {
   wide: "w-[6rem] sm:w-[7rem] aspect-video",
 };
 
+/**
+ * The desktop dialog's art panel. It must carry its own aspect: the panel is a
+ * grid cell, so with only `min-h-full` its height comes from the row, and a
+ * short capsule collapses a 2:3 poster into a square that `object-cover` then
+ * crops. Locking the aspect makes the panel's height derive from the column
+ * width instead, which holds for every art shape a tier list might use.
+ */
+const ASPECT_DIALOG: Record<TierChipAspect, string> = {
+  poster: "aspect-[2/3]",
+  square: "aspect-square",
+  wide: "aspect-video",
+};
+
+/** Landscape art needs a wider column to read at all. */
+const DIALOG_COLS: Record<TierChipAspect, string> = {
+  poster: "sm:grid-cols-[minmax(10rem,13rem)_1fr]",
+  square: "sm:grid-cols-[minmax(10rem,13rem)_1fr]",
+  wide: "sm:grid-cols-[minmax(15rem,19rem)_1fr]",
+};
+
 const ASPECT_THUMB: Record<TierChipAspect, string> = {
   poster: "w-11 aspect-[2/3]",
   square: "w-12 aspect-square",
@@ -198,13 +218,18 @@ function CapsuleContent({
   return (
     <>
       {shell === "dialog" && (
-        <div className="relative hidden min-h-full bg-muted sm:block">
+        <div
+          className={cn(
+            "relative hidden self-start overflow-hidden bg-muted sm:block",
+            ASPECT_DIALOG[aspect]
+          )}
+        >
           {posterUrl ? (
             <Image
               src={posterUrl}
               alt=""
               fill
-              sizes="220px"
+              sizes="(max-width: 640px) 0px, 300px"
               className="object-cover"
             />
           ) : (
@@ -553,7 +578,10 @@ export function TierListChart({ value }: { value: TierListBlock }) {
                 ref={dialogRef}
                 role="dialog"
                 aria-modal="true"
-                className="relative grid max-h-[min(34rem,92vh)] w-full max-w-3xl grid-cols-1 overflow-hidden rounded-lg border border-border bg-card shadow-[0_24px_70px_rgba(0,0,0,0.6)] sm:grid-cols-[minmax(10rem,13rem)_1fr]"
+                className={cn(
+                  "relative grid max-h-[min(34rem,92vh)] w-full max-w-3xl grid-cols-1 overflow-hidden rounded-lg border border-border bg-card shadow-[0_24px_70px_rgba(0,0,0,0.6)]",
+                  DIALOG_COLS[aspect]
+                )}
               >
                 <button
                   type="button"
