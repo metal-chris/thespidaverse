@@ -12,7 +12,7 @@ import Image from "next/image";
 import { PortableText, type PortableTextComponents as PTComponents } from "@portabletext/react";
 import { useTranslations } from "next-intl";
 import { urlFor } from "@/lib/sanity/image";
-import { cn } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 import { WebRating } from "./WebRating";
 import { SourceLink } from "./SourceLink";
 import { TierMaker } from "./TierMaker";
@@ -491,9 +491,21 @@ export function TierListChart({ value }: { value: TierListBlock }) {
   return (
     <>
       <figure className="not-prose my-10 overflow-hidden rounded-lg ring-1 ring-border">
+        {/* A real <h2> inside the figcaption, not styled text. The chart is a
+            named section of the article — often the one readers want most —
+            but the TOC is built from `style: h2 | h3` blocks, and a tierList
+            block carries no style, so the chart was the one destination "Jump
+            to section" could not offer. The caption styling is unchanged; only
+            the semantics and the anchor id are new. `scroll-mt-24` matches the
+            body headings so the sticky header never covers the target. */}
         {value.title && (
-          <figcaption className="border-b border-border bg-card px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-            {value.title}
+          <figcaption className="border-b border-border bg-card px-4 py-2.5">
+            <h2
+              id={slugify(value.title)}
+              className="scroll-mt-24 text-xs font-bold uppercase tracking-widest text-muted-foreground"
+            >
+              {value.title}
+            </h2>
           </figcaption>
         )}
         <div className="flex flex-col gap-px bg-border">

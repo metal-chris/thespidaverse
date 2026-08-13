@@ -140,13 +140,26 @@ export default async function ArticlePage({ params }: Props) {
     getCategoryConfig(article.category?.title).pill;
 
   // Extract headings for TOC (IDs must match PortableTextComponents.tsx block renderers)
+  //
+  // A titled tierList counts as an h2. It renders one — TierListChart puts a
+  // real <h2 id> in its figcaption — but it reaches us as a block with no
+  // `style`, so a style-only filter silently dropped the chart from "Jump to
+  // section" even though it is usually the section readers came for.
   const headings: TocHeading[] = (article.body || [])
-    .filter((b: any) => ["h2", "h3"].includes(b.style))
-    .map((b: any) => ({
-      id: slugify(b.children?.map((c: any) => c.text).join("") || ""),
-      text: b.children?.map((c: any) => c.text).join("") || "",
-      level: (b.style === "h2" ? 2 : 3) as 2 | 3,
-    }));
+    .filter(
+      (b: any) => ["h2", "h3"].includes(b.style) || (b._type === "tierList" && b.title)
+    )
+    .map((b: any) => {
+      if (b._type === "tierList") {
+        return { id: slugify(b.title), text: b.title, level: 2 as const };
+      }
+      const text = b.children?.map((c: any) => c.text).join("") || "";
+      return {
+        id: slugify(text),
+        text,
+        level: (b.style === "h2" ? 2 : 3) as 2 | 3,
+      };
+    });
 
   // Related articles: prefer same tags, fall back to same category
   let relatedArticles: Article[] = [];
