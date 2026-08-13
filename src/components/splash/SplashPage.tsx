@@ -19,7 +19,7 @@ export function SplashPage() {
   // next full page load, and the splash could disagree with the header it was
   // about to hand you to. One source of truth removes that skew, and the
   // provider already owns persistence (localStorage + the shared cookie).
-  const { theme: palette, setTheme } = useTheme();
+  const { theme: palette } = useTheme();
 
   const handleRendererReady = useCallback((trigger: (x: number, y: number) => void) => {
     strikeTriggerRef.current = trigger;
@@ -142,7 +142,7 @@ export function SplashPage() {
       <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} onRendererReady={handleRendererReady} />
 
       {/* Content overlay */}
-      <SplashContent palette={palette} onSetPalette={setTheme} onAccessGranted={handleAccessGranted} />
+      <SplashContent palette={palette} onAccessGranted={handleAccessGranted} />
 
       {/* Portal wipe overlay — covers screen before redirect */}
       {accessGranted && (

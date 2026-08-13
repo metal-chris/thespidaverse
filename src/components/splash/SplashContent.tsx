@@ -4,18 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { ModeToggle } from "@/components/theme/ModeToggle";
+import { PaletteToggle } from "@/components/theme/PaletteToggle";
 import type { Palette } from "@/components/web-canvas/particle-config";
 
 interface SplashContentProps {
   palette: Palette;
-  /** Set a specific palette. The splash offers direct selection rather than a
-   *  cycle so every option is one action away, not up to three. */
-  onSetPalette: (p: Palette) => void;
   earlyAccessEnabled?: boolean;
   onAccessGranted?: () => void;
 }
 
-export function SplashContent({ palette, onSetPalette, onAccessGranted }: SplashContentProps) {
+export function SplashContent({ palette, onAccessGranted }: SplashContentProps) {
   const t = useTranslations();
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -113,32 +111,10 @@ export function SplashContent({ palette, onSetPalette, onAccessGranted }: Splash
           tied brand copy to a licence and told the visitor nothing a swatch
           shows faster. Accessible names describe the ACTION, never a theme. */}
       <div className="absolute right-4 top-4 z-30 flex items-center gap-2 sm:right-6 sm:top-6">
-        <div
-          role="radiogroup"
-          aria-label={t("splash.paletteLabel")}
-          className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/40 px-3 py-2 backdrop-blur"
-        >
-          {(Object.keys(accents) as Palette[]).map((p) => (
-            <button
-              key={p}
-              type="button"
-              role="radio"
-              aria-checked={p === palette}
-              aria-label={t(`splash.palette_${p}`)}
-              onClick={() => onSetPalette(p)}
-              className={`h-3 w-3 rounded-full border border-white/25 transition-transform hover:scale-125 focus-visible:outline focus-visible:outline-2 ${
-                p === palette ? "ring-2 ring-offset-2 ring-offset-black" : ""
-              }`}
-              style={
-                {
-                  background: accents[p],
-                  outlineColor: accents[p],
-                  ...(p === palette ? { "--tw-ring-color": accents[p] } : {}),
-                } as React.CSSProperties
-              }
-            />
-          ))}
-        </div>
+        <PaletteToggle
+          label={t("splash.paletteLabel")}
+          optionLabel={(p) => t(`splash.palette_${p}`)}
+        />
 
         <ModeToggle className="h-9 w-9 rounded-full border border-white/10 bg-black/40 text-white/70 backdrop-blur hover:text-white" />
 
