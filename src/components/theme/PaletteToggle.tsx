@@ -29,7 +29,11 @@ import { cn } from "@/lib/utils";
 const PALETTE_SWATCH: Record<string, string> = {
   miles: "#e82334",
   peter: "#3c78ff",
-  venom: "linear-gradient(135deg, #f0f0f0 50%, #17151a 50%)",
+  // Split top/bottom rather than on the diagonal. A 135deg split puts the
+  // light half against the BOTTOM-LEFT arc, so the lower half of the dot is
+  // never solid — it reads as a smudge at 12px rather than as two halves.
+  // Straight down states "black and white" unambiguously at this size.
+  venom: "linear-gradient(to bottom, #f0f0f0 50%, #17151a 50%)",
 };
 
 const PALETTES = ["miles", "peter", "venom"] as const;
@@ -73,6 +77,16 @@ export function PaletteToggle({
           style={
             {
               background: PALETTE_SWATCH[p],
+              // The border box and the background box must agree. By default
+              // the background is ORIGINATED at the padding edge but CLIPPED at
+              // the border edge, so a gradient is laid out for the inner circle
+              // and then painted a further 1px out on every side. At 12px that
+              // offset is ~8% of the dot: the light half spilled past its own
+              // boundary and showed as white leaking around the dark half's
+              // edge. Clipping to the same box it is positioned in keeps the
+              // split exactly where it is drawn, and leaves the border sitting
+              // cleanly outside it.
+              backgroundClip: "padding-box",
               outlineColor: "var(--color-accent)",
               ...(theme === p ? { "--tw-ring-color": "var(--color-accent)" } : {}),
             } as React.CSSProperties
