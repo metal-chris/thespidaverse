@@ -15,6 +15,7 @@ import { urlFor } from "@/lib/sanity/image";
 import { cn } from "@/lib/utils";
 import { WebRating } from "./WebRating";
 import { SourceLink } from "./SourceLink";
+import { TierMaker } from "./TierMaker";
 import type { TierChipAspect, TierEntry, TierListBlock, TierRow } from "@/types";
 
 /**
@@ -36,7 +37,7 @@ import type { TierChipAspect, TierEntry, TierListBlock, TierRow } from "@/types"
 // The classic tier ramp. Fixed rather than theme-derived on purpose: this is
 // recognizable tier-list iconography, and it sits on the dark card in all
 // three site themes. Schema `color` overrides per tier.
-const TIER_COLORS: Record<string, string> = {
+export const TIER_COLORS: Record<string, string> = {
   S: "#E85A4F",
   A: "#E8944F",
   B: "#E8C94F",
@@ -46,7 +47,7 @@ const TIER_COLORS: Record<string, string> = {
   F: "#A66FC4",
 };
 
-const ASPECT_CHIP: Record<TierChipAspect, string> = {
+export const ASPECT_CHIP: Record<TierChipAspect, string> = {
   poster: "w-16 sm:w-20 aspect-[2/3]",
   square: "w-[4.2rem] sm:w-[4.8rem] aspect-square",
   wide: "w-[6rem] sm:w-[7rem] aspect-video",
@@ -105,11 +106,11 @@ function flatten(tiers: TierRow[]): FlatEntry[] {
   return out;
 }
 
-function tierColor(tier: TierRow): string {
+export function tierColor(tier: TierRow): string {
   return tier.color || TIER_COLORS[tier.label] || "#8A8A8A";
 }
 
-function entryImageUrl(entry: TierEntry, width: number): string {
+export function entryImageUrl(entry: TierEntry, width: number): string {
   let url = "";
   if (entry.image) {
     try {
@@ -605,6 +606,10 @@ export function TierListChart({ value }: { value: TierListBlock }) {
           ),
           document.body
         )}
+
+      {/* The Maker sits behind its own CTA rather than auto-expanding: on a
+          long ranking piece the reading rhythm matters more than discovery. */}
+      <TierMaker value={value} />
     </>
   );
 }

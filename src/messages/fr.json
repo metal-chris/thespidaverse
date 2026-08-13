@@ -421,6 +421,31 @@
     "readFull": "Lire l'entrée complète",
     "fullReview": "Critique complète",
     "textList": "Version texte de cette liste",
-    "open": "Voir l'entrée : {title}"
+    "open": "Voir l'entrée : {title}",
+    "maker": {
+      "ctaTitle": "Pas d'accord avec ce classement ?",
+      "ctaBlurb": "Réorganisez-le et partagez votre version. Sans compte.",
+      "ctaButton": "Créez le vôtre",
+      "boardTitle": "Votre classement",
+      "unranked": "Non classé",
+      "unrankedCount": "{n} non classés",
+      "allPlaced": "Tout est placé",
+      "holding": "Vous tenez <b>{title}</b>. Touchez un rang pour le placer.",
+      "cancelHold": "Annuler la sélection",
+      "placeIn": "Placer dans le rang {tier}",
+      "chipLabel": "{title} — touchez pour prendre",
+      "share": "Partager mon classement",
+      "shareBlurb": "Votre disposition tient dans le lien. Sans compte ni suivi.",
+      "copy": "Copier le lien",
+      "copied": "Copié",
+      "compare": "Comparer",
+      "clear": "Repartir de zéro",
+      "reset": "Réinitialiser",
+      "matches": "Identique à l'original",
+      "moveCount": "{n} déplacés",
+      "diffNone": "Identique au classement d'origine.",
+      "diffCount": "{n} placés différemment.",
+      "keyboardHint": "Clavier : ciblez une affiche puis appuyez sur la lettre d'un rang pour la placer, ou 0 pour la retirer."
+    }
   }
 }

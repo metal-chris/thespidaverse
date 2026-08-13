@@ -421,6 +421,31 @@
     "readFull": "Read the full entry",
     "fullReview": "Full review",
     "textList": "Text version of this list",
-    "open": "View entry: {title}"
+    "open": "View entry: {title}",
+    "maker": {
+      "ctaTitle": "Disagree with this ranking?",
+      "ctaBlurb": "Rearrange it and share your version. No account needed.",
+      "ctaButton": "Make your own",
+      "boardTitle": "Your ranking",
+      "unranked": "Unranked",
+      "unrankedCount": "{n} unranked",
+      "allPlaced": "All placed",
+      "holding": "Holding <b>{title}</b>. Tap a tier to place it.",
+      "cancelHold": "Cancel selection",
+      "placeIn": "Place in {tier} tier",
+      "chipLabel": "{title} — tap to pick up",
+      "share": "Share my ranking",
+      "shareBlurb": "Your arrangement lives in the link. No account, no tracking.",
+      "copy": "Copy link",
+      "copied": "Copied",
+      "compare": "Compare",
+      "clear": "Start from scratch",
+      "reset": "Reset",
+      "matches": "Matches the original",
+      "moveCount": "{n} moved",
+      "diffNone": "Identical to the original ranking.",
+      "diffCount": "{n} placed differently.",
+      "keyboardHint": "Keyboard: focus a poster, then press a tier's letter to place it, or 0 to unrank."
+    }
   }
 }

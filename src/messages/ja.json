@@ -421,6 +421,31 @@
     "readFull": "全文を読む",
     "fullReview": "レビュー全文",
     "textList": "このリストのテキスト版",
-    "open": "エントリーを見る：{title}"
+    "open": "エントリーを見る：{title}",
+    "maker": {
+      "ctaTitle": "このランキングに異議あり？",
+      "ctaBlurb": "並べ替えて自分の版を共有できます。登録不要。",
+      "ctaButton": "自分で作る",
+      "boardTitle": "あなたのランキング",
+      "unranked": "未配置",
+      "unrankedCount": "未配置 {n} 件",
+      "allPlaced": "すべて配置済み",
+      "holding": "<b>{title}</b> を選択中。ティアをタップして配置します。",
+      "cancelHold": "選択を解除",
+      "placeIn": "{tier} ティアに配置",
+      "chipLabel": "{title} — タップして選択",
+      "share": "ランキングを共有",
+      "shareBlurb": "並び順はリンクに入ります。アカウントも追跡もありません。",
+      "copy": "リンクをコピー",
+      "copied": "コピーしました",
+      "compare": "比較する",
+      "clear": "最初から",
+      "reset": "リセット",
+      "matches": "元のランキングと同じ",
+      "moveCount": "{n} 件変更",
+      "diffNone": "元のランキングと完全に同じです。",
+      "diffCount": "{n} 件が異なる配置です。",
+      "keyboardHint": "キーボード：ポスターを選び、ティアの頭文字キーで配置、0 で未配置に戻します。"
+    }
   }
 }

@@ -421,6 +421,31 @@
     "readFull": "Leer la entrada completa",
     "fullReview": "Reseña completa",
     "textList": "Versión en texto de esta lista",
-    "open": "Ver entrada: {title}"
+    "open": "Ver entrada: {title}",
+    "maker": {
+      "ctaTitle": "¿No estás de acuerdo con esta clasificación?",
+      "ctaBlurb": "Reorganízala y comparte tu versión. Sin cuenta.",
+      "ctaButton": "Crea la tuya",
+      "boardTitle": "Tu clasificación",
+      "unranked": "Sin clasificar",
+      "unrankedCount": "{n} sin clasificar",
+      "allPlaced": "Todo colocado",
+      "holding": "Tienes <b>{title}</b>. Toca un nivel para colocarlo.",
+      "cancelHold": "Cancelar selección",
+      "placeIn": "Colocar en el nivel {tier}",
+      "chipLabel": "{title} — toca para tomar",
+      "share": "Compartir mi clasificación",
+      "shareBlurb": "Tu orden vive en el enlace. Sin cuenta ni rastreo.",
+      "copy": "Copiar enlace",
+      "copied": "Copiado",
+      "compare": "Comparar",
+      "clear": "Empezar de cero",
+      "reset": "Restablecer",
+      "matches": "Igual que la original",
+      "moveCount": "{n} movidas",
+      "diffNone": "Idéntica a la clasificación original.",
+      "diffCount": "{n} colocadas de otra forma.",
+      "keyboardHint": "Teclado: enfoca un póster y pulsa la letra de un nivel para colocarlo, o 0 para quitarlo."
+    }
   }
 }

@@ -421,6 +421,31 @@
     "readFull": "전체 글 읽기",
     "fullReview": "전체 리뷰",
     "textList": "이 목록의 텍스트 버전",
-    "open": "항목 보기: {title}"
+    "open": "항목 보기: {title}",
+    "maker": {
+      "ctaTitle": "이 순위에 동의하지 않나요?",
+      "ctaBlurb": "직접 재배열하고 공유하세요. 계정이 필요 없습니다.",
+      "ctaButton": "직접 만들기",
+      "boardTitle": "내 순위",
+      "unranked": "미배치",
+      "unrankedCount": "미배치 {n}개",
+      "allPlaced": "모두 배치됨",
+      "holding": "<b>{title}</b> 선택 중. 티어를 눌러 배치하세요.",
+      "cancelHold": "선택 취소",
+      "placeIn": "{tier} 티어에 배치",
+      "chipLabel": "{title} — 눌러서 선택",
+      "share": "내 순위 공유",
+      "shareBlurb": "배열이 링크에 담깁니다. 계정도 추적도 없습니다.",
+      "copy": "링크 복사",
+      "copied": "복사됨",
+      "compare": "비교하기",
+      "clear": "처음부터",
+      "reset": "되돌리기",
+      "matches": "원본과 동일",
+      "moveCount": "{n}개 이동",
+      "diffNone": "원본 순위와 완전히 같습니다.",
+      "diffCount": "{n}개가 다르게 배치됨.",
+      "keyboardHint": "키보드: 포스터에 포커스한 뒤 티어 첫 글자로 배치, 0으로 미배치."
+    }
   }
 }
