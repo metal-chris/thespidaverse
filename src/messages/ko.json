@@ -17,6 +17,20 @@
       "palette_peter": "블루 색상",
       "palette_venom": "모노크롬 색상",
       "paletteNext": "{palette}(으)로 전환"
+    },
+    "language": {
+      "label": "언어",
+      "change": "언어 변경",
+      "names": {
+        "en": "English",
+        "es": "Español",
+        "ja": "日本語",
+        "pt": "Português",
+        "ko": "한국어",
+        "fr": "Français",
+        "zh-CN": "简体中文",
+        "zh-TW": "繁體中文"
+      }
     }
   },
   "nav": {

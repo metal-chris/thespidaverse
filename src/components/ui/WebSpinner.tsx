@@ -140,7 +140,13 @@ export function WebSpinner({ size = "md", className = "" }: WebSpinnerProps) {
 
       {/* Spider logo in center — counter-rotates to stay upright */}
       {(() => {
-        const spiderSize = size === "sm" ? 12 : size === "md" ? 20 : 28;
+        // ~72% of the dial, up from ~50%. The old hand-drawn spider had long
+        // sweeping legs that filled its box; the mark's legs stop at the
+        // octagon it no longer draws, so at the previous size it read as a
+        // small dot adrift in the web. This lands its leg tips near the inner
+        // ring, which is where the web reads as something the spider is
+        // sitting ON rather than floating inside.
+        const spiderSize = size === "sm" ? 17 : size === "md" ? 34 : 50;
         const scale = rnd(spiderSize / 32);
         const offset = center - spiderSize / 2;
         return (

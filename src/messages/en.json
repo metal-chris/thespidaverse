@@ -17,6 +17,20 @@
       "palette_peter": "Blue palette",
       "palette_venom": "Monochrome palette",
       "paletteNext": "Switch to {palette}"
+    },
+    "language": {
+      "label": "Language",
+      "change": "Change language",
+      "names": {
+        "en": "English",
+        "es": "Español",
+        "ja": "日本語",
+        "pt": "Português",
+        "ko": "한국어",
+        "fr": "Français",
+        "zh-CN": "简体中文",
+        "zh-TW": "繁體中文"
+      }
     }
   },
   "nav": {

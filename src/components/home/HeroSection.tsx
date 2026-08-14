@@ -147,14 +147,18 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
             caption introducing the name. Beneath, the sequence reads
             mark → name → what it is. */}
         <h2
-          className="font-mono text-xs md:text-sm uppercase tracking-[0.25em] text-accent mt-5 opacity-0 animate-hero-fade-in"
+          className="font-mono text-xs md:text-sm uppercase tracking-[0.25em] text-accent mt-8 md:mt-9 opacity-0 animate-hero-fade-in"
           style={{ animationDelay: "0.35s" }}
         >
           {t("hero.tagline")}
         </h2>
 
+        {/* Tight to the heading above it, not floating between it and the
+            title. A heading belongs to what it introduces, so the large gap
+            goes ABOVE the tagline and the small one below — it was the other
+            way round, which grouped the tagline with the title instead. */}
         <p
-          className="mt-6 text-base md:text-lg text-muted-foreground max-w-xl mx-auto text-balance leading-relaxed opacity-0 animate-hero-fade-in"
+          className="mt-2.5 text-base md:text-lg text-muted-foreground max-w-xl mx-auto text-balance leading-relaxed opacity-0 animate-hero-fade-in"
           style={{ animationDelay: "0.45s" }}
         >
           {t("hero.description")}
