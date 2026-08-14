@@ -460,7 +460,9 @@
       "diffNone": "Identical to the original ranking.",
       "diffCount": "{n} placed differently.",
       "keyboardHint": "Keyboard: focus a poster, then press a tier's letter to place it, or 0 to unrank."
-    }
+    },
+    "brandCredit": "The Spidaverse",
+    "brandMadeWith": "Made with The Spidaverse"
   },
   "splash": {
     "earlyAccess": "Early Access",

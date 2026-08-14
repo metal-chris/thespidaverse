@@ -460,7 +460,9 @@
       "diffNone": "Idéntica a la clasificación original.",
       "diffCount": "{n} colocadas de otra forma.",
       "keyboardHint": "Teclado: enfoca un póster y pulsa la letra de un nivel para colocarlo, o 0 para quitarlo."
-    }
+    },
+    "brandCredit": "The Spidaverse",
+    "brandMadeWith": "Creado con The Spidaverse"
   },
   "splash": {
     "earlyAccess": "Acceso Anticipado",

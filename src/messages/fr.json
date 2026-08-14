@@ -460,7 +460,9 @@
       "diffNone": "Identique au classement d'origine.",
       "diffCount": "{n} placés différemment.",
       "keyboardHint": "Clavier : ciblez une affiche puis appuyez sur la lettre d'un rang pour la placer, ou 0 pour la retirer."
-    }
+    },
+    "brandCredit": "The Spidaverse",
+    "brandMadeWith": "Créé avec The Spidaverse"
   },
   "splash": {
     "earlyAccess": "Accès Anticipé",

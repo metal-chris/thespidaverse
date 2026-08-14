@@ -460,7 +460,9 @@
       "diffNone": "원본 순위와 완전히 같습니다.",
       "diffCount": "{n}개가 다르게 배치됨.",
       "keyboardHint": "키보드: 포스터에 포커스한 뒤 티어 첫 글자로 배치, 0으로 미배치."
-    }
+    },
+    "brandCredit": "The Spidaverse",
+    "brandMadeWith": "The Spidaverse로 제작"
   },
   "splash": {
     "earlyAccess": "얼리 액세스",

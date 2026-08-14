@@ -460,7 +460,9 @@
       "diffNone": "與原始排名完全相同。",
       "diffCount": "有 {n} 個位置不同。",
       "keyboardHint": "鍵盤操作：選取一張海報，按對應層級的字母放置，按 0 取消排名。"
-    }
+    },
+    "brandCredit": "The Spidaverse",
+    "brandMadeWith": "由 The Spidaverse 製作"
   },
   "splash": {
     "earlyAccess": "搶先體驗",

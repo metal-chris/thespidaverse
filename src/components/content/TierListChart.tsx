@@ -18,6 +18,7 @@ import { SourceLink } from "./SourceLink";
 import { TierMaker } from "./TierMaker";
 import type { TierChipAspect, TierEntry, TierListBlock, TierRow } from "@/types";
 import { TIER_COLORS, tierColor } from "@/lib/tierlist/arrangement";
+import { SpidaverseMark } from "@/components/ui/SpidaverseMark";
 // Re-exported: existing imports of the ramp from this module keep working.
 export { TIER_COLORS, tierColor };
 
@@ -673,6 +674,27 @@ export function TierListChart({ value }: { value: TierListBlock }) {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Source credit, INSIDE the figure's border.
+            The chart is the most screenshot-able thing on the site, and a
+            screenshot keeps the tiers while losing every scrap of brand around
+            them — the site header, the footer, the URL. Sitting inside the
+            border means the credit travels with the pixels.
+
+            It reads "The Spidaverse", not "Made with": on the author's own
+            published ranking, "made with" would credit the reader for
+            something they did not make. The Maker's board says that instead,
+            where it is true.
+
+            Deliberately quiet — muted, small, a hairline above it. This is a
+            signature after the work, not a second headline before it; the
+            caption bar already names the chart and anchors the TOC. */}
+        <div className="flex items-center justify-center gap-2 border-t border-border bg-card px-4 py-2">
+          <SpidaverseMark className="h-3.5 w-3.5 shrink-0 text-accent" />
+          <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            {t("brandCredit")}
+          </span>
         </div>
       </figure>
 

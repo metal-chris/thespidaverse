@@ -561,6 +561,23 @@ export function TierMaker({ value }: { value: TierListBlock }) {
       <p className="border-t border-border bg-card px-3 py-2 text-[0.68rem] text-muted-foreground">
         {t("maker.keyboardHint")}
       </p>
+
+      {/* Maker credit. "Made with" is true HERE and only here — this board is
+          the reader's arrangement, so crediting them for making it is
+          accurate. The published chart above says "The Spidaverse" instead,
+          because claiming the author's ranking was made by whoever screenshots
+          it would not be.
+
+          Same reason it exists at all: a screenshot of the board keeps the
+          tiers and loses the page, so the credit has to live inside the
+          border. Centred to match the chart's, so the two read as one family
+          rather than two different footers stacked. */}
+      <div className="flex items-center justify-center gap-2 border-t border-border bg-card px-3 py-2">
+        <SpidaverseMark className="h-3.5 w-3.5 shrink-0 text-accent" />
+        <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          {t("brandMadeWith")}
+        </span>
+      </div>
     </div>
   );
 }

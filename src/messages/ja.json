@@ -460,7 +460,9 @@
       "diffNone": "元のランキングと完全に同じです。",
       "diffCount": "{n} 件が異なる配置です。",
       "keyboardHint": "キーボード：ポスターを選び、ティアの頭文字キーで配置、0 で未配置に戻します。"
-    }
+    },
+    "brandCredit": "The Spidaverse",
+    "brandMadeWith": "The Spidaverse で作成"
   },
   "splash": {
     "earlyAccess": "アーリーアクセス",

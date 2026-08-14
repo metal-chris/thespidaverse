@@ -460,7 +460,9 @@
       "diffNone": "Idêntico ao ranking original.",
       "diffCount": "{n} posicionados de outra forma.",
       "keyboardHint": "Teclado: foque um pôster e pressione a letra de um nível para posicionar, ou 0 para remover."
-    }
+    },
+    "brandCredit": "The Spidaverse",
+    "brandMadeWith": "Feito com The Spidaverse"
   },
   "splash": {
     "earlyAccess": "Acesso Antecipado",
