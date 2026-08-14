@@ -1778,3 +1778,19 @@ body.sanity-studio-active #main-content {
     transition: none;
   }
 }
+
+/* ========================================
+   Web spin — the loading mark
+   ========================================
+   One slow revolution. The mark carries an octagon frame, so a fast spin
+   reads as a wobble where a circular glyph would read as smooth; 2.4s is
+   slow enough that the eight legs stay countable while it turns. */
+@keyframes web-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.animate-web-spin {
+  animation: web-spin 2.4s linear infinite;
+  transform-origin: 50% 50%;
+}

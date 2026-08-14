@@ -57,20 +57,26 @@ export function SplashPage() {
     venom: "#FFFFFF",
   };
 
-  const bgColor: Record<Palette, string> = {
-    miles: "#0A0A0A",
-    peter: "#3A0808",
-    venom: "#0A0A0A",
-  };
+  /* The page surface follows the MODE token, not a fixed hex — see the
+   * className on the wrapper below. This is why light mode appeared dead
+   * here: the splash painted a hardcoded dark value, so flipping to light
+   * updated <html data-mode>, the browser chrome and scrollbars followed, and
+   * the splash itself stayed black. Kumo Club's teaser never had the bug
+   * because it paints `bg-bg-primary`, which resolves per theme.
+   *
+   * The atmospheric layers below still vary by PALETTE — that is their job —
+   * and their opacities are low enough to sit on either surface. The vignette
+   * EDGE is the exception and has to invert: darkening the edges of a light
+   * page just makes a grey smudge, so on light it lightens instead. */
   const vignetteCenter: Record<Palette, string> = {
     miles: "rgba(232,35,52,0.04)",
     peter: "transparent",
     venom: "rgba(255,255,255,0.02)",
   };
   const vignetteEdge: Record<Palette, string> = {
-    miles: "rgba(0,0,0,0.4)",
-    peter: "rgba(0,0,0,0.5)",
-    venom: "rgba(0,0,0,0.4)",
+    miles: "var(--splash-vignette-edge)",
+    peter: "var(--splash-vignette-edge-strong)",
+    venom: "var(--splash-vignette-edge)",
   };
   const glowPrimary: Record<Palette, string> = {
     miles: "rgba(232,35,52,0.06)",
@@ -85,13 +91,8 @@ export function SplashPage() {
 
   return (
     <div
-      className="relative w-full overflow-hidden"
-      style={{
-        height: "100dvh",
-        minHeight: "100vh",
-        background: bgColor[palette],
-        transition: "background 0.6s ease",
-      }}
+      className="relative w-full overflow-hidden bg-background text-foreground transition-colors duration-500"
+      style={{ height: "100dvh", minHeight: "100vh" }}
     >
       {/* Subtle radial vignette */}
       <div

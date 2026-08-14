@@ -31,12 +31,16 @@ export interface SpidaverseMarkProps {
   className?: string;
   /** Accessible name. Omit for a purely decorative mark (aria-hidden). */
   title?: string;
+  /** Pass-through for explicit pixel sizing (WebSpinner sizes in px, not
+   *  utilities). Presentation only — it cannot reach the geometry. */
+  style?: React.CSSProperties;
 }
 
-export function SpidaverseMark({ className, title }: SpidaverseMarkProps) {
+export function SpidaverseMark({ className, title, style }: SpidaverseMarkProps) {
   return (
     <svg
       className={className}
+      style={style}
       viewBox="0 0 120 120"
       width="1em"
       height="1em"

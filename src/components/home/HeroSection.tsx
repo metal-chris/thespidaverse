@@ -118,14 +118,6 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
           <SpidaverseMark className="h-20 w-20 text-accent md:h-24 md:w-24" />
         </div>
 
-        {/* Mono tagline above heading */}
-        <p
-          className="font-mono text-xs md:text-sm uppercase tracking-[0.25em] text-accent mb-4 opacity-0 animate-hero-fade-in"
-          style={{ animationDelay: "0.1s" }}
-        >
-          {t("hero.tagline")}
-        </p>
-
         <GlitchText
           as="h1"
           dataText={t("hero.title")}
@@ -142,6 +134,17 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
             />
           </span>
         </GlitchText>
+
+        {/* Tagline sits UNDER the title. Above it, the mono line was the first
+            thing read on the site and the title only the second — a caption
+            introducing the name. Beneath, the sequence reads mark → name →
+            what it is, and the title keeps the top of the page. */}
+        <p
+          className="font-mono text-xs md:text-sm uppercase tracking-[0.25em] text-accent mt-5 opacity-0 animate-hero-fade-in"
+          style={{ animationDelay: "0.35s" }}
+        >
+          {t("hero.tagline")}
+        </p>
 
         <p
           className="mt-6 text-base md:text-lg text-muted-foreground max-w-xl mx-auto text-balance leading-relaxed opacity-0 animate-hero-fade-in"

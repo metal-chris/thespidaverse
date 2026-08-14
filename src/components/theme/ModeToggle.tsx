@@ -29,7 +29,6 @@ export function ModeToggle({ className }: { className?: string }) {
       type="button"
       onClick={toggleMode}
       aria-label={`Switch to ${goingTo} mode`}
-      title={`Switch to ${goingTo} mode`}
       className={cn(
         "flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent",
         className

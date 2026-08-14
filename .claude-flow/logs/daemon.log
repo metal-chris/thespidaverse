@@ -623,3 +623,13 @@
 [2026-08-14T01:13:56.899Z] [INFO] Worker optimize deferred: CPU load too high: 12.34
 [2026-08-14T01:16:56.976Z] [INFO] Worker audit deferred: CPU load too high: 19.51
 [2026-08-14T01:22:56.902Z] [INFO] Worker testgaps deferred: CPU load too high: 28.56
+[2026-08-14T01:24:56.914Z] [INFO] Worker map deferred: CPU load too high: 19.74
+[2026-08-14T01:24:57.012Z] [INFO] Daemon self-shutdown: idle for 1800s (no worker activity)
+[2026-08-14T01:24:57.018Z] [INFO] Stopped worker: map
+[2026-08-14T01:24:57.018Z] [INFO] Stopped worker: audit
+[2026-08-14T01:24:57.018Z] [INFO] Stopped worker: optimize
+[2026-08-14T01:24:57.019Z] [INFO] Stopped worker: consolidate
+[2026-08-14T01:24:57.019Z] [INFO] Stopped worker: testgaps
+[2026-08-14T01:24:57.019Z] [INFO] Stopped worker: backup
+[2026-08-14T01:24:57.019Z] [INFO] Stopped worker: harness
+[2026-08-14T01:24:57.046Z] [INFO] Daemon stopped
