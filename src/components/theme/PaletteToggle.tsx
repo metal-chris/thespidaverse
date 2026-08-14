@@ -57,7 +57,9 @@ export function PaletteToggle({
       role="radiogroup"
       aria-label={label}
       className={cn(
-        "flex items-center gap-1.5 rounded-full border border-white/10 bg-black/40 px-3 py-2 backdrop-blur",
+        // Token-driven, not dark glass: bg-black/40 read as a washed grey pill
+        // on the light surface, and its white hairline vanished entirely.
+        "flex items-center gap-1.5 rounded-full border border-border bg-muted/70 px-3 py-2 backdrop-blur",
         className
       )}
     >
@@ -70,9 +72,9 @@ export function PaletteToggle({
           aria-label={optionLabel(p)}
           onClick={() => setTheme(p)}
           className={cn(
-            "h-3 w-3 rounded-full border border-white/25 transition-transform hover:scale-125",
+            "h-3 w-3 rounded-full border border-foreground/25 transition-transform hover:scale-125",
             "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
-            theme === p && "ring-2 ring-offset-2 ring-offset-black"
+            theme === p && "ring-2 ring-offset-2 ring-offset-background"
           )}
           style={
             {

@@ -111,7 +111,7 @@ export function SplashContent({ palette, onAccessGranted }: SplashContentProps) 
       <div className="absolute right-4 top-4 z-30 flex items-center gap-2 sm:right-6 sm:top-6">
         <SettingsBar
           palette="swatches"
-          modeClassName="h-9 w-9 rounded-full border border-white/10 bg-black/40 text-white/70 backdrop-blur hover:text-white"
+          modeClassName="h-9 w-9 rounded-full border border-border bg-muted/70 text-muted-foreground backdrop-blur hover:text-foreground"
         />
       </div>
 
@@ -159,7 +159,7 @@ export function SplashContent({ palette, onAccessGranted }: SplashContentProps) 
             {/* Status label */}
             <p
               className="text-center text-[11px] font-mono font-medium tracking-[0.25em] uppercase mb-5"
-              style={{ color: "#555", transition: "color 0.4s ease" }}
+              style={{ color: "#8A8A8A", transition: "color 0.4s ease" }}
             >
               {t("splash.earlyAccess")}
             </p>
@@ -191,7 +191,7 @@ export function SplashContent({ palette, onAccessGranted }: SplashContentProps) 
                 >
                   {t("splash.connected")}
                 </p>
-                <p className="text-xs mt-2" style={{ color: "#666" }}>
+                <p className="text-xs mt-2" style={{ color: "#8F8F8F" }}>
                   {t("splash.welcome")}
                 </p>
               </div>
