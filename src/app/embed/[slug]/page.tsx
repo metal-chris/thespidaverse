@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getProvider } from "@/lib/providers";
 import { routing } from "@/i18n/routing";
-import { KumoWebMark } from "@/components/ui/KumoWebMark";
+import { SpidaverseMark } from "@/components/ui/SpidaverseMark";
 import { TierListChart } from "@/components/content/TierListChart";
 import type { TierListBlock } from "@/types";
 
@@ -19,9 +19,14 @@ import type { TierListBlock } from "@/types";
  * It renders the full interactive chart — capsules, text list, and the Maker,
  * so a reader can rearrange the list without leaving the host page — plus the
  * one thing an off-site surface must always carry: attribution. The footer
- * marks the work as The Spidaverse's and links back to the article; it uses
- * the orb-web mark (see KumoWebMark) as the site's mark by explicit decision,
- * accepting that the two sites read as siblings.
+ * marks the work as The Spidaverse's and links back to the article.
+ *
+ * It used to borrow Kumo Club's orb-web (KumoWebMark) as the mark here — a
+ * deliberate choice at the time, made when this site had no mark of its own
+ * and the sibling resemblance was the point. It has one now, so the borrowed
+ * mark is retired: this is the surface that renders on other people's pages,
+ * where a reader has no way to see the rest of the site and work out that the
+ * logo belongs to a different brand.
  *
  * Only ever renders published chart content — no member/auth surface exists
  * here, which is what makes the middleware bypass safe.
@@ -78,7 +83,7 @@ export default async function EmbedPage({ params, searchParams }: Props) {
             rel="noopener"
             className="flex items-center gap-2 text-sm font-bold text-foreground no-underline hover:text-accent"
           >
-            <KumoWebMark className="h-4 w-4 text-accent" />
+            <SpidaverseMark className="h-4 w-4 text-accent" />
             The Spidaverse
           </a>
           <a

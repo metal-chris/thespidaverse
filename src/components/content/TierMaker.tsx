@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { ASPECT_CHIP, entryImageUrl, tierColor } from "./TierListChart";
 import type { TierChipAspect, TierEntry, TierListBlock, TierRow } from "@/types";
+import { SpidaverseMark } from "@/components/ui/SpidaverseMark";
 import {
   UNRANKED,
   flatten,
@@ -261,7 +262,13 @@ export function TierMaker({ value }: { value: TierListBlock }) {
       // text column is narrow enough for the button to sit beside it — so
       // the sm: stacking variants are gone rather than tuned.
       <div className="not-prose my-8 flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-4">
-        <div className="flex min-w-0 flex-col gap-0.5">
+        {/* The Maker's identity badge. Hidden below sm on purpose: the whole
+            point of the layout note above is that the button sits beside the
+            text on a phone, and a third element in that row is what would push
+            it back down. The mark earns its place at widths that have room
+            for it. */}
+        <SpidaverseMark className="hidden sm:block h-9 w-9 shrink-0 text-accent" />
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <p className="text-sm font-bold text-foreground">{t("maker.ctaTitle")}</p>
           <p className="text-xs text-muted-foreground">{t("maker.ctaBlurb")}</p>
           <p className="text-xs text-muted-foreground">{t("maker.ctaNoAccount")}</p>

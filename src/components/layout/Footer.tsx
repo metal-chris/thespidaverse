@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Container } from "@/components/ui/Container";
 import { useTransition } from "@/components/transitions/TransitionProvider";
+import { SpidaverseMark } from "@/components/ui/SpidaverseMark";
 
 function SocialIcon({
   d,
@@ -87,8 +88,9 @@ export function Footer() {
           <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="text-sm font-bold tracking-tight text-foreground hover:text-accent transition-colors"
+              className="flex items-center gap-2 text-sm font-bold tracking-tight text-foreground hover:text-accent transition-colors"
             >
+              <SpidaverseMark className="h-5 w-5 shrink-0" />
               {t("footer.logo")}
             </Link>
             <span className="hidden sm:block w-px h-4 bg-border" />
