@@ -19,7 +19,7 @@ export function SplashPage() {
   // next full page load, and the splash could disagree with the header it was
   // about to hand you to. One source of truth removes that skew, and the
   // provider already owns persistence (localStorage + the shared cookie).
-  const { theme: palette } = useTheme();
+  const { theme: palette, mode } = useTheme();
 
   const handleRendererReady = useCallback((trigger: (x: number, y: number) => void) => {
     strikeTriggerRef.current = trigger;
@@ -74,9 +74,9 @@ export function SplashPage() {
     venom: "rgba(255,255,255,0.02)",
   };
   const vignetteEdge: Record<Palette, string> = {
-    miles: "var(--splash-vignette-edge)",
-    peter: "var(--splash-vignette-edge-strong)",
-    venom: "var(--splash-vignette-edge)",
+    miles: "var(--vignette-edge)",
+    peter: "var(--vignette-edge-strong)",
+    venom: "var(--vignette-edge)",
   };
   const glowPrimary: Record<Palette, string> = {
     miles: "rgba(232,35,52,0.06)",
@@ -140,7 +140,7 @@ export function SplashPage() {
       />
 
       {/* Spider web canvas */}
-      <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} onRendererReady={handleRendererReady} />
+      <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} mode={mode} onRendererReady={handleRendererReady} />
 
       {/* Content overlay */}
       <SplashContent palette={palette} onAccessGranted={handleAccessGranted} />

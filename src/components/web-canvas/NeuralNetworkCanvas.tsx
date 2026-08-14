@@ -2,15 +2,17 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import { SpiderWebRenderer } from "./SpiderWebRenderer";
-import type { Palette } from "./particle-config";
+import type { Mode, Palette } from "./particle-config";
 
 interface SpiderWebCanvasProps {
   reducedMotion: boolean;
   palette: Palette;
+  /** Surface lightness. The web is drawn in ink, so it must know its ground. */
+  mode?: Mode;
   onRendererReady?: (trigger: (x: number, y: number) => void) => void;
 }
 
-export function SpiderWebCanvas({ reducedMotion, palette, onRendererReady }: SpiderWebCanvasProps) {
+export function SpiderWebCanvas({ reducedMotion, palette, mode = "dark", onRendererReady }: SpiderWebCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rendererRef = useRef<SpiderWebRenderer | null>(null);
   const onRendererReadyRef = useRef(onRendererReady);
@@ -31,8 +33,8 @@ export function SpiderWebCanvas({ reducedMotion, palette, onRendererReady }: Spi
 
   // Sync palette changes into the renderer
   useEffect(() => {
-    rendererRef.current?.setPalette(palette);
-  }, [palette]);
+    rendererRef.current?.setPalette(palette, mode);
+  }, [palette, mode]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -43,7 +45,7 @@ export function SpiderWebCanvas({ reducedMotion, palette, onRendererReady }: Spi
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
 
-    const renderer = new SpiderWebRenderer(canvas, reducedMotion, palette);
+    const renderer = new SpiderWebRenderer(canvas, reducedMotion, palette, mode);
     rendererRef.current = renderer;
     renderer.start();
 
@@ -102,7 +104,7 @@ export function SpiderWebCanvas({ reducedMotion, palette, onRendererReady }: Spi
       window.removeEventListener("touchend", handleTouchEnd);
       document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, [reducedMotion, resizeCanvas, palette]);
+  }, [reducedMotion, resizeCanvas, palette, mode]);
 
   return (
     <canvas

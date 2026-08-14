@@ -1,5 +1,5 @@
 import {
-  PALETTES, ANIMATION, type WebConfig, type Palette, type PaletteColors, getWebConfig,
+  PALETTES, ANIMATION, type WebConfig, type Palette, type PaletteColors, type Mode, getWebConfig,
 } from "./particle-config";
 
 // ============================================================
@@ -49,12 +49,19 @@ export class SpiderWebRenderer {
 
   // Venom strikes
   private strikes: Strike[] = [];
+  private mode: Mode = "dark";
 
-  constructor(canvas: HTMLCanvasElement, reducedMotion = false, palette: Palette = "miles") {
+  constructor(
+    canvas: HTMLCanvasElement,
+    reducedMotion = false,
+    palette: Palette = "miles",
+    mode: Mode = "dark"
+  ) {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d")!;
     this.reducedMotion = reducedMotion;
-    this.colors = PALETTES[palette];
+    this.mode = mode;
+    this.colors = PALETTES[palette][mode];
     this.config = getWebConfig(window.innerWidth);
     this.computeGeometry();
   }
@@ -112,8 +119,11 @@ export class SpiderWebRenderer {
     this.strikes = [];
   }
 
-  setPalette(palette: Palette) {
-    this.colors = PALETTES[palette];
+  /** Palette and mode are set together: the colour set is keyed on both, so
+   *  changing either without the other would resolve against a stale axis. */
+  setPalette(palette: Palette, mode: Mode = this.mode) {
+    this.mode = mode;
+    this.colors = PALETTES[palette][mode];
   }
 
   triggerStrike(x: number, y: number) {

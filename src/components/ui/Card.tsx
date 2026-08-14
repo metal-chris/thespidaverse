@@ -138,7 +138,7 @@ export function Card({ article, featured = false }: CardProps) {
 
           {/* Gradient overlay for real images (placeholder handles its own) */}
           {imageUrl && (
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
+            <div className="img-scrim absolute inset-0" />
           )}
 
           {/* Personal rating badge intentionally removed — data stays in Sanity. */}
@@ -222,7 +222,7 @@ export function Card({ article, featured = false }: CardProps) {
             sizes="(max-width: 768px) 100vw, 33vw"
           />
           {/* Subtle gradient for badges */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          <div className="img-scrim-soft absolute inset-0" />
 
           {/* Personal rating badge intentionally removed — data stays in Sanity. */}
 

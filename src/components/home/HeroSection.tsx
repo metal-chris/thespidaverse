@@ -16,7 +16,7 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ className = "", children }: HeroSectionProps) {
-  const { theme } = useTheme();
+  const { theme, mode } = useTheme();
   const t = useTranslations();
   const palette: Palette = theme; // miles | peter | venom — same type
 
@@ -36,10 +36,15 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
     peter: "rgba(30,80,220,0.03)",
     venom: "rgba(255,255,255,0.02)",
   };
+  // Edge falloff comes from the mode-aware token, not a fixed black. The
+  // splash had this same bug and was fixed first; the hero kept painting a
+  // 40% black ring on the light page, which is the "radial blur looks dark"
+  // report. peter keeps its own tint since its dark ground is maroon, not
+  // black, but it too defers to the token in light.
   const vignetteEdge: Record<Palette, string> = {
-    miles: "rgba(0,0,0,0.4)",
-    peter: "rgba(30,4,4,0.15)",
-    venom: "rgba(0,0,0,0.4)",
+    miles: "var(--vignette-edge)",
+    peter: "var(--vignette-edge)",
+    venom: "var(--vignette-edge)",
   };
   const glowPrimary: Record<Palette, string> = {
     miles: "rgba(232,35,52,0.06)",
@@ -100,7 +105,7 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
       />
 
       {/* Layer 4: Interactive spider web canvas */}
-      <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} />
+      <SpiderWebCanvas reducedMotion={reducedMotion} palette={palette} mode={mode} />
 
       {/* Content — above all background layers, centered in remaining space */}
       <div className="flex-1 flex items-center justify-center">
@@ -125,7 +130,15 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
           style={{ fontSize: "clamp(3rem, 5vw + 1.5rem, 7rem)", animationDelay: "0.25s" }}
         >
           The{" "}
-          <span className="text-accent relative [html[data-theme='venom']_&]:text-white [html[data-theme='peter']_&]:text-[#1E50DC]">
+          {/* Accent word — driven by the token, with no per-palette overrides.
+              These hardcoded values predate light mode and only ever described
+              the DARK surface: venom forced text-white, so in wangan the title
+              read half-black half-white; peter pinned #1E50DC, the dark-mode
+              blue, which is 3.1:1 on the light ground. Both palettes already
+              define --color-accent correctly for each mode (venom light is
+              #33333A, peter light #12379E), so the override was not just wrong
+              in light — it was overriding a value that was already right. */}
+          <span className="relative text-accent">
             {t("hero.titleAccent")}
             {/* Underline accent */}
             <span

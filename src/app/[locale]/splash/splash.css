@@ -387,21 +387,3 @@ body:has(.splash-layout) .sr-only[href="#main-content"] {
   .cs-card-edge::before { transition: none; }
 }
 
-/* ============================================================
-   Splash vignette edge — inverts with the surface
-   ============================================================
-   The vignette darkens the page edges so the centre card sits forward.
-   That reads on a dark surface; on a light one the same black wash is just
-   a grey smudge round the border. Defining it as a token lets the same
-   gradient do the right thing in both modes: darken on dark, lighten on
-   light. Declared on :root (dark default) and overridden under
-   [data-mode="light"], matching how every other surface token works. */
-:root {
-  --splash-vignette-edge: rgba(0, 0, 0, 0.4);
-  --splash-vignette-edge-strong: rgba(0, 0, 0, 0.5);
-}
-
-[data-mode="light"] {
-  --splash-vignette-edge: rgba(255, 255, 255, 0.55);
-  --splash-vignette-edge-strong: rgba(255, 255, 255, 0.7);
-}

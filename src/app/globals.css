@@ -1794,3 +1794,73 @@ body.sanity-studio-active #main-content {
   animation: web-spin 2.4s linear infinite;
   transform-origin: 50% 50%;
 }
+
+/* ========================================
+   Mode-aware overlays — vignettes and image scrims
+   ========================================
+   Both of these darken. Darkening is how you separate content from a
+   background on a DARK surface; on a light one the same wash reads as haze,
+   which is the "foggy" look these produced in light mode.
+
+   Two different jobs, so two different treatments:
+
+   --vignette-edge      the page-edge falloff behind heroes and canvases.
+                        Inverts outright: darkens on dark, LIGHTENS on light,
+                        because the goal is "recede at the edges" and on paper
+                        that means going paler, not greyer.
+
+   .img-scrim           the gradient over a featured image that keeps white
+                        badge/title text legible. This one cannot invert — the
+                        text on it is white in both modes — so instead the
+                        WHOLE-IMAGE tint is dropped in light mode and only the
+                        bottom band survives. That tint (to-black/10 across the
+                        entire frame) was the actual fog: a 10% black wash over
+                        every thumbnail, invisible against a dark card and
+                        obvious against a white one.
+*/
+:root {
+  --vignette-edge: rgba(0, 0, 0, 0.4);
+  --vignette-edge-strong: rgba(0, 0, 0, 0.5);
+}
+
+[data-mode="light"] {
+  --vignette-edge: rgba(255, 255, 255, 0.55);
+  --vignette-edge-strong: rgba(255, 255, 255, 0.7);
+}
+
+.img-scrim {
+  background-image: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.85) 0%,
+    rgba(0, 0, 0, 0.4) 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+}
+
+.img-scrim-soft {
+  background-image: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.4) 0%,
+    transparent 60%,
+    transparent 100%
+  );
+}
+
+/* Light: keep the bottom band that carries the text, drop the veil. */
+[data-mode="light"] .img-scrim {
+  background-image: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.28) 42%,
+    transparent 72%
+  );
+}
+
+[data-mode="light"] .img-scrim-soft {
+  background-image: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.34) 0%,
+    transparent 52%,
+    transparent 100%
+  );
+}
