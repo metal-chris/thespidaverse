@@ -25,7 +25,7 @@ export function Header() {
             lockup instead of an icon parked next to some text. */}
         <Link
           href="/"
-          className="group flex items-center gap-2.5 text-xl font-bold tracking-tight text-foreground hover:text-accent transition-colors"
+          className="group flex min-h-[44px] items-center gap-2.5 text-xl font-bold tracking-tight text-foreground hover:text-accent transition-colors"
         >
           <SpidaverseMark className="h-7 w-7 shrink-0" />
           The Spidaverse
@@ -58,7 +58,7 @@ export function Header() {
           <SearchButton />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 rounded-md hover:bg-muted transition-colors"
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md hover:bg-muted transition-colors"
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
           >
@@ -90,9 +90,11 @@ export function Header() {
         <Container className="py-4">
           <Nav mobile onNavigate={() => setMobileOpen(false)} />
           {/* The settings the header cannot afford to show at this width.
-              Same component, same order, given the room to be tappable. */}
+              Same component, same order, given the room to be tappable — and
+              labelled, because three bare icons in a drawer read as decoration
+              and go unused. */}
           <div className="mt-4 border-t border-border pt-4">
-            <SettingsBar />
+            <SettingsBar labelled />
           </div>
         </Container>
       </div>

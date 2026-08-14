@@ -169,7 +169,7 @@ export function LocaleSwitcher({
           type="button"
           aria-label={t('change')}
           className={cn(
-            'group inline-flex items-center gap-2 px-3 py-2 rounded-sm border transition-all duration-200',
+            'group inline-flex min-h-[44px] items-center gap-2 px-3 py-2 rounded-sm border transition-all duration-200',
             'text-sm font-medium',
             'border-border bg-transparent text-muted-foreground hover:border-muted-foreground hover:text-foreground',
             'data-[state=open]:border-accent/50 data-[state=open]:bg-card data-[state=open]:text-foreground',
