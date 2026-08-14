@@ -8,7 +8,16 @@
     "notFoundTitle": "포털에 빠졌습니다.",
     "notFoundDescription": "이 페이지는 다른 차원에 있습니다.",
     "notFoundSwingHome": "홈으로 돌아가기",
-    "notFoundSearch": "검색하기"
+    "notFoundSearch": "검색하기",
+    "settings": {
+      "paletteLabel": "색상 변경",
+      "modeLabel": "명암 변경",
+      "languageLabel": "언어 변경",
+      "palette_miles": "레드 색상",
+      "palette_peter": "블루 색상",
+      "palette_venom": "모노크롬 색상",
+      "paletteNext": "{palette}(으)로 전환"
+    }
   },
   "nav": {
     "home": "홈",
@@ -446,12 +455,6 @@
     "connect": "연결하기",
     "connecting": "연결 중…",
     "connected": "입장 완료",
-    "welcome": "웹에 오신 것을 환영합니다. 와주셔서 반가워요.",
-    "paletteLabel": "색상 변경",
-    "modeLabel": "명암 변경",
-    "languageLabel": "언어 변경",
-    "palette_miles": "레드 색상",
-    "palette_peter": "블루 색상",
-    "palette_venom": "모노크롬 색상"
+    "welcome": "웹에 오신 것을 환영합니다. 와주셔서 반가워요."
   }
 }

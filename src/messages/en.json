@@ -8,7 +8,16 @@
     "notFoundTitle": "You fell through a spot.",
     "notFoundDescription": "This page exists in another dimension.",
     "notFoundSwingHome": "Swing Back Home",
-    "notFoundSearch": "Search Instead"
+    "notFoundSearch": "Search Instead",
+    "settings": {
+      "paletteLabel": "Change colour",
+      "modeLabel": "Change contrast",
+      "languageLabel": "Change language",
+      "palette_miles": "Red palette",
+      "palette_peter": "Blue palette",
+      "palette_venom": "Monochrome palette",
+      "paletteNext": "Switch to {palette}"
+    }
   },
   "nav": {
     "home": "Home",
@@ -446,12 +455,6 @@
     "connect": "Connect",
     "connecting": "Connecting…",
     "connected": "You're in",
-    "welcome": "Welcome to the web. Glad you made it.",
-    "paletteLabel": "Change colour",
-    "modeLabel": "Change contrast",
-    "languageLabel": "Change language",
-    "palette_miles": "Red palette",
-    "palette_peter": "Blue palette",
-    "palette_venom": "Monochrome palette"
+    "welcome": "Welcome to the web. Glad you made it."
   }
 }

@@ -8,7 +8,16 @@
     "notFoundTitle": "スポットに落ちました。",
     "notFoundDescription": "このページは別の次元に存在します。",
     "notFoundSwingHome": "ホームに戻る",
-    "notFoundSearch": "検索する"
+    "notFoundSearch": "検索する",
+    "settings": {
+      "paletteLabel": "配色を変更",
+      "modeLabel": "コントラストを変更",
+      "languageLabel": "言語を変更",
+      "palette_miles": "レッドの配色",
+      "palette_peter": "ブルーの配色",
+      "palette_venom": "モノクロの配色",
+      "paletteNext": "{palette}に切り替える"
+    }
   },
   "nav": {
     "home": "ホーム",
@@ -446,12 +455,6 @@
     "connect": "つながる",
     "connecting": "接続中…",
     "connected": "ようこそ",
-    "welcome": "ウェブへようこそ。来てくれてうれしいです。",
-    "paletteLabel": "配色を変更",
-    "modeLabel": "コントラストを変更",
-    "languageLabel": "言語を変更",
-    "palette_miles": "レッドの配色",
-    "palette_peter": "ブルーの配色",
-    "palette_venom": "モノクロの配色"
+    "welcome": "ウェブへようこそ。来てくれてうれしいです。"
   }
 }

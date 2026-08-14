@@ -8,7 +8,16 @@
     "notFoundTitle": "Vous êtes tombé dans un portail.",
     "notFoundDescription": "Cette page existe dans une autre dimension.",
     "notFoundSwingHome": "Retour à l'Accueil",
-    "notFoundSearch": "Rechercher"
+    "notFoundSearch": "Rechercher",
+    "settings": {
+      "paletteLabel": "Changer la couleur",
+      "modeLabel": "Changer le contraste",
+      "languageLabel": "Changer de langue",
+      "palette_miles": "Palette rouge",
+      "palette_peter": "Palette bleue",
+      "palette_venom": "Palette monochrome",
+      "paletteNext": "Passer à {palette}"
+    }
   },
   "nav": {
     "home": "Accueil",
@@ -446,12 +455,6 @@
     "connect": "Se connecter",
     "connecting": "Connexion…",
     "connected": "Vous y êtes",
-    "welcome": "Bienvenue sur la toile. Ravis de vous voir.",
-    "paletteLabel": "Changer la couleur",
-    "modeLabel": "Changer le contraste",
-    "languageLabel": "Changer de langue",
-    "palette_miles": "Palette rouge",
-    "palette_peter": "Palette bleue",
-    "palette_venom": "Palette monochrome"
+    "welcome": "Bienvenue sur la toile. Ravis de vous voir."
   }
 }

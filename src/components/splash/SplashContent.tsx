@@ -2,9 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
-import { ModeToggle } from "@/components/theme/ModeToggle";
-import { PaletteToggle } from "@/components/theme/PaletteToggle";
+import { SettingsBar } from "@/components/layout/SettingsBar";
 import type { Palette } from "@/components/web-canvas/particle-config";
 
 interface SplashContentProps {
@@ -111,14 +109,10 @@ export function SplashContent({ palette, onAccessGranted }: SplashContentProps) 
           tied brand copy to a licence and told the visitor nothing a swatch
           shows faster. Accessible names describe the ACTION, never a theme. */}
       <div className="absolute right-4 top-4 z-30 flex items-center gap-2 sm:right-6 sm:top-6">
-        <PaletteToggle
-          label={t("splash.paletteLabel")}
-          optionLabel={(p) => t(`splash.palette_${p}`)}
+        <SettingsBar
+          palette="swatches"
+          modeClassName="h-9 w-9 rounded-full border border-white/10 bg-black/40 text-white/70 backdrop-blur hover:text-white"
         />
-
-        <ModeToggle className="h-9 w-9 rounded-full border border-white/10 bg-black/40 text-white/70 backdrop-blur hover:text-white" />
-
-        <LocaleSwitcher />
       </div>
 
       <div

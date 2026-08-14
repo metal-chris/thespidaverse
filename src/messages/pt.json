@@ -8,7 +8,16 @@
     "notFoundTitle": "Você caiu por um portal.",
     "notFoundDescription": "Esta página existe em outra dimensão.",
     "notFoundSwingHome": "Voltar pra Casa",
-    "notFoundSearch": "Buscar"
+    "notFoundSearch": "Buscar",
+    "settings": {
+      "paletteLabel": "Mudar cor",
+      "modeLabel": "Mudar contraste",
+      "languageLabel": "Mudar idioma",
+      "palette_miles": "Paleta vermelha",
+      "palette_peter": "Paleta azul",
+      "palette_venom": "Paleta monocromática",
+      "paletteNext": "Mudar para {palette}"
+    }
   },
   "nav": {
     "home": "Início",
@@ -446,12 +455,6 @@
     "connect": "Conectar",
     "connecting": "Conectando…",
     "connected": "Você entrou",
-    "welcome": "Bem-vindo à teia. Que bom que você veio.",
-    "paletteLabel": "Mudar cor",
-    "modeLabel": "Mudar contraste",
-    "languageLabel": "Mudar idioma",
-    "palette_miles": "Paleta vermelha",
-    "palette_peter": "Paleta azul",
-    "palette_venom": "Paleta monocromática"
+    "welcome": "Bem-vindo à teia. Que bom que você veio."
   }
 }

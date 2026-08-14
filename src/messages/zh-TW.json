@@ -8,7 +8,16 @@
     "notFoundTitle": "你從縫裡掉下去了。",
     "notFoundDescription": "這個頁面存在於另一個次元。",
     "notFoundSwingHome": "盪回首頁",
-    "notFoundSearch": "改用搜尋"
+    "notFoundSearch": "改用搜尋",
+    "settings": {
+      "paletteLabel": "更換配色",
+      "modeLabel": "變更對比度",
+      "languageLabel": "變更語言",
+      "palette_miles": "紅色配色",
+      "palette_peter": "藍色配色",
+      "palette_venom": "單色配色",
+      "paletteNext": "切換至{palette}"
+    }
   },
   "nav": {
     "home": "首頁",
@@ -446,12 +455,6 @@
     "connect": "連線",
     "connecting": "連線中…",
     "connected": "你進來了",
-    "welcome": "歡迎來到這張網，很高興你來了。",
-    "paletteLabel": "更換配色",
-    "modeLabel": "變更對比度",
-    "languageLabel": "變更語言",
-    "palette_miles": "紅色配色",
-    "palette_peter": "藍色配色",
-    "palette_venom": "單色配色"
+    "welcome": "歡迎來到這張網，很高興你來了。"
   }
 }

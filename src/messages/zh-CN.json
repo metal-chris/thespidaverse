@@ -8,7 +8,16 @@
     "notFoundTitle": "你从缝里掉下去了。",
     "notFoundDescription": "这个页面存在于另一个维度。",
     "notFoundSwingHome": "荡回首页",
-    "notFoundSearch": "改为搜索"
+    "notFoundSearch": "改为搜索",
+    "settings": {
+      "paletteLabel": "更换配色",
+      "modeLabel": "更改对比度",
+      "languageLabel": "更改语言",
+      "palette_miles": "红色配色",
+      "palette_peter": "蓝色配色",
+      "palette_venom": "黑白配色",
+      "paletteNext": "切换到{palette}"
+    }
   },
   "nav": {
     "home": "首页",
@@ -446,12 +455,6 @@
     "connect": "接入",
     "connecting": "接入中…",
     "connected": "你进来了",
-    "welcome": "欢迎来到这张网，很高兴你来了。",
-    "paletteLabel": "更换配色",
-    "modeLabel": "更改对比度",
-    "languageLabel": "更改语言",
-    "palette_miles": "红色配色",
-    "palette_peter": "蓝色配色",
-    "palette_venom": "黑白配色"
+    "welcome": "欢迎来到这张网，很高兴你来了。"
   }
 }

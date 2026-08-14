@@ -8,6 +8,7 @@ import { useTheme } from "@/components/theme/ThemeProvider";
 import { useTranslations } from "next-intl";
 import { ArrowDown } from "lucide-react";
 import type { Palette } from "@/components/web-canvas/particle-config";
+import { SpidaverseMark } from "@/components/ui/SpidaverseMark";
 
 interface HeroSectionProps {
   className?: string;
@@ -104,6 +105,19 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
       {/* Content — above all background layers, centered in remaining space */}
       <div className="flex-1 flex items-center justify-center">
       <Container className="relative z-10 text-center">
+        {/* The mark, at the size it was actually designed to be judged at.
+            It leads the hero rather than the tagline because this is the one
+            place on the site with room to show it whole — everywhere else it
+            appears at nav or favicon scale, where the inner octagon and the
+            leg junctions are inferred rather than seen. Enters first, one beat
+            ahead of the tagline, so the sequence reads mark → claim → title. */}
+        <div
+          className="flex justify-center mb-6 opacity-0 animate-hero-fade-in"
+          style={{ animationDelay: "0.05s" }}
+        >
+          <SpidaverseMark className="h-20 w-20 text-accent md:h-24 md:w-24" />
+        </div>
+
         {/* Mono tagline above heading */}
         <p
           className="font-mono text-xs md:text-sm uppercase tracking-[0.25em] text-accent mb-4 opacity-0 animate-hero-fade-in"

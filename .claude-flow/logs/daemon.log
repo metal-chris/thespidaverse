@@ -601,3 +601,25 @@
 [2026-08-13T01:54:39.029Z] [INFO] Stopped worker: backup
 [2026-08-13T01:54:39.029Z] [INFO] Stopped worker: harness
 [2026-08-13T01:54:39.084Z] [INFO] Daemon stopped
+[2026-08-14T00:54:56.890Z] [INFO] AI workers disabled (default) - all workers run local-only. Enable with `daemon start --headless`, daemon.aiWorkers.enabled=true, or RUFLO_DAEMON_AI_WORKERS=1 (#2661)
+[2026-08-14T00:54:56.891Z] [INFO] Scheduled map (interval: 900s, first run in 0s)
+[2026-08-14T00:54:56.891Z] [INFO] Scheduled audit (interval: 600s, first run in 120s)
+[2026-08-14T00:54:56.891Z] [INFO] Scheduled optimize (interval: 900s, first run in 240s)
+[2026-08-14T00:54:56.891Z] [INFO] Scheduled consolidate (interval: 1800s, first run in 360s)
+[2026-08-14T00:54:56.891Z] [INFO] Scheduled testgaps (interval: 1200s, first run in 480s)
+[2026-08-14T00:54:56.891Z] [INFO] Scheduled backup (interval: 86400s, first run in 600s)
+[2026-08-14T00:54:56.891Z] [INFO] Scheduled harness (interval: 21600s, first run in 720s)
+[2026-08-14T00:54:56.891Z] [INFO] Lifecycle monitor active (workspace-removal, ttl=43200s, idle=1800s)
+[2026-08-14T00:54:56.905Z] [INFO] Daemon started (PID: 67048, CPUs: 10, workers: 7, maxCpuLoad: 8, minFreeMemoryPercent: 5%)
+[2026-08-14T00:54:56.905Z] [INFO] Worker map deferred: CPU load too high: 18.54
+[2026-08-14T00:56:56.893Z] [INFO] Worker audit deferred: CPU load too high: 11.75
+[2026-08-14T00:58:56.893Z] [INFO] Worker optimize deferred: CPU load too high: 24.26
+[2026-08-14T01:00:56.894Z] [INFO] Worker consolidate deferred: CPU load too high: 18.99
+[2026-08-14T01:02:56.896Z] [INFO] Worker testgaps deferred: CPU load too high: 17.07
+[2026-08-14T01:04:56.894Z] [INFO] Worker backup deferred: CPU load too high: 12.64
+[2026-08-14T01:06:56.894Z] [INFO] Worker harness deferred: CPU load too high: 12.30
+[2026-08-14T01:06:56.971Z] [INFO] Worker audit deferred: CPU load too high: 12.30
+[2026-08-14T01:09:56.908Z] [INFO] Worker map deferred: CPU load too high: 17.61
+[2026-08-14T01:13:56.899Z] [INFO] Worker optimize deferred: CPU load too high: 12.34
+[2026-08-14T01:16:56.976Z] [INFO] Worker audit deferred: CPU load too high: 19.51
+[2026-08-14T01:22:56.902Z] [INFO] Worker testgaps deferred: CPU load too high: 28.56
