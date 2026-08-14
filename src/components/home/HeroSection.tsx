@@ -135,16 +135,23 @@ export function HeroSection({ className = "", children }: HeroSectionProps) {
           </span>
         </GlitchText>
 
-        {/* Tagline sits UNDER the title. Above it, the mono line was the first
-            thing read on the site and the title only the second — a caption
-            introducing the name. Beneath, the sequence reads mark → name →
-            what it is, and the title keeps the top of the page. */}
-        <p
+        {/* A real heading, not a styled paragraph.
+            This line introduces the two below it — the media list and the
+            claim — so it is the heading OF that block and marking it <h2>
+            says so. As a <p> it was styled to look like a heading while
+            being invisible to anything reading structure, which left the
+            hero as a title followed by three unrelated paragraphs.
+
+            It also sits UNDER the title now. Above it, the mono line was the
+            first thing read on the site and the title only the second — a
+            caption introducing the name. Beneath, the sequence reads
+            mark → name → what it is. */}
+        <h2
           className="font-mono text-xs md:text-sm uppercase tracking-[0.25em] text-accent mt-5 opacity-0 animate-hero-fade-in"
           style={{ animationDelay: "0.35s" }}
         >
           {t("hero.tagline")}
-        </p>
+        </h2>
 
         <p
           className="mt-6 text-base md:text-lg text-muted-foreground max-w-xl mx-auto text-balance leading-relaxed opacity-0 animate-hero-fade-in"

@@ -49,8 +49,27 @@ export function SpidaverseMark({ className, title, style }: SpidaverseMarkProps)
       {...(title ? { role: "img" } : { "aria-hidden": true })}
     >
       {title ? <title>{title}</title> : null}
-      <polygon points="108.04,79.9 79.9,108.04 40.1,108.04 11.96,79.9 11.96,40.1 40.1,11.96 79.9,11.96 108.04,40.1" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
-      <polygon points="94.59,74.33 74.33,94.59 45.67,94.59 25.41,74.33 25.41,45.67 45.67,25.41 74.33,25.41 94.59,45.67" fill="none" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" opacity="0.55"/>
+      <SpidaverseFrame />
+      <SpidaverseSpider />
+    </svg>
+  );
+}
+
+
+/**
+ * The spider alone — no frame.
+ *
+ * Exported so WebSpinner can put THIS spider inside its own spinning web
+ * without inheriting the octagon (a web behind a framed spider is two
+ * enclosures fighting). Same emitted geometry as the full mark, not a second
+ * drawing: there is one spider on this site and this is it.
+ *
+ * Coordinates are the generator's, in the 120x120 space. Scale it by wrapping
+ * in a transform rather than editing numbers here.
+ */
+export function SpidaverseSpider() {
+  return (
+    <>
       <polyline points="69.43,48.44 80.23,28.13 89.07,23.82" fill="none" stroke="currentColor" strokeWidth="3.8" strokeLinecap="round" strokeLinejoin="round"/>
       <polyline points="50.57,48.44 39.77,28.13 30.93,23.82" fill="none" stroke="currentColor" strokeWidth="3.8" strokeLinecap="round" strokeLinejoin="round"/>
       <polyline points="72.18,52.75 93.38,39.5 105.61,40.36" fill="none" stroke="currentColor" strokeWidth="3.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -62,7 +81,17 @@ export function SpidaverseMark({ className, title, style }: SpidaverseMarkProps)
       <path d="M 60 64 C 69.18 64 73.5 73 73.5 82.6 C 73.5 89.2 67.29 94 60 94 C 52.71 94 46.5 89.2 46.5 82.6 C 46.5 73 50.82 64 60 64 Z" fill="currentColor"/>
       <ellipse cx="60" cy="55" rx="12.5" ry="10" fill="currentColor"/>
       <ellipse cx="60" cy="39" rx="8.5" ry="7.5" fill="currentColor"/>
-    </svg>
+    </>
+  );
+}
+
+/** The octagon frame alone — outer ring plus the inner rule. */
+export function SpidaverseFrame() {
+  return (
+    <>
+      <polygon points="108.04,79.9 79.9,108.04 40.1,108.04 11.96,79.9 11.96,40.1 40.1,11.96 79.9,11.96 108.04,40.1" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
+      <polygon points="94.59,74.33 74.33,94.59 45.67,94.59 25.41,74.33 25.41,45.67 45.67,25.41 74.33,25.41 94.59,45.67" fill="none" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" opacity="0.55"/>
+    </>
   );
 }
 
