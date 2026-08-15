@@ -17,11 +17,14 @@ import ArticlePage from "../../page";
  * whole article route dynamic — this way article pages keep ISR and each
  * shared ranking is just another statically-generated path.
  *
- * Humans don't stay here. The inline script below rewrites the URL to the
- * article's canonical ?tl= form before hydration, so the Maker (which reads
- * location.search on mount) opens the arrangement exactly as if the query
- * link had been followed — one page, no redirect hop, no double fetch.
- * Crawlers never run it and read this route's metadata instead.
+ * Humans don't stay here either, but this route no longer does that work. It
+ * used to carry an inline script that rewrote the URL to the article's ?tl=
+ * form before hydration. The script never ran: React streams it inside a
+ * hidden placeholder and moves it into the document, and a script inserted by
+ * DOM insertion does not execute — so every shared link landed on the author's
+ * ranking rather than the reader's. The Maker now reads the /r/<tl> path
+ * itself and rewrites the address bar from its own mount effect, which owes
+ * nothing to hydration order. This route is metadata and nothing else.
  */
 
 interface Props {
@@ -85,28 +88,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ArrangementPage({ params }: Props) {
-  const { locale, slug, tl } = await params;
+  const { slug } = await params;
   const provider = getProvider();
   const article = await provider.getArticleBySlug(slug);
   if (!article || !firstTierList(article.body as unknown[])) notFound();
 
-  // Path → canonical query form, before hydration. localePrefix is
-  // "as-needed": en lives unprefixed, every other locale keeps its prefix.
-  const prefix = locale === "en" ? "" : `/${locale}`;
-  const canonicalPath = `${prefix}/articles/${slug}?tl=${encodeURIComponent(decodeURIComponent(tl))}`;
-
-  return (
-    <>
-      <script
-        // Runs synchronously before React hydrates, so the Maker's mount
-        // effect sees ?tl= in location.search and opens the arrangement.
-        // JSON.stringify guards the interpolation; the path is built from
-        // route params the router already validated.
-        dangerouslySetInnerHTML={{
-          __html: `history.replaceState(null,"",${JSON.stringify(canonicalPath)});`,
-        }}
-      />
-      <ArticlePage params={Promise.resolve({ slug })} />
-    </>
-  );
+  return <ArticlePage params={Promise.resolve({ slug })} />;
 }

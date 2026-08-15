@@ -136,11 +136,36 @@ export function TierMaker({ value }: { value: TierListBlock }) {
   const boardRef = useRef<HTMLDivElement>(null);
 
   /* A link with an arrangement opens the Maker already showing it. Read from
-     location rather than useSearchParams so this needs no Suspense boundary. */
+     location rather than useSearchParams so this needs no Suspense boundary.
+
+     Two link shapes arrive here. `?tl=` is the form the address bar keeps.
+     `/r/<code>` is the form Share hands out, because a path segment can have
+     its own route and its own OG card while article pages stay static. That
+     route used to convert the path to the query form with an inline script
+     "before hydration" — but React streams the script inside a hidden
+     placeholder and then MOVES it into the document, and a script inserted by
+     DOM insertion never executes. So the conversion never happened and every
+     shared link opened the author's ranking instead of the reader's. Reading
+     both shapes here removes the ordering assumption entirely: whatever the
+     route does or does not run, the Maker sees the code. */
   useEffect(() => {
-    const param = new URLSearchParams(window.location.search).get("tl");
-    if (!param) return;
-    const decoded = decodeArrangement(param, tiers, items);
+    const [base, pathCode] = window.location.pathname.split("/r/");
+    const code =
+      new URLSearchParams(window.location.search).get("tl") ??
+      (pathCode ? decodeURIComponent(pathCode) : null);
+    const decoded = code ? decodeArrangement(code, tiers, items) : null;
+
+    /* Leave the path form behind either way. A code that decoded belongs in
+       the address bar as `?tl=`; one that did not is a dead link the reader
+       should not pass on, so it goes rather than riding along. */
+    if (pathCode) {
+      const u = new URL(window.location.href);
+      u.pathname = base;
+      if (decoded && code) u.searchParams.set("tl", code);
+      else u.searchParams.delete("tl");
+      window.history.replaceState(null, "", u.toString());
+    }
+
     if (decoded) {
       setArr(decoded);
       setOpen(true);
