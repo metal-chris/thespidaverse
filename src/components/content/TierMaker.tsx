@@ -38,6 +38,25 @@ import {
  * links valid — the new entry simply arrives unranked.
  */
 
+/* ── Chrome ─────────────────────────────────────────────────────────
+   The board is an instrument, and its chrome says so. Three kinds of thing
+   live around the tiers and they used to look identical: views that can be
+   OPEN (Share, Compare), actions that change the board (clear, restore), and
+   readouts that only display. A flat strip of matching pills told a reader
+   none of that — nothing showed Compare was already open, so it read as a
+   button that had failed rather than a panel that was showing.
+
+   So: views are a segmented pair that fills with accent while their panel is
+   up, actions sit in their own group behind a divider, and every readout
+   wears the same recessed mono field wherever it appears. Sizing is 44px on
+   touch and tightens on pointer, matching the header pass. */
+
+const READOUT =
+  "rounded-md border border-border bg-muted px-2 py-1 font-mono text-[0.66rem] tabular-nums text-muted-foreground";
+
+const CONTROL =
+  "inline-flex min-h-[44px] items-center justify-center px-3 text-[0.78rem] transition-colors sm:min-h-0 sm:py-1.5";
+
 /* ── Chip ───────────────────────────────────────────────────────── */
 
 function Chip({
@@ -323,15 +342,21 @@ export function TierMaker({ value }: { value: TierListBlock }) {
         <span className="text-[0.7rem] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
           {t("maker.boardTitle")}
         </span>
-        <span className="ml-auto rounded-full border border-border px-2 py-0.5 font-mono text-[0.66rem] text-muted-foreground">
+        <output className={cn("ml-auto", READOUT)}>
           {(arr[UNRANKED] ?? []).length > 0
             ? t("maker.unrankedCount", { n: (arr[UNRANKED] ?? []).length })
             : t("maker.allPlaced")}
-        </span>
+        </output>
       </div>
 
       {heldItem && (
-        <div className="flex items-center gap-2 border-b border-border bg-accent/15 px-3 py-2 text-[0.78rem]">
+        /* A status line, not a notice: the accent rail on the left edge is the
+           board telling you it is holding something, and it reads as lit
+           rather than as a message that appeared. */
+        <div
+          role="status"
+          className="flex items-center gap-2 border-b border-l-2 border-border border-l-accent bg-accent/15 px-3 py-2 text-[0.78rem]"
+        >
           <span>
             {t.rich("maker.holding", {
               title: heldItem.entry.title,
@@ -341,7 +366,7 @@ export function TierMaker({ value }: { value: TierListBlock }) {
           <button
             type="button"
             onClick={() => setHeld(null)}
-            className="ml-auto text-muted-foreground hover:text-foreground"
+            className="ml-auto grid h-11 w-11 flex-none place-items-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:h-8 sm:w-8"
             aria-label={t("maker.cancelHold")}
           >
             ✕
@@ -451,51 +476,97 @@ export function TierMaker({ value }: { value: TierListBlock }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5 border-t border-border bg-card px-3 py-2.5">
-        <button
-          type="button"
-          onClick={() => {
-            setShowShare((s) => !s);
-            setShowDiff(false);
-          }}
-          className="rounded-md bg-accent px-3 py-1.5 text-[0.78rem] font-bold text-background hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
-        >
-          {t("maker.share")}
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setShowDiff((s) => !s);
-            setShowShare(false);
-          }}
-          className="rounded-md border border-border px-3 py-1.5 text-[0.78rem] font-semibold text-foreground hover:border-muted-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
-          {t("maker.compare")}
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setArr({ ...Object.fromEntries(tiers.map((x) => [x._key, []])), [UNRANKED]: items.map((i) => i.entry._key) });
-            setHeld(null);
-          }}
-          className="rounded-md border border-border px-3 py-1.5 text-[0.78rem] font-semibold text-foreground hover:border-muted-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
-          {t("maker.clear")}
-        </button>
-        <button
-          type="button"
-          disabled={moves === 0 && (arr[UNRANKED] ?? []).length === 0}
-          onClick={() => {
-            setArr(canonical);
-            setHeld(null);
-          }}
-          className="rounded-md border border-border px-3 py-1.5 text-[0.78rem] font-semibold text-foreground hover:border-muted-foreground disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
-          {t("maker.reset")}
-        </button>
-        <span className="ml-auto font-mono text-[0.66rem] text-muted-foreground">
+      {/* The deck drops to `background`, the same step down the Unranked tray
+          takes. That is the only surface move that reads in BOTH modes:
+          measured, `muted` sits 4 steps from `card` in dark (26 vs 22) and
+          would have been invisible, while `background` is 9 down in dark and
+          5 in light. Controls then sit ON the deck in `card`, so they read as
+          raised keys on their own panel rather than text lying on the board. */}
+      <div className="flex flex-wrap items-center gap-2 border-t border-border bg-background px-2 py-2 sm:px-3">
+        {/* Views. A segmented pair, because they are two settings of one
+            control — at most one panel is up at a time — and because a
+            segment that fills with accent is the one place a reader can see
+            WHICH is up. aria-pressed carries the same fact to a screen
+            reader, which the old plain buttons never said at all. */}
+        {/* The cluster carries a surface, not just a hairline. The border
+            token is near-invisible on card by design, which is right for
+            dividing content and wrong for drawing a control that has to look
+            like one object with two halves. */}
+        <div className="flex flex-none overflow-hidden rounded-md border border-border bg-card">
+          <button
+            type="button"
+            aria-pressed={showShare}
+            onClick={() => {
+              setShowShare((s) => !s);
+              setShowDiff(false);
+            }}
+            className={cn(
+              CONTROL,
+              "font-bold focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent",
+              showShare
+                ? "bg-accent text-background"
+                : "text-accent hover:bg-card"
+            )}
+          >
+            {t("maker.share")}
+          </button>
+          <span aria-hidden="true" className="w-px flex-none bg-border" />
+          <button
+            type="button"
+            aria-pressed={showDiff}
+            onClick={() => {
+              setShowDiff((s) => !s);
+              setShowShare(false);
+            }}
+            className={cn(
+              CONTROL,
+              "font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent",
+              showDiff
+                ? "bg-accent text-background"
+                : "text-foreground hover:bg-card"
+            )}
+          >
+            {t("maker.compare")}
+          </button>
+        </div>
+
+        {/* The divider is the whole point of the grouping: everything left of
+            it shows you something, everything right of it changes the board. */}
+        <span aria-hidden="true" className="hidden h-6 w-px flex-none bg-border sm:block" />
+
+        <div className="flex flex-none items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => {
+              setArr({ ...Object.fromEntries(tiers.map((x) => [x._key, []])), [UNRANKED]: items.map((i) => i.entry._key) });
+              setHeld(null);
+            }}
+            className={cn(
+              CONTROL,
+              "rounded-md border border-border bg-card font-semibold text-muted-foreground hover:border-muted-foreground hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            )}
+          >
+            {t("maker.clear")}
+          </button>
+          <button
+            type="button"
+            disabled={moves === 0 && (arr[UNRANKED] ?? []).length === 0}
+            onClick={() => {
+              setArr(canonical);
+              setHeld(null);
+            }}
+            className={cn(
+              CONTROL,
+              "rounded-md border border-border bg-card font-semibold text-muted-foreground hover:border-muted-foreground hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:text-muted-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            )}
+          >
+            {t("maker.reset")}
+          </button>
+        </div>
+
+        <output className={cn("ml-auto flex-none", READOUT)}>
           {moves === 0 ? t("maker.matches") : t("maker.moveCount", { n: moves })}
-        </span>
+        </output>
       </div>
 
       {showShare && (
@@ -512,14 +583,20 @@ export function TierMaker({ value }: { value: TierListBlock }) {
                 setCopied(true);
                 window.setTimeout(() => setCopied(false), 1400);
               }}
-              className="rounded-md border border-border px-3 py-1.5 text-[0.78rem] font-semibold hover:border-muted-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className={cn(
+                CONTROL,
+                "rounded-md border border-border font-semibold text-muted-foreground hover:border-muted-foreground hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              )}
             >
               {copied ? t("maker.copied") : t("maker.copy")}
             </button>
             <button
               type="button"
               onClick={() => setShowShare(false)}
-              className="rounded-md border border-border px-3 py-1.5 text-[0.78rem] font-semibold hover:border-muted-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className={cn(
+                CONTROL,
+                "rounded-md border border-border font-semibold text-muted-foreground hover:border-muted-foreground hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              )}
             >
               {t("close")}
             </button>
@@ -576,14 +653,19 @@ export function TierMaker({ value }: { value: TierListBlock }) {
           <button
             type="button"
             onClick={() => setShowDiff(false)}
-            className="self-start rounded-md border border-border px-3 py-1.5 text-[0.78rem] font-semibold hover:border-muted-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className={cn(
+              CONTROL,
+              "self-start rounded-md border border-border font-semibold text-muted-foreground hover:border-muted-foreground hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            )}
           >
             {t("close")}
           </button>
         </div>
       )}
 
-      <p className="border-t border-border bg-card px-3 py-2 text-[0.68rem] text-muted-foreground">
+      {/* The legend, in the same mono the readouts use, so it reads as the
+          instrument's own labelling rather than a footnote about it. */}
+      <p className="border-t border-border bg-background px-3 py-2 font-mono text-[0.66rem] leading-relaxed tracking-[0.02em] text-muted-foreground">
         {t("maker.keyboardHint")}
       </p>
 
