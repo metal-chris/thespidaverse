@@ -29,7 +29,7 @@ export function ThemeToggle() {
     <button
       onClick={(e) => toggleTheme(e)}
       ref={toggleRef as React.RefObject<HTMLButtonElement>}
-      className="spider-toggle spidey-sense-hover relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
+      className="spider-toggle spidey-sense-hover relative w-11 h-11 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
       aria-label={label}
     >
       <WebSpinner size="sm" className="text-foreground" />

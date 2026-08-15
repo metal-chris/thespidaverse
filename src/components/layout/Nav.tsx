@@ -57,7 +57,7 @@ export function Nav({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () 
 
         const className = cn(
           "group relative flex items-center rounded-md text-sm font-medium transition-colors duration-200",
-          mobile ? "gap-3 px-3 py-2" : "px-2.5 py-2",
+          mobile ? "min-h-[44px] gap-3 px-3 py-2" : "px-2.5 py-2",
           isActive
             ? "text-accent"
             : "text-muted-foreground hover:text-foreground"

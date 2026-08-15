@@ -103,7 +103,17 @@
       "stateOfTheGame": "State of the Game",
       "theRotation": "The Rotation",
       "oneYearLater": "One Year Later"
-    }
+    },
+    "resultsLabel": "Search results",
+    "recent": "Recent",
+    "clearRecents": "Clear",
+    "popular": "Start here",
+    "searching": "Loading…",
+    "viewAll": "See all results for \"{query}\"",
+    "jumpToCategory": "Category",
+    "noResultsFor": "Nothing matches \"{query}\"",
+    "noResultsHint": "Try fewer words, or a different spelling.",
+    "navHint": "↑↓ move · ↵ open · esc close"
   },
   "footer": {
     "logo": "The Spidaverse",
