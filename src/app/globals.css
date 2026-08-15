@@ -1626,6 +1626,63 @@
   border-top: none;
 }
 
+/* Tailwind Typography gives every `img` a 2em top and bottom margin. Inside a
+   figure those margins land INSIDE the rounded frame, so the frame stands 64px
+   taller than the picture it holds and the picture floats in the middle of it.
+   Every gap around a figure was therefore 32px larger than the figure's own
+   margins said, and the caption sat 40px off an image it is captioning.
+
+   It is also why spacing read as uniform no matter where an image sat: this
+   32px dominated, and it is the same everywhere. The figure owns its outer
+   spacing and the caption owns its own gap; the image inside owns neither. */
+.article-prose figure img {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Section openers.
+   An image placed directly beneath an h2 opens that section. Nothing marks
+   it as such today: it clears the heading by 32px and the paragraph below it
+   by 24px, so it sits nearer the text that follows than the heading it
+   belongs to, and reads as an illustration that drifted upward. The 8px
+   difference is not a distinction a reader can see.
+
+   Authored in Studio, not in the schema. The rule keys on adjacency, so an
+   opener is made by putting the image immediately under the heading and
+   unmade by putting a paragraph between them. That is the whole interface,
+   and it costs nothing to reverse — deleting this block returns every image
+   to uniform spacing.
+
+   The `:has()` half is not optional decoration. Adjacent margins collapse to
+   the larger of the two, so tightening the figure's margin-top alone would
+   have done nothing at all against the h2's 32px bottom margin. Where
+   `:has()` is unsupported the pair simply collapses to today's spacing. */
+.article-prose h2:has(+ figure) {
+  margin-bottom: 0.75rem;
+}
+
+.article-prose h2 + figure {
+  margin-top: 0;
+  margin-bottom: 2.5rem;
+  /* Full column. The figure is otherwise pinned to 640px, which leaves an
+     opener NARROWER than its own body text at mid widths — the opposite of
+     opening anything. A true breakout past the column is not available here:
+     the article sits in a [220px, 1fr, 220px] grid and would run under the
+     table of contents. */
+  max-width: none;
+}
+
+/* The caption of an opener is a credit line for the section, so it aligns to
+   the heading's edge rather than floating centred under the image, and sits
+   a touch further off the frame. Mid-flow captions keep their centred
+   treatment: those images interrupt the reading column, and a centred label
+   is what closes them. */
+.article-prose h2 + figure figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  text-align: left;
+}
+
 /* A caption that is also a heading. The tier chart titles itself with a real
    <h2> so the TOC can offer it, but it is a caption inside the chart's own
    frame — not a section break in the article. Left to inherit the rule above
