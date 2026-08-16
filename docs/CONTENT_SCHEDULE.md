@@ -4,9 +4,7 @@ Forward-scheduled article slots for the next four weeks. Workflow is defined in 
 
 ## Status
 
-The first 12 slots (2026-05-16 → 2026-06-10) have **unpublished drafts in Sanity Studio**. Each draft holds title, slug, format, full body, polls, mood tags, web rating, and `publishedAt` set to the slot date. Drafts will not appear on the live site until manually published.
-
-The 3 extension slots (2026-06-13 → 2026-06-17) are scripted but **not yet seeded**. Run `npx tsx scripts/seed-articles-2026-06-to-07.ts` locally after merging to materialize those Sanity drafts.
+All 12 slots have **unpublished drafts in Sanity Studio**. Each draft holds title, slug, format, full body, polls, mood tags, web rating, and `publishedAt` set to the slot date. Drafts will not appear on the live site until manually published.
 
 Drafts live at `_id = drafts.scheduled-<slug>`. Open them in Studio at `/studio` under **Articles**.
 
@@ -26,11 +24,11 @@ Drafts live at `_id = drafts.scheduled-<slug>`. Open them in Studio at `/studio`
 | 2026-06-06 | Sat | cartoons-and-cereal  | Solo Leveling S3 Premiere                                          | Anime       | yes_no           |
 | 2026-06-08 | Mon | the-daily-bugle      | Summer 2026 Anime: 3 Shows                                         | Anime       | multiple_choice  |
 | 2026-06-10 | Wed | the-sinister-six     | Best Spider-Man Stories Across Every Medium                        | Culture     | ranking          |
-| 2026-06-13 | Sat | cartoons-and-cereal  | Shangri-La Frontier S2 Is Two Weeks Deep on Netflix and You're Running Out of Excuses | Anime | yes_no |
-| 2026-06-15 | Mon | the-daily-bugle      | Supergirl Drops in 11 Days and the DCU Is Either About to Build or Buckle | Movies | hot_take |
-| 2026-06-17 | Wed | versus               | Frieren vs. Mushoku Tensei — Two Visions of What Fantasy Anime Can Be | Anime | this_or_that |
+| 2026-06-13 | Sat | cartoons-and-cereal  | Witch Hat Atelier Is the Best Thing Airing Right Now               | Anime       | yes_no           |
+| 2026-06-15 | Mon | the-daily-bugle      | Toy Story 5 Opens Friday — Here's Where I'm At on the Franchise    | Movies      | hot_take         |
+| 2026-06-17 | Wed | versus               | Witch Hat Atelier vs. Frieren — Fantasy Anime's Two Best Slow Burns| Anime       | this_or_that     |
 
-Wednesday long-form rotation continues `the-sinister-six` → `versus` → `the-full-web` → `the-sinister-six` from the backfill's last entry (`the-full-web` on 2026-05-13).
+Wednesday long-form rotation continues `the-sinister-six` → `versus` → `the-full-web` → `the-sinister-six` from the backfill's last entry (`the-full-web` on 2026-05-13). Next after 2026-06-17 (`versus`) is `the-full-web`.
 
 ## Publishing each slot
 
@@ -50,12 +48,12 @@ This means you can **batch-publish all 12 drafts after editing** — the site wi
 
 ## Regenerating / extending the schedule
 
-The original seed script is at [scripts/seed-articles-2026-05-to-06.ts](../scripts/seed-articles-2026-05-to-06.ts) (slots 1–12). The extension script for slots 13–15 is at [scripts/seed-articles-2026-06-to-07.ts](../scripts/seed-articles-2026-06-to-07.ts). Both are **idempotent** — they use `createOrReplace`, so re-running overwrites existing drafts with the script content. Use `--dry` to preview without writing.
+The seed script is at [scripts/seed-articles-2026-05-to-06.ts](../scripts/seed-articles-2026-05-to-06.ts). Re-running it (`npx tsx scripts/seed-articles-2026-05-to-06.ts`) is **idempotent** — it uses `createOrReplace`, so the existing drafts get overwritten with the latest content from the script. Use `--dry` to preview without writing.
 
 To extend the schedule past 2026-06-17:
 
-1. Copy the script to a new dated filename (e.g. `seed-articles-2026-06-to-07b.ts`).
-2. Continue the Wed rotation: after 2026-06-17 (versus), the next Wed is `the-full-web` → `the-sinister-six` → `versus` → ...
+1. Copy the script to a new dated filename (e.g. `seed-articles-2026-07-to-08.ts`).
+2. Continue the Wed rotation: after 2026-06-17 (`versus`), the next Wed is `the-full-web` → `the-sinister-six` → `versus` → ...
 3. Keep Mon = `the-daily-bugle`, Sat = `cartoons-and-cereal`.
 4. Update slug, `publishedAt`, and draft `_id` per article.
 
