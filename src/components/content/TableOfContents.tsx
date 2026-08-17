@@ -7,6 +7,10 @@ export interface TocHeading {
   id: string;
   text: string;
   level: 2 | 3;
+  /** Set only when a section opener follows this heading — an image placed
+      directly beneath it. Most headings have none, and most articles have
+      none at all, so every consumer treats this as absent by default. */
+  imageUrl?: string;
 }
 
 // ── Desktop sticky sidebar ──
@@ -50,6 +54,9 @@ export function TableOfContents({ headings }: { headings: TocHeading[] }) {
     }
   }, []);
 
+  const hasAnyImage = headings.some((h) => h.imageUrl);
+  const activeImage = headings.find((h) => h.id === activeId)?.imageUrl;
+
   if (!headings.length) return null;
 
   return (
@@ -65,13 +72,37 @@ export function TableOfContents({ headings }: { headings: TocHeading[] }) {
        scroll that reaches the end of the list from continuing on to the
        article behind it. */
     <nav
-      className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto overscroll-contain"
+      className="sticky top-24 flex max-h-[calc(100vh-8rem)] flex-col"
       aria-label="Table of contents"
     >
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+      <p className="flex-none text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">
         In This Article
       </p>
-      <ul className="space-y-1 text-sm">
+
+      {/* The section opener for wherever you currently are.
+          One slot, not a thumbnail per row: the list is already 720px on an
+          18-heading article, and a thumbnail on each of the seven rows that
+          have one would push it past the viewport again.
+
+          Rendered only when the article has openers at all, so the 53 of 55
+          articles with none are untouched. The box keeps its height whether or
+          not the active section has an image, because appearing and
+          disappearing would shove the list up and down as you read. */}
+      {hasAnyImage && (
+        <div className="mb-3 flex-none overflow-hidden rounded border border-border bg-muted/20 aspect-video">
+          {activeImage ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              key={activeImage}
+              src={activeImage}
+              alt=""
+              className="h-full w-full object-cover animate-in fade-in duration-300"
+            />
+          ) : null}
+        </div>
+      )}
+
+      <ul className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain text-sm">
         {headings.map((h) => {
           const isActive = activeId === h.id;
           return (

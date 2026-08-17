@@ -145,21 +145,32 @@ export default async function ArticlePage({ params }: Props) {
   // real <h2 id> in its figcaption — but it reaches us as a block with no
   // `style`, so a style-only filter silently dropped the chart from "Jump to
   // section" even though it is usually the section readers came for.
-  const headings: TocHeading[] = (article.body || [])
-    .filter(
-      (b: any) => ["h2", "h3"].includes(b.style) || (b._type === "tierList" && b.title)
-    )
-    .map((b: any) => {
-      if (b._type === "tierList") {
-        return { id: slugify(b.title), text: b.title, level: 2 as const };
+  // Indexed rather than filter/map because a section opener is defined by
+  // adjacency: the image immediately after a heading. Filtering first throws
+  // away the neighbour, which is the only thing that makes an opener an opener
+  // — the same adjacency the CSS in globals.css keys on.
+  const body: any[] = article.body || [];
+  const headings: TocHeading[] = body.flatMap((b: any, i: number) => {
+    const isHeading = ["h2", "h3"].includes(b.style);
+    const isTitledChart = b._type === "tierList" && b.title;
+    if (!isHeading && !isTitledChart) return [];
+
+    const text = isTitledChart ? b.title : b.children?.map((c: any) => c.text).join("") || "";
+    const level = (isTitledChart || b.style === "h2" ? 2 : 3) as 2 | 3;
+
+    // A titled chart is its own figure, so it never has an opener after it.
+    const next = isTitledChart ? null : body[i + 1];
+    let imageUrl: string | undefined;
+    if (next?._type === "image" && next.asset) {
+      try {
+        imageUrl = urlFor(next).width(440).url() || undefined;
+      } catch {
+        // Mock data carries fake asset refs; the preview simply stays empty.
       }
-      const text = b.children?.map((c: any) => c.text).join("") || "";
-      return {
-        id: slugify(text),
-        text,
-        level: (b.style === "h2" ? 2 : 3) as 2 | 3,
-      };
-    });
+    }
+
+    return [{ id: slugify(text), text, level, ...(imageUrl ? { imageUrl } : {}) }];
+  });
 
   // Related articles: prefer same tags, fall back to same category
   let relatedArticles: Article[] = [];
