@@ -24,7 +24,10 @@ const BYPASS_PREFIXES = [
   "/embed",
 ];
 
-const BYPASS_EXTENSIONS = [".svg", ".png", ".jpg", ".ico", ".json", ".xml", ".js", ".css", ".woff", ".woff2"];
+// `.txt` is here for /robots.txt, which the gate used to catch: crawlers got a
+// 307 to the splash instead of the file, so the sitemap declaration inside it
+// was unreachable. sitemap.xml and rss.xml were already fine via `.xml`.
+const BYPASS_EXTENSIONS = [".svg", ".png", ".jpg", ".ico", ".json", ".xml", ".txt", ".js", ".css", ".woff", ".woff2"];
 
 /**
  * Link-preview crawlers skip the splash and read the real page.

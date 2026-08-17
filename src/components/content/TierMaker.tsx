@@ -153,6 +153,9 @@ export function TierMaker({ value }: { value: TierListBlock }) {
   const [showDiff, setShowDiff] = useState(false);
   const [copied, setCopied] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
+  /* The chip a keyboard action just moved. Read by the effect below, which
+     restores focus once React has actually committed the move. */
+  const refocusKey = useRef<string | null>(null);
 
   /* A link with an arrangement opens the Maker already showing it. Read from
      location rather than useSearchParams so this needs no Suspense boundary.
@@ -280,15 +283,27 @@ export function TierMaker({ value }: { value: TierListBlock }) {
       } else {
         return;
       }
-      // Keep focus on the chip after it relocates.
-      requestAnimationFrame(() =>
-        boardRef.current
-          ?.querySelector<HTMLElement>(`[data-chip="${CSS.escape(key)}"]`)
-          ?.focus()
-      );
+      /* Keep focus on the chip after it relocates. This records the intent;
+         the effect below does the focusing. A requestAnimationFrame here fired
+         before React had committed the move, so it focused the outgoing node
+         and focus fell to <body>, which stranded keyboard users after every
+         single placement. */
+      refocusKey.current = key;
     },
     [held, move, shortcuts]
   );
+
+  /* Runs after React commits the new arrangement, so the chip queried here is
+     the one actually in the document. Keyed on `arr` because that is what a
+     move changes; Clear and Reset also change it, but leave refocusKey null. */
+  useEffect(() => {
+    const key = refocusKey.current;
+    if (!key) return;
+    refocusKey.current = null;
+    boardRef.current
+      ?.querySelector<HTMLElement>(`[data-chip="${CSS.escape(key)}"]`)
+      ?.focus();
+  }, [arr]);
 
   if (items.length === 0) return null;
 
