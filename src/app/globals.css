@@ -1672,15 +1672,17 @@
   max-width: none;
 }
 
-/* The caption of an opener is a credit line for the section, so it aligns to
-   the heading's edge rather than floating centred under the image, and sits
-   a touch further off the frame. Mid-flow captions keep their centred
-   treatment: those images interrupt the reading column, and a centred label
-   is what closes them. */
+/* An opener's caption sits a touch further off the frame than a mid-flow one,
+   because the figure above it now carries no inner margin at all.
+
+   Spacing only. This rule also used to left-align the caption and drop it to
+   0.8125rem, on the reasoning that an opener's caption is a credit line for
+   the section. That was scope creep: the problem being solved here was
+   elements sitting too far apart, and alignment and type size are not that.
+   Captions stay centred at their serializer size everywhere, so an opener
+   differs from a mid-flow image in spacing and width alone. */
 .article-prose h2 + figure figcaption {
   margin-top: 0.5rem;
-  font-size: 0.8125rem;
-  text-align: left;
 }
 
 /* A caption that is also a heading. The tier chart titles itself with a real
