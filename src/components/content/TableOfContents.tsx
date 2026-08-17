@@ -53,8 +53,19 @@ export function TableOfContents({ headings }: { headings: TocHeading[] }) {
   if (!headings.length) return null;
 
   return (
+    /* The list has to scroll inside its own column. Sticky pins this nav 96px
+       from the top and it grows to whatever the heading count needs — 720px
+       for an 18-heading article — so on any viewport under about 820px the
+       bottom entries sat below the fold with no way to reach them. Scrolling
+       the page does not help: sticky holds the same offset, so the clipped
+       entries stayed clipped no matter where you were in the article.
+
+       8rem rather than the 6rem of `top-24` so the list ends clear of the
+       bottom edge instead of flush against it. `overscroll-contain` keeps a
+       scroll that reaches the end of the list from continuing on to the
+       article behind it. */
     <nav
-      className="sticky top-24"
+      className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto overscroll-contain"
       aria-label="Table of contents"
     >
       <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">
