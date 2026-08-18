@@ -207,6 +207,25 @@ instead of stripping them, so all 18 grades key uniquely; `validateTiers()`
 warns on duplicate keys, naming the consequence; and `moveEntry()` places into
 the first matching tier only, so bad data cannot duplicate an entry.
 
+**A9 ✅ — unset fields showed the opposite of what the site does.** Found by
+the first real Studio click-through (Aug 2026), which until then had never
+been run against a live document. `initialValue` only fires when a block is
+created, so every `tierList` written before a field existed stores it as
+`undefined` — and Sanity's stock controls draw `undefined` as "nothing
+chosen". The reading code disagrees: `poll` is `value.poll !== false`, so
+undefined **collects**, and `listType` falls back to `"tiers"`. On all four
+live lists the poll switch therefore read "off" while readers could and did
+submit to it, which was confirmed against the published Ghibli list — stored
+`poll` is null and it accepted every response. This is the B+ lesson one level
+up: a control that silently reports the opposite of the behaviour.
+
+`sanity/components/UnsetDefaultInput.tsx` hands the effective default down to
+`renderDefault` for both fields. Deliberately display-only: coercing the stored
+value would write to a published document merely because somebody opened it.
+Verified in Studio against Rivals — the radio now shows *Tiers* selected and
+the switch shows on, opening the document creates no draft, and one click on a
+shown-on switch writes `poll: false` rather than flipping it to true.
+
 Studio code lives in `sanity/components/` (inputs) and `sanity/lib/` (pure
 presets + validators, both importable from `@/lib/tierlist/arrangement` and
 `@/lib/utils` because `next-sanity` bundles Studio through Next). Validation

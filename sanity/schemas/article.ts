@@ -5,6 +5,7 @@ import { TierColorInput } from "../components/TierColorInput";
 import { TierRowsInput } from "../components/TierRowsInput";
 import { TierListInput } from "../components/TierListInput";
 import { TierEntryImageInput } from "../components/TierEntryImageInput";
+import { unsetDefaultInput } from "../components/UnsetDefaultInput";
 import {
   validateEntryAnchor,
   validateTierColor,
@@ -349,6 +350,7 @@ export default defineType({
                 ],
                 layout: "radio",
               },
+              components: { input: unsetDefaultInput("tiers") },
               initialValue: "tiers",
               description:
                 "Numbered turns the rows into tie buckets: everything in a row shares a number, and the next row picks up after it (1, 1, 3…). Changing this on a published list re-reads any links already shared against it.",
@@ -373,6 +375,7 @@ export default defineType({
               type: "boolean",
               description:
                 'Show "Where readers put it" — readers submit their arrangement and the chart can show the crowd\'s board beside yours. Needs a handful of responses before anything appears.',
+              components: { input: unsetDefaultInput(true) },
               initialValue: true,
             }),
             defineField({
