@@ -98,12 +98,17 @@ export interface TierRow {
 
 export interface TierListBlock {
   _type: "tierList";
+  /** Portable Text block key — identifies this list when an article has two. */
+  _key?: string;
   title?: string;
   tiers: TierRow[];
   /** index (default): body keeps the write-ups; capsule: they live in the entries. */
   mode?: TierListMode;
   /** Chip shape per block: poster 2:3, square 1:1, wide 16:9. */
   chipAspect?: TierChipAspect;
+  /** Phase 5: collect reader arrangements. Absent reads as true, so lists
+   *  published before the poll existed take part without being re-saved. */
+  poll?: boolean;
 }
 
 export interface ImageGallery {

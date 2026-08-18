@@ -477,7 +477,17 @@
       "signPlaceholder": "이름",
       "previewHeading": "공유했을 때의 모습",
       "previewAlt": "이 랭킹의 공유 카드 미리보기",
-      "movedTo": "{tier}(으)로 이동했습니다"
+      "movedTo": "{tier}(으)로 이동했습니다",
+      "pollSubmit": "투표에 제출",
+      "pollSubmitting": "보내는 중…",
+      "pollThanks": "{n}명 중 한 명입니다",
+      "pollFailed": "보내지 못했습니다. 다시 시도해 주세요.",
+      "pollViewAuthor": "작성자",
+      "pollViewReaders": "독자",
+      "pollViewBoth": "둘 다",
+      "pollReadersTitle": "독자들은 어디에 두었나",
+      "pollCount": "랭킹 {n}개",
+      "pollSoon": "독자 랭킹은 몇 건이 모이면 표시됩니다."
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "The Spidaverse로 제작"

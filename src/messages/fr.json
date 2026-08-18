@@ -477,7 +477,17 @@
       "signPlaceholder": "Votre nom",
       "previewHeading": "Aperçu du partage",
       "previewAlt": "Aperçu de la carte de partage de ce classement",
-      "movedTo": "Déplacé vers {tier}"
+      "movedTo": "Déplacé vers {tier}",
+      "pollSubmit": "Envoyer au sondage",
+      "pollSubmitting": "Envoi…",
+      "pollThanks": "Vous êtes l'un des {n}",
+      "pollFailed": "Envoi impossible. Réessayez.",
+      "pollViewAuthor": "Auteur",
+      "pollViewReaders": "Lecteurs",
+      "pollViewBoth": "Les deux",
+      "pollReadersTitle": "Où les lecteurs l'ont placé",
+      "pollCount": "{n} classements",
+      "pollSoon": "Les classements des lecteurs apparaîtront après quelques envois."
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "Créé avec The Spidaverse"

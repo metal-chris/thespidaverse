@@ -477,7 +477,17 @@
       "signPlaceholder": "Tu nombre",
       "previewHeading": "Así se verá al compartirla",
       "previewAlt": "Vista previa de la tarjeta para compartir esta clasificación",
-      "movedTo": "Movido a {tier}"
+      "movedTo": "Movido a {tier}",
+      "pollSubmit": "Enviar a la encuesta",
+      "pollSubmitting": "Enviando…",
+      "pollThanks": "Eres una de {n} personas",
+      "pollFailed": "No se pudo enviar. Inténtalo de nuevo.",
+      "pollViewAuthor": "Autor",
+      "pollViewReaders": "Lectores",
+      "pollViewBoth": "Ambos",
+      "pollReadersTitle": "Dónde lo pusieron los lectores",
+      "pollCount": "{n} clasificaciones",
+      "pollSoon": "Las clasificaciones de los lectores aparecen cuando haya varias enviadas."
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "Creado con The Spidaverse"

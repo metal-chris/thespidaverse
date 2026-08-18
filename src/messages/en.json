@@ -477,7 +477,17 @@
       "signPlaceholder": "Your name",
       "previewHeading": "How it will look when shared",
       "previewAlt": "Preview of the share card for this ranking",
-      "movedTo": "Moved to {tier}"
+      "movedTo": "Moved to {tier}",
+      "pollSubmit": "Submit to the poll",
+      "pollSubmitting": "Sending…",
+      "pollThanks": "You're one of {n}",
+      "pollFailed": "Couldn't send that. Try again.",
+      "pollViewAuthor": "Author",
+      "pollViewReaders": "Readers",
+      "pollViewBoth": "Both",
+      "pollReadersTitle": "Where readers put it",
+      "pollCount": "{n} rankings",
+      "pollSoon": "Readers' rankings appear once a few people have submitted."
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "Made with The Spidaverse"

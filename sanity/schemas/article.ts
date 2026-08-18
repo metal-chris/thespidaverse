@@ -353,6 +353,14 @@ export default defineType({
               description: "Per block, never per entry — films 2:3, albums 1:1, key art 16:9.",
             }),
             defineField({
+              name: "poll",
+              title: "Collect reader rankings",
+              type: "boolean",
+              description:
+                'Show "Where readers put it" — readers submit their arrangement and the chart can show the crowd\'s board beside yours. Needs a handful of responses before anything appears.',
+              initialValue: true,
+            }),
+            defineField({
               name: "tiers",
               title: "Tiers",
               type: "array",
