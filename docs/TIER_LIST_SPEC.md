@@ -214,6 +214,7 @@ power. No schema change, no backend, share codes untouched. One PR.
 | **Sign your ranking** | Optional display name on the Share panel (plain text, ≤ 24 chars, control chars stripped) carried as `?by=` on the `/r/` URL only. The OG card headline becomes "*Name*'s ranking" instead of "A reader's ranking". The OG route clips and never renders it as markup. Absent → today's copy |
 | **Share preview** | The Share panel shows the OG card inline (an `<img>` of `/api/og/tierlist?…`), so a reader sees exactly what they are posting before they copy |
 | **Empty-row hint** | Rows with no chips show muted "Drag here or tap to place" text — verify against the current board first; may already exist |
+| **± label shortcuts** | Keyboard shortcuts key on a label's first character, so with `B+` and `B` on one board, pressing **B** always lands in whichever comes first and the other is unreachable by keyboard (found on Marvel Rivals after A1). Pressing the letter again should cycle through the tiers that share it — B+ → B → B- → B+ — with the target announced to the readout |
 | *Optional:* `/tier-lists` index | "Browse" from the TierlistFills landing: every article carrying a `tierList`, its OG card as thumbnail, link. Cheap; not yet decided |
 
 **Done when:** strings in all 8 locales; keyboard shortcuts verified on
