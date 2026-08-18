@@ -29,8 +29,29 @@ export interface TierPreset {
   labels: string[];
 }
 
+/**
+ * Tier keys must be unique within a block, and they are not cosmetic:
+ * canonicalArrangement() in src/lib/tierlist/arrangement.ts buckets entries
+ * BY KEY, so two tiers sharing one silently collapse into a single bucket —
+ * entries in the first vanish from the arrangement, the author's own ranking
+ * encodes with a duplicate index, and the code then fails to decode.
+ *
+ * That is not hypothetical: the Marvel Rivals list shipped with `B+` and `B`
+ * both keyed `tl-b`, because stripping non-alphanumerics turns "B+" into "b".
+ * Grade modifiers are spelled out here instead of stripped.
+ */
+const keyFor = (label: string): string => {
+  const slug = label
+    .toLowerCase()
+    .replace(/\+/g, "-plus")
+    .replace(/-(?=$)/g, "-minus")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+  return `tl-${slug || "tier"}`;
+};
+
 const row = (label: string): TierPresetRow => ({
-  _key: `tl-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+  _key: keyFor(label),
   _type: "tier",
   label,
   entries: [],
@@ -42,6 +63,8 @@ export const TIER_PRESETS: TierPreset[] = [
   { id: "four", title: "S – C", hint: "Four rows", labels: ["S", "A", "B", "C"] },
   { id: "three", title: "S / A / B", hint: "Three rows", labels: ["S", "A", "B"] },
 ];
+
+export { keyFor };
 
 export function presetRows(preset: TierPreset): TierPresetRow[] {
   return preset.labels.map(row);
