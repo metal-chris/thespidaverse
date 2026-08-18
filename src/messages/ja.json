@@ -469,7 +469,15 @@
       "moveCount": "{n} 件変更",
       "diffNone": "元のランキングと完全に同じです。",
       "diffCount": "{n} 件が異なる配置です。",
-      "keyboardHint": "キーボード：ポスターを選び、ティアの頭文字キーで配置、0 で未配置に戻します。"
+      "keyboardHint": "キーボード：ポスターを選び、ティアの頭文字キーで配置、0 で未配置に戻します。",
+      "undo": "元に戻す",
+      "redo": "やり直す",
+      "emptyRow": "ここにドラッグ、またはタップして配置",
+      "signLabel": "署名する（任意）",
+      "signPlaceholder": "お名前",
+      "previewHeading": "共有時の表示",
+      "previewAlt": "このランキングの共有カードのプレビュー",
+      "movedTo": "{tier} に移動しました"
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "The Spidaverse で作成"

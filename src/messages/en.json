@@ -469,7 +469,15 @@
       "moveCount": "{n} moved",
       "diffNone": "Identical to the original ranking.",
       "diffCount": "{n} placed differently.",
-      "keyboardHint": "Keyboard: focus a poster, then press a tier's letter to place it, or 0 to unrank."
+      "keyboardHint": "Keyboard: focus a poster, then press a tier's letter to place it, or 0 to unrank.",
+      "undo": "Undo",
+      "redo": "Redo",
+      "emptyRow": "Drag here or tap to place",
+      "signLabel": "Sign it (optional)",
+      "signPlaceholder": "Your name",
+      "previewHeading": "How it will look when shared",
+      "previewAlt": "Preview of the share card for this ranking",
+      "movedTo": "Moved to {tier}"
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "Made with The Spidaverse"

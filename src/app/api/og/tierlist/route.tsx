@@ -111,6 +111,16 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const slug = searchParams.get("slug");
   const tl = searchParams.get("tl");
+  /* Optional signature from the Maker's Share panel. Clipped and stripped of
+     control characters here as well as at the input: this route is reachable
+     with any query string, and the value is drawn as text into an image, so
+     it is treated as untrusted either way. Satori renders strings as text
+     nodes, never as markup, so there is nothing to inject — the cap is about
+     the card staying legible. */
+  const by = (searchParams.get("by") ?? "")
+    .replace(/[\u0000-\u001f\u007f]/g, "")
+    .trim()
+    .slice(0, 24);
 
   if (!slug) return fallbackCard("A reader's tier list");
 
@@ -154,7 +164,7 @@ export async function GET(request: NextRequest) {
               color: ACCENT,
             }}
           >
-            {isRearranged ? "A READER'S RANKING" : "THE RANKING"}
+            {isRearranged ? (by ? `${by.toUpperCase()}'S RANKING` : "A READER'S RANKING") : "THE RANKING"}
           </div>
           <div
             style={{

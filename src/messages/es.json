@@ -469,7 +469,15 @@
       "moveCount": "{n} movidas",
       "diffNone": "Idéntica a la clasificación original.",
       "diffCount": "{n} colocadas de otra forma.",
-      "keyboardHint": "Teclado: enfoca un póster y pulsa la letra de un nivel para colocarlo, o 0 para quitarlo."
+      "keyboardHint": "Teclado: enfoca un póster y pulsa la letra de un nivel para colocarlo, o 0 para quitarlo.",
+      "undo": "Deshacer",
+      "redo": "Rehacer",
+      "emptyRow": "Arrastra aquí o toca para colocar",
+      "signLabel": "Fírmala (opcional)",
+      "signPlaceholder": "Tu nombre",
+      "previewHeading": "Así se verá al compartirla",
+      "previewAlt": "Vista previa de la tarjeta para compartir esta clasificación",
+      "movedTo": "Movido a {tier}"
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "Creado con The Spidaverse"

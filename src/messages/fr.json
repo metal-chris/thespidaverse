@@ -469,7 +469,15 @@
       "moveCount": "{n} déplacés",
       "diffNone": "Identique au classement d'origine.",
       "diffCount": "{n} placés différemment.",
-      "keyboardHint": "Clavier : ciblez une affiche puis appuyez sur la lettre d'un rang pour la placer, ou 0 pour la retirer."
+      "keyboardHint": "Clavier : ciblez une affiche puis appuyez sur la lettre d'un rang pour la placer, ou 0 pour la retirer.",
+      "undo": "Annuler",
+      "redo": "Rétablir",
+      "emptyRow": "Glissez ici ou touchez pour placer",
+      "signLabel": "Signez-le (facultatif)",
+      "signPlaceholder": "Votre nom",
+      "previewHeading": "Aperçu du partage",
+      "previewAlt": "Aperçu de la carte de partage de ce classement",
+      "movedTo": "Déplacé vers {tier}"
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "Créé avec The Spidaverse"

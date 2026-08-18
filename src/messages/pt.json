@@ -469,7 +469,15 @@
       "moveCount": "{n} movidos",
       "diffNone": "Idêntico ao ranking original.",
       "diffCount": "{n} posicionados de outra forma.",
-      "keyboardHint": "Teclado: foque um pôster e pressione a letra de um nível para posicionar, ou 0 para remover."
+      "keyboardHint": "Teclado: foque um pôster e pressione a letra de um nível para posicionar, ou 0 para remover.",
+      "undo": "Desfazer",
+      "redo": "Refazer",
+      "emptyRow": "Arraste aqui ou toque para posicionar",
+      "signLabel": "Assine (opcional)",
+      "signPlaceholder": "Seu nome",
+      "previewHeading": "Como vai aparecer ao compartilhar",
+      "previewAlt": "Prévia do cartão de compartilhamento deste ranking",
+      "movedTo": "Movido para {tier}"
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "Feito com The Spidaverse"

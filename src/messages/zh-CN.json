@@ -469,7 +469,15 @@
       "moveCount": "移动了 {n} 个",
       "diffNone": "和原始排名完全一样。",
       "diffCount": "有 {n} 个位置不同。",
-      "keyboardHint": "键盘操作：选中一张海报，按对应层级的字母放置，按 0 取消排名。"
+      "keyboardHint": "键盘操作：选中一张海报，按对应层级的字母放置，按 0 取消排名。",
+      "undo": "撤销",
+      "redo": "重做",
+      "emptyRow": "拖到这里或点按放置",
+      "signLabel": "署名（可选）",
+      "signPlaceholder": "你的名字",
+      "previewHeading": "分享后的效果",
+      "previewAlt": "该排行分享卡片的预览",
+      "movedTo": "已移动到 {tier}"
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "由 The Spidaverse 制作"
