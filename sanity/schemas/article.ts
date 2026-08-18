@@ -4,6 +4,7 @@ import { DEFAULT_TIER_ROWS } from "../lib/tierPresets";
 import { TierColorInput } from "../components/TierColorInput";
 import { TierRowsInput } from "../components/TierRowsInput";
 import { TierListInput } from "../components/TierListInput";
+import { TierEntryImageInput } from "../components/TierEntryImageInput";
 import {
   validateEntryAnchor,
   validateTierColor,
@@ -428,6 +429,9 @@ export default defineType({
                               title: "Poster",
                               type: "image",
                               options: { hotspot: true },
+                              // "Find poster on TMDB" above the usual image
+                              // input (A7). Uploading by hand still works.
+                              components: { input: TierEntryImageInput },
                             }),
                             defineField({
                               name: "subtitle",
