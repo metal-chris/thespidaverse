@@ -3,6 +3,7 @@ import { sourceLinkAnnotation } from "./objects/sourceLink";
 import { DEFAULT_TIER_ROWS } from "../lib/tierPresets";
 import { TierColorInput } from "../components/TierColorInput";
 import { TierRowsInput } from "../components/TierRowsInput";
+import { TierListInput } from "../components/TierListInput";
 import {
   validateEntryAnchor,
   validateTierColor,
@@ -296,6 +297,9 @@ export default defineType({
           name: "tierList",
           title: "Tier List",
           icon: () => "🏆",
+          // A compact chart preview sits above the fields (A4) so the author
+          // sees colours, ranks and art change as they edit.
+          components: { input: TierListInput },
           // Inserting a Tier List scaffolds the classic ramp instead of an empty
           // block. Every list on the site is capsule-mode S-through-F (or a
           // subset of it), and typing six tier objects by hand was the single
@@ -494,9 +498,14 @@ export default defineType({
             }),
           ],
           preview: {
-            select: { title: "title" },
-            prepare({ title }) {
-              return { title: `🏆 ${title || "Tier List"}` };
+            select: { title: "title", tiers: "tiers", mode: "mode", chipAspect: "chipAspect" },
+            prepare({ title, tiers, mode, chipAspect }: { title?: string; tiers?: Array<{ entries?: unknown[] }>; mode?: string; chipAspect?: string }) {
+              const rows = tiers?.length ?? 0;
+              const entries = (tiers ?? []).reduce((n, t) => n + (t.entries?.length ?? 0), 0);
+              return {
+                title: `🏆 ${title || "Tier List"}`,
+                subtitle: `${rows} tier${rows === 1 ? "" : "s"} · ${entries} entr${entries === 1 ? "y" : "ies"} · ${mode ?? "capsule"} · ${chipAspect ?? "poster"}`,
+              };
             },
           },
         },
