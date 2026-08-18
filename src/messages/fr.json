@@ -487,7 +487,12 @@
       "pollViewBoth": "Les deux",
       "pollReadersTitle": "Où les lecteurs l'ont placé",
       "pollCount": "{n} classements",
-      "pollSoon": "Les classements des lecteurs apparaîtront après quelques envois."
+      "pollSoon": "Les classements des lecteurs apparaîtront après quelques envois.",
+      "placeAtRank": "Placer au rang {rank}",
+      "placeAtNewRank": "Placer à son propre rang, entre {above} et {below}",
+      "placeAtNewRankTop": "Placer à son propre rang, au-dessus de {below}",
+      "placeAtNewRankEnd": "Placer à son propre rang, après {above}",
+      "keyboardHintNumbered": "Clavier : sélectionnez une affiche, puis ↑/↓ pour la déplacer d'un rang, = pour l'égaliser avec le rang au-dessus, ou 0 pour la retirer."
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "Créé avec The Spidaverse",

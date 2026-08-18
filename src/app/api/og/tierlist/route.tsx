@@ -147,6 +147,71 @@ export async function GET(request: NextRequest) {
   const startRanks: number[] = [];
   rows.reduce((above, r) => { startRanks.push(above + 1); return above + r.entries.length; }, 0);
 
+  /* One row of the card. `compact` is the numbered two-column form: a tiers
+     card has at most 6 rows and can afford the large type, while a numbered
+     card is a whole ranking and has to fit up to 24 buckets. */
+  const renderRow = (row: (typeof rows)[number], rank: number, compact: boolean) => {
+    const names = row.entries.map((e) => e.title);
+    const shown = names.slice(0, compact ? 2 : 3);
+    const extra = names.length - shown.length;
+    return (
+      <div
+        key={row.tier._key}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: compact ? 9 : 16,
+          background: CARD,
+          borderRadius: compact ? 6 : 10,
+          padding: compact ? "1px 9px 1px 2px" : "7px 16px 7px 7px",
+        }}
+      >
+        {/* A grade wears its tier colour; a rank wears a numeral, because
+            colouring positions would invent a meaning the list does not have. */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: compact ? 28 : 46,
+            height: compact ? 28 : 46,
+            borderRadius: compact ? 6 : 8,
+            fontSize: compact ? 15 : numbered ? 24 : 27,
+            fontWeight: 800,
+            color: numbered ? FG : "#141414",
+            background: numbered ? CARD : tierColor(row.tier),
+            /* Spread rather than `border: undefined`: Satori parses the border
+               shorthand by calling .trim() on the value, so an explicit
+               undefined threw and every tiers-mode card 500'd. */
+            ...(numbered ? { border: `2px solid ${ACCENT}` } : {}),
+            flexShrink: 0,
+          }}
+        >
+          {numbered ? rank : row.tier.label}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            fontSize: compact ? 14 : 21,
+            color: FG,
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {shown.join("  ·  ") + (extra > 0 ? `  ·  +${extra}` : "")}
+        </div>
+      </div>
+    );
+  };
+
+  /* A numbered card shows the whole ranking in two columns rather than the
+     top 6, which on a 24-bucket list silently hid three quarters of it. */
+  const NUMBERED_MAX = 24;
+  const numberedRows = rows.slice(0, NUMBERED_MAX);
+  const perCol = Math.ceil(numberedRows.length / 2) || 1;
+  const numberedHidden = rows.length - numberedRows.length;
+
+
   return new ImageResponse(
     (
       <div
@@ -187,69 +252,32 @@ export async function GET(request: NextRequest) {
         </div>
 
         {/* Tier rows */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 7,
-            marginTop: 20,
-            flexGrow: 1,
-          }}
-        >
-          {rows.slice(0, 6).map((row, rowIndex) => {
-            const names = row.entries.map((e) => e.title);
-            // One line per tier; platforms downscale hard, so favour fewer,
-            // larger names over completeness. The +N tail says what's cut.
-            const shown = names.slice(0, 3);
-            const extra = names.length - shown.length;
-            return (
+        {numbered ? (
+          <div style={{ display: "flex", gap: 12, marginTop: 14, flexGrow: 1 }}>
+            {[0, 1].map((col) => (
               <div
-                key={row.tier._key}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 16,
-                  background: CARD,
-                  borderRadius: 10,
-                  padding: "7px 16px 7px 7px",
-                }}
+                key={col}
+                style={{ display: "flex", flexDirection: "column", gap: 3, width: "50%" }}
               >
-                {/* A grade wears its tier colour; a rank wears a numeral,
-                    because colouring positions would invent a meaning the
-                    list does not have. */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 46,
-                    height: 46,
-                    borderRadius: 8,
-                    fontSize: numbered ? 24 : 27,
-                    fontWeight: 800,
-                    color: numbered ? FG : "#141414",
-                    background: numbered ? CARD : tierColor(row.tier),
-                    border: numbered ? `2px solid ${ACCENT}` : undefined,
-                    flexShrink: 0,
-                  }}
-                >
-                  {numbered ? startRanks[rowIndex] : row.tier.label}
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    fontSize: 21,
-                    color: FG,
-                    overflow: "hidden",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {shown.join("  ·  ") + (extra > 0 ? `  ·  +${extra}` : "")}
-                </div>
+                {numberedRows
+                  .slice(col * perCol, (col + 1) * perCol)
+                  .map((row, i) => renderRow(row, startRanks[col * perCol + i], true))}
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 7,
+              marginTop: 20,
+              flexGrow: 1,
+            }}
+          >
+            {rows.slice(0, 6).map((row, rowIndex) => renderRow(row, startRanks[rowIndex], false))}
+          </div>
+        )}
 
         {/* Footer: brand + the invitation */}
         <div

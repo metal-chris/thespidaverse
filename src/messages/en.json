@@ -487,7 +487,12 @@
       "pollViewBoth": "Both",
       "pollReadersTitle": "Where readers put it",
       "pollCount": "{n} rankings",
-      "pollSoon": "Readers' rankings appear once a few people have submitted."
+      "pollSoon": "Readers' rankings appear once a few people have submitted.",
+      "placeAtRank": "Place at rank {rank}",
+      "placeAtNewRank": "Place at its own rank, between {above} and {below}",
+      "placeAtNewRankTop": "Place at its own rank, above {below}",
+      "placeAtNewRankEnd": "Place at its own rank, after {above}",
+      "keyboardHintNumbered": "Keyboard: focus a poster, then ↑/↓ to move it a rank, = to tie with the rank above, or 0 to unrank."
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "Made with The Spidaverse",

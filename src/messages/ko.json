@@ -487,7 +487,12 @@
       "pollViewBoth": "둘 다",
       "pollReadersTitle": "독자들은 어디에 두었나",
       "pollCount": "랭킹 {n}개",
-      "pollSoon": "독자 랭킹은 몇 건이 모이면 표시됩니다."
+      "pollSoon": "독자 랭킹은 몇 건이 모이면 표시됩니다.",
+      "placeAtRank": "{rank}위에 배치",
+      "placeAtNewRank": "{above}위와 {below}위 사이에 단독 배치",
+      "placeAtNewRankTop": "{below}위 위에 단독 배치",
+      "placeAtNewRankEnd": "{above}위 뒤에 단독 배치",
+      "keyboardHintNumbered": "키보드: 포스터를 선택한 뒤 ↑/↓로 순위를 이동, =로 위 순위와 공동, 0으로 순위 해제."
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "The Spidaverse로 제작",

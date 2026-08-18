@@ -207,6 +207,25 @@ instead of stripping them, so all 18 grades key uniquely; `validateTiers()`
 warns on duplicate keys, naming the consequence; and `moveEntry()` places into
 the first matching tier only, so bad data cannot duplicate an entry.
 
+**A9 ✅ — unset fields showed the opposite of what the site does.** Found by
+the first real Studio click-through (Aug 2026), which until then had never
+been run against a live document. `initialValue` only fires when a block is
+created, so every `tierList` written before a field existed stores it as
+`undefined` — and Sanity's stock controls draw `undefined` as "nothing
+chosen". The reading code disagrees: `poll` is `value.poll !== false`, so
+undefined **collects**, and `listType` falls back to `"tiers"`. On all four
+live lists the poll switch therefore read "off" while readers could and did
+submit to it, which was confirmed against the published Ghibli list — stored
+`poll` is null and it accepted every response. This is the B+ lesson one level
+up: a control that silently reports the opposite of the behaviour.
+
+`sanity/components/UnsetDefaultInput.tsx` hands the effective default down to
+`renderDefault` for both fields. Deliberately display-only: coercing the stored
+value would write to a published document merely because somebody opened it.
+Verified in Studio against Rivals — the radio now shows *Tiers* selected and
+the switch shows on, opening the document creates no draft, and one click on a
+shown-on switch writes `poll: false` rather than flipping it to true.
+
 Studio code lives in `sanity/components/` (inputs) and `sanity/lib/` (pure
 presets + validators, both importable from `@/lib/tierlist/arrangement` and
 `@/lib/utils` because `next-sanity` bundles Studio through Next). Validation
@@ -330,6 +349,19 @@ verified against the real, table-less database.
 round-trip, the upsert-on-resubmit behaviour, and the aggregate past the
 threshold. The aggregation rules themselves are tested in isolation.
 
+**Defect found and fixed (Aug 2026), once a numbered list existed to point the
+poll at.** Neither POST nor GET passed the block's `listType` into
+`decodeArrangement`, so both fell to the `"tiers"` default and its
+`groups.length === tiers.length` guard. On a numbered list that rejects any
+arrangement whose bucket count differs from the author's — which is every tie
+split or merge, the entire point of the format. POST answered 400 and GET
+counted the code as `undecodable`. `TierMaker` and the `/r/` resolver had
+always passed it; the poll route was simply missed. `p_list_type` was also
+hardcoded `"tiers"`, mislabelling every numbered row. Aggregation of
+reader-created buckets is still keyed off the block's tiers, so a synthetic
+bucket sorts to the end of the crowd board — the mean/median-rank ordering
+below is what replaces that.
+
 ---
 
 ## Phase 6 — Numbered format — model, encoding and rendering shipped
@@ -389,20 +421,56 @@ an absolute `MAX_BUCKETS`, well past the 36 entries the index space allows.
 entries above it, so two entries tied at 1 make the next bucket 3. Verified
 against Rivals' real shape → 1, 1, 3, 3, 3, 6, 7.
 
-**Still to build:** the Maker's numbered-specific interactions — a drop zone
-*between* rows to split a tie, `↑`/`↓` to move a chip one bucket, `=` to tie
-with the bucket above. Dragging onto a bucket, tap-to-place, `0` and the
-arrow-walk all work today, so a numbered board is usable; splitting a tie
-needs the array field. Deferred because that interaction wants a real
-numbered list in front of it. Compare still reports tier → tier rather than a
+**Built (Aug 2026), once Ghibli was flipped:** the drop zone *between* rows
+that splits a tie, `↑`/`↓` to move a chip one bucket, `=` to tie with the
+bucket above. Gap zones render only while a chip is held or dragged, and name
+the ranks they sit between. Compare still reports tier → tier rather than a
 rank delta, which reads correctly but under-uses the format.
 
-**Not verified:** the chart, Maker and OG card have not been seen against a
-*published* numbered list, because only published documents are served. The
-Studio preview is the exception and was verified — tiers and numbered
-rendered side by side from identical data. Flipping one list to Numbered in
-Studio is enough to check the rest; Ghibli is the natural first, its 1–24
-order is already in the prose.
+**The board could not represent a reader-created bucket at all**, which is
+what building the split affordance turned up. Rows were rendered by mapping
+`value.tiers`, and the four `encodeArrangement` calls used its default order,
+so a bucket the reader made had no row and no group: a valid 25-group code
+against 24 tiers put an entry in a bucket nothing drew, and that entry
+vanished from the board — not in a row, not in Unranked — after which
+re-sharing encoded 23 of 24 entries. The Maker now takes its bucket order from
+the arrangement's own key insertion order (`canonicalArrangement` writes the
+tiers in order, decode assigns positionally, `move` rebuilds preserving order,
+a split splices a fresh key into place), so undo/redo carry the order for free
+with no second piece of state. Empty buckets collapse in numbered mode only;
+tiers keep their empty rows, which say a real "nothing reached this grade".
+`arrangement.ts` is untouched and tiers-mode encoding is byte-identical.
+
+Two consequences worth recording. Splitting mints a fresh bucket key, so
+comparing placement by key told a reader who landed back on the author's exact
+order that they had moved something; `moves` compares by **rank** in numbered
+mode. And the phantom empty row the old renderer left behind was, accidentally,
+the only way to split a tie — collapsing empties without first building the gap
+zones would have made ties one-way.
+
+**Verified (Aug 2026) against a published numbered list.** Ghibli is live as
+one. Its 24 films sat in 6 tiers, so flipping `listType` alone would have
+rendered six tie buckets (1, 4, 9, 15, 19, 22) rather than the 1–24 its prose
+states: "convert with no re-authoring" holds for the *flat order*, not for the
+stored shape. The block was restructured to 24 single-entry buckets under an
+`ifRevisionID` guard, with the entry objects asserted byte-identical first, so
+every `_key`, anchor, capsule, image and rating travelled intact and the flat
+index order — the space the wire format encodes against — did not move. Its
+body prose names no tier, so nothing was orphaned. Chart, Maker board, `/r/`,
+the malformed-code fallback and the OG card (ties as `1 · A · B`, then 3, plus
+the `~name` signature) all check out.
+
+Two rendering defects the real list exposed, both fixed: the per-chip rank
+badge repeated the row numeral, and the OG card's `rows.slice(0, 6)` — right
+when 6 rows *is* the whole S–F chart — silently showed 6 of 24 buckets. The
+card now draws the whole ranking in the two columns this section always
+specified.
+
+**A live 500, unrelated to numbered, found the same way.** `border: undefined`
+was passed to Satori, whose border-shorthand parser calls `.trim()` on the
+value; numbered set a border and tiers did not, so every tiers-mode share card
+was returning 500 in production. The property is now spread in rather than set
+to `undefined`.
 
 ---
 

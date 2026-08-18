@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,7 @@ import {
   flatten,
   canonicalArrangement,
   encodeArrangement,
+  numberedRanks,
   decodeArrangement,
   type Arrangement,
   type FlatItem,
@@ -265,14 +266,79 @@ export function TierMaker({ value }: { value: TierListBlock }) {
     setHeld(null);
   }, []);
 
-  const moves = useMemo(
-    () =>
-      items.filter((it) => {
-        const now = tierOf(it.entry._key);
-        return now !== it.tier._key;
-      }).length,
-    [items, tierOf]
+  /* The board's bucket order. `arr`'s own key insertion order IS that order:
+     canonicalArrangement writes the block's tiers in order, decode assigns
+     buckets positionally, `move` rebuilds preserving order, and a split
+     splices a fresh key into place. Reading it off `arr` means undo/redo carry
+     the order for free, with no second piece of state to keep in step.
+
+     Rendering used to map over `value.tiers` instead, which meant a bucket the
+     reader created could not be drawn at all: a valid shared code with more
+     groups than the block has tiers put an entry in a bucket no row existed
+     for, and that entry vanished from the board — not in a row, not in
+     Unranked — and re-sharing from that state dropped it from the code. */
+  const order = useMemo(() => Object.keys(arr).filter((k) => k !== UNRANKED), [arr]);
+
+  /* A numbered row is a position, so an empty bucket is not somewhere to put
+     something — it is a gap that would wear the next row's numeral. Tiers keep
+     their empty rows, which say a real "nothing reached this grade". */
+  const visibleOrder = useMemo(
+    () => (numbered ? order.filter((k) => (arr[k] ?? []).length > 0) : order),
+    [numbered, order, arr]
   );
+
+  /* Encode what the board actually shows. A numbered list emits only its
+     occupied buckets, because an empty group decodes straight back into a
+     phantom row; a tiers list must emit one group per tier, which is the
+     decoder's guard. */
+  const encodeOrder = useMemo(
+    () => (numbered ? visibleOrder : tiers.map((x) => x._key)),
+    [numbered, visibleOrder, tiers]
+  );
+
+  /** How many entries are placed, i.e. the last rank in use. */
+  const rankedCount = useMemo(
+    () => visibleOrder.reduce((n, k) => n + (arr[k] ?? []).length, 0),
+    [visibleOrder, arr]
+  );
+
+  /** Split a tie: give `key` a bucket of its own at `at` in the shown order. */
+  const insertBucket = useCallback((key: string, at: number) => {
+    setArr((prev) => {
+      const keys = Object.keys(prev).filter((k) => k !== UNRANKED);
+      const shown = keys.filter((k) => (prev[k] ?? []).length > 0);
+      const anchor = shown[at];
+      const cut = anchor ? keys.indexOf(anchor) : keys.length;
+      let n = 0;
+      while (keys.includes(`nb-${n}`)) n += 1;
+      const fresh = `nb-${n}`;
+      const next: Arrangement = {};
+      keys.forEach((k, i) => {
+        if (i === cut) next[fresh] = [key];
+        next[k] = (prev[k] ?? []).filter((x) => x !== key);
+      });
+      if (cut >= keys.length) next[fresh] = [key];
+      next[UNRANKED] = (prev[UNRANKED] ?? []).filter((x) => x !== key);
+      return next;
+    });
+    setHeld(null);
+  }, []);
+
+  /* How far the board has drifted from the author's. A numbered board is
+     compared by RANK, not by bucket key: splitting a tie mints a fresh key,
+     so a reader who lands back on the author's exact order would otherwise
+     be told they had moved something and keep a `?tl=` they no longer need. */
+  const moves = useMemo(() => {
+    if (numbered) {
+      const mine = numberedRanks(arr, visibleOrder);
+      const theirs = numberedRanks(
+        canonical,
+        tiers.map((x) => x._key)
+      );
+      return items.filter((it) => mine.get(it.entry._key) !== theirs.get(it.entry._key)).length;
+    }
+    return items.filter((it) => tierOf(it.entry._key) !== it.tier._key).length;
+  }, [numbered, arr, visibleOrder, canonical, tiers, items, tierOf]);
 
   const shareUrl = useMemo(() => {
     if (typeof window === "undefined") return "";
@@ -282,14 +348,14 @@ export function TierMaker({ value }: { value: TierListBlock }) {
     // path segment gets its own route with its own OG card — the person's
     // actual arrangement drawn as an image — while article pages stay static.
     // The /r/ page bounces humans straight back to the ?tl= form on load.
-    const code = encodeArrangement(arr, tiers, keyToIndex);
+    const code = encodeArrangement(arr, tiers, keyToIndex, encodeOrder);
     const base = window.location.pathname.split("/r/")[0].replace(/\/$/, "");
     /* Signed links carry the name in the path segment, after a `~`. A query
        param would have forced /r/ to render dynamically for every link,
        signed or not. */
     const seg = signature ? `${code}~${signature}` : code;
     return `${window.location.origin}${base}/r/${encodeURIComponent(seg)}`;
-  }, [arr, tiers, keyToIndex, signature]);
+  }, [arr, tiers, keyToIndex, signature, encodeOrder]);
 
   const pollTarget = useMemo(() => {
     if (typeof window === "undefined") return null;
@@ -322,7 +388,7 @@ export function TierMaker({ value }: { value: TierListBlock }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           blockKey: pollTarget.blockKey,
-          code: encodeArrangement(arr, tiers, keyToIndex),
+          code: encodeArrangement(arr, tiers, keyToIndex, encodeOrder),
           honeypot: "",
         }),
       });
@@ -334,17 +400,17 @@ export function TierMaker({ value }: { value: TierListBlock }) {
     } catch {
       setPollState("failed");
     }
-  }, [pollTarget, arr, tiers, keyToIndex, loadPoll]);
+  }, [pollTarget, arr, tiers, keyToIndex, encodeOrder, loadPoll]);
 
   /* The card the reader is about to post, drawn by the same route the
      crawler will hit. Same-origin, so no key and nothing to configure. */
   const previewUrl = useMemo(() => {
     if (typeof window === "undefined") return "";
     const slug = window.location.pathname.split("/r/")[0].replace(/\/$/, "").split("/").pop() ?? "";
-    const params = new URLSearchParams({ slug, tl: encodeArrangement(arr, tiers, keyToIndex) });
+    const params = new URLSearchParams({ slug, tl: encodeArrangement(arr, tiers, keyToIndex, encodeOrder) });
     if (signature) params.set("by", signature);
     return `/api/og/tierlist?${params}`;
-  }, [arr, tiers, keyToIndex, signature]);
+  }, [arr, tiers, keyToIndex, signature, encodeOrder]);
 
   useEffect(() => {
     if (!announce) return;
@@ -357,9 +423,9 @@ export function TierMaker({ value }: { value: TierListBlock }) {
     if (!open) return;
     const u = new URL(window.location.href);
     if (moves === 0 && (arr[UNRANKED] ?? []).length === 0) u.searchParams.delete("tl");
-    else u.searchParams.set("tl", encodeArrangement(arr, tiers, keyToIndex));
+    else u.searchParams.set("tl", encodeArrangement(arr, tiers, keyToIndex, encodeOrder));
     window.history.replaceState(null, "", u.toString());
-  }, [arr, open, moves, tiers, keyToIndex]);
+  }, [arr, open, moves, tiers, keyToIndex, encodeOrder]);
 
   /* Keyboard: a tier's first letter assigns, 0 unranks, arrows walk chips.
      A letter maps to EVERY tier that starts with it, not the first one found.
@@ -409,6 +475,28 @@ export function TierMaker({ value }: { value: TierListBlock }) {
         move(key, to);
         const label = tiers.find((x) => x._key === to)?.label;
         if (label) setAnnounce(t("maker.movedTo", { tier: label }));
+      } else if (numbered && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+        /* Move one bucket. Landing on an occupied bucket ties; stepping past
+           the ends gives the chip a rank of its own there. */
+        e.preventDefault();
+        const from = visibleOrder.findIndex((k) => (arr[k] ?? []).includes(key));
+        if (from === -1) return;
+        const to = from + (e.key === "ArrowUp" ? -1 : 1);
+        const alone = (arr[visibleOrder[from]] ?? []).length === 1;
+        if (to < 0 || to >= visibleOrder.length) {
+          if (alone) return;
+          insertBucket(key, e.key === "ArrowUp" ? 0 : visibleOrder.length);
+        } else {
+          move(key, visibleOrder[to]);
+        }
+        setAnnounce(t("maker.movedTo", { tier: String(Math.max(1, to + 1)) }));
+      } else if (numbered && e.key === "=") {
+        /* Tie with the bucket above. */
+        e.preventDefault();
+        const from = visibleOrder.findIndex((k) => (arr[k] ?? []).includes(key));
+        if (from <= 0) return;
+        move(key, visibleOrder[from - 1]);
+        setAnnounce(t("maker.movedTo", { tier: String(from) }));
       } else if (e.key === "0") {
         e.preventDefault();
         move(key, UNRANKED);
@@ -432,7 +520,7 @@ export function TierMaker({ value }: { value: TierListBlock }) {
          single placement. */
       refocusKey.current = key;
     },
-    [held, move, shortcuts, targetForLetter, tiers, t, numbered]
+    [held, move, insertBucket, shortcuts, targetForLetter, tiers, t, numbered, visibleOrder, arr]
   );
 
   /* Runs after React commits the new arrangement, so the chip queried here is
@@ -552,15 +640,69 @@ export function TierMaker({ value }: { value: TierListBlock }) {
       )}
 
       <div className="flex flex-col gap-px bg-border">
-        {tiers.map((tier) => {
+        {visibleOrder.map((bucketKey, bucketIndex) => {
+          /* A reader-created bucket has no TierRow behind it. That only ever
+             happens in numbered mode, where the label is unused anyway — the
+             row wears its position instead. */
+          const tier: TierRow =
+            tiers.find((x) => x._key === bucketKey) ?? { _key: bucketKey, label: "", entries: [] };
           let rank = 0;
-          for (const tr of tiers) {
-            if (tr._key === tier._key) break;
-            rank += (arr[tr._key] ?? []).length;
+          for (const k of visibleOrder) {
+            if (k === bucketKey) break;
+            rank += (arr[k] ?? []).length;
           }
           return (
+            <Fragment key={bucketKey}>
+              {/* Splitting a tie: drop into the gap ABOVE this row to take a
+                  rank of your own. Without it a merge was one-way — the only
+                  way back was the phantom empty bucket the old renderer left
+                  behind, which is the bug this replaced. */}
+              {numbered && (held || dragKey) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const k = held ?? dragKey;
+                    if (k) insertBucket(k, bucketIndex);
+                  }}
+                  onDragOver={(e) => {
+                    if (!dragKey) return;
+                    e.preventDefault();
+                    setDropTier(`gap-${bucketIndex}`);
+                  }}
+                  onDragLeave={() =>
+                    setDropTier((d) => (d === `gap-${bucketIndex}` ? null : d))
+                  }
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (dragKey) insertBucket(dragKey, bucketIndex);
+                    setDragKey(null);
+                    setDropTier(null);
+                  }}
+                  aria-label={
+                    bucketIndex === 0
+                      ? t("maker.placeAtNewRankTop", { below: rank + 1 })
+                      : t("maker.placeAtNewRank", {
+                          /* The rank the row ABOVE wears, which is where its
+                             own bucket starts — not the count of entries above
+                             this one. With a tie at 1 the gap below it sits
+                             between 1 and 3, never "between 2 and 3". */
+                          above:
+                            rank -
+                            (arr[visibleOrder[bucketIndex - 1]] ?? []).length +
+                            1,
+                          below: rank + 1,
+                        })
+                  }
+                  className={cn(
+                    "h-4 w-full flex-none bg-card text-[0.6rem] leading-none text-muted-foreground opacity-70 hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent",
+                    dropTier === `gap-${bucketIndex}` &&
+                      "outline outline-2 -outline-offset-2 outline-dashed outline-accent opacity-100"
+                  )}
+                >
+                  ⌄
+                </button>
+              )}
             <div
-              key={tier._key}
               onDragOver={(e) => {
                 if (!dragKey) return;
                 e.preventDefault();
@@ -581,7 +723,11 @@ export function TierMaker({ value }: { value: TierListBlock }) {
               <button
                 type="button"
                 onClick={() => held && move(held, tier._key)}
-                aria-label={t("maker.placeIn", { tier: numbered ? String(rank + 1) : tier.label })}
+                aria-label={
+                  numbered
+                    ? t("maker.placeAtRank", { rank: rank + 1 })
+                    : t("maker.placeIn", { tier: tier.label })
+                }
                 style={
                   numbered
                     ? { boxShadow: "inset 0 0 0 2px var(--color-accent)" }
@@ -622,8 +768,39 @@ export function TierMaker({ value }: { value: TierListBlock }) {
                 })}
               </div>
             </div>
+            </Fragment>
           );
         })}
+        {/* The gap after the last row: its own rank, at the bottom. */}
+        {numbered && (held || dragKey) && (
+          <button
+            type="button"
+            onClick={() => {
+              const k = held ?? dragKey;
+              if (k) insertBucket(k, visibleOrder.length);
+            }}
+            onDragOver={(e) => {
+              if (!dragKey) return;
+              e.preventDefault();
+              setDropTier("gap-end");
+            }}
+            onDragLeave={() => setDropTier((d) => (d === "gap-end" ? null : d))}
+            onDrop={(e) => {
+              e.preventDefault();
+              if (dragKey) insertBucket(dragKey, visibleOrder.length);
+              setDragKey(null);
+              setDropTier(null);
+            }}
+            aria-label={t("maker.placeAtNewRankEnd", { above: rankedCount })}
+            className={cn(
+              "h-4 w-full flex-none bg-card text-[0.6rem] leading-none text-muted-foreground opacity-70 hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent",
+              dropTier === "gap-end" &&
+                "outline outline-2 -outline-offset-2 outline-dashed outline-accent opacity-100"
+            )}
+          >
+            ⌄
+          </button>
+        )}
       </div>
 
       <div
@@ -1007,7 +1184,7 @@ export function TierMaker({ value }: { value: TierListBlock }) {
       {/* The legend, in the same mono the readouts use, so it reads as the
           instrument's own labelling rather than a footnote about it. */}
       <p className="border-t border-border bg-background px-3 py-2 font-mono text-[0.66rem] leading-relaxed tracking-[0.02em] text-muted-foreground">
-        {t("maker.keyboardHint")}
+        {t(numbered ? "maker.keyboardHintNumbered" : "maker.keyboardHint")}
       </p>
 
       {/* Maker credit. "Made with" is true HERE and only here — this board is

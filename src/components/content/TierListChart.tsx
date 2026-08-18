@@ -690,9 +690,13 @@ export function TierListChart({ value }: { value: TierListBlock }) {
                           {entry.title}
                         </span>
                       )}
-                      <span className="absolute left-0.5 top-0.5 rounded-sm bg-black/75 px-1 font-mono text-[10px] font-bold tabular-nums text-white">
-                        {rank}
-                      </span>
+                      {/* In numbered mode the row already wears the position,
+                          so a per-chip badge just says it twice. */}
+                      {!numbered && (
+                        <span className="absolute left-0.5 top-0.5 rounded-sm bg-black/75 px-1 font-mono text-[10px] font-bold tabular-nums text-white">
+                          {rank}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
