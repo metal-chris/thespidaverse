@@ -139,6 +139,13 @@ export async function GET(request: NextRequest) {
 
   const rows = arrangedRows(block, tl).filter((r) => r.entries.length > 0);
   const isRearranged = !!tl;
+  const numbered = block.listType === "numbered";
+  /* In numbered mode a row is a tie bucket, so it wears the position it
+     starts at rather than a grade: two entries in the first bucket are
+     joint 1st and the next bucket is 3rd. Computed across the rows that
+     survived the filter, so the numbering the card shows matches the board. */
+  const startRanks: number[] = [];
+  rows.reduce((above, r) => { startRanks.push(above + 1); return above + r.entries.length; }, 0);
 
   return new ImageResponse(
     (
@@ -189,7 +196,7 @@ export async function GET(request: NextRequest) {
             flexGrow: 1,
           }}
         >
-          {rows.slice(0, 6).map((row) => {
+          {rows.slice(0, 6).map((row, rowIndex) => {
             const names = row.entries.map((e) => e.title);
             // One line per tier; platforms downscale hard, so favour fewer,
             // larger names over completeness. The +N tail says what's cut.
@@ -207,6 +214,9 @@ export async function GET(request: NextRequest) {
                   padding: "7px 16px 7px 7px",
                 }}
               >
+                {/* A grade wears its tier colour; a rank wears a numeral,
+                    because colouring positions would invent a meaning the
+                    list does not have. */}
                 <div
                   style={{
                     display: "flex",
@@ -215,14 +225,15 @@ export async function GET(request: NextRequest) {
                     width: 46,
                     height: 46,
                     borderRadius: 8,
-                    fontSize: 27,
+                    fontSize: numbered ? 24 : 27,
                     fontWeight: 800,
-                    color: "#141414",
-                    background: tierColor(row.tier),
+                    color: numbered ? FG : "#141414",
+                    background: numbered ? CARD : tierColor(row.tier),
+                    border: numbered ? `2px solid ${ACCENT}` : undefined,
                     flexShrink: 0,
                   }}
                 >
-                  {row.tier.label}
+                  {numbered ? startRanks[rowIndex] : row.tier.label}
                 </div>
                 <div
                   style={{

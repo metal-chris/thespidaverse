@@ -85,6 +85,7 @@ export interface TierEntry {
 
 export type TierListMode = "index" | "capsule";
 export type TierChipAspect = "poster" | "square" | "wide";
+export type TierListType = "tiers" | "numbered";
 
 export interface TierRow {
   _key: string;
@@ -106,6 +107,9 @@ export interface TierListBlock {
   mode?: TierListMode;
   /** Chip shape per block: poster 2:3, square 1:1, wide 16:9. */
   chipAspect?: TierChipAspect;
+  /** tiers (default): S/A/B grades. numbered: an ordered 1,2,3… list whose
+   *  `tiers` are tie buckets. See src/lib/tierlist/arrangement.ts. */
+  listType?: TierListType;
   /** Phase 5: collect reader arrangements. Absent reads as true, so lists
    *  published before the poll existed take part without being re-saved. */
   poll?: boolean;

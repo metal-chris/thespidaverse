@@ -25,7 +25,7 @@ import { moveEntry, type BoardTier } from "../lib/tierBoard";
 type Img = { asset?: { _ref?: string } };
 type Entry = { _key?: string; title?: string; year?: string; subtitle?: string; anchor?: string; image?: Img };
 type Tier = { _key?: string; label?: string; color?: string; entries?: Entry[] };
-export type TierListValue = { title?: string; mode?: string; chipAspect?: string; tiers?: Tier[] };
+export type TierListValue = { title?: string; mode?: string; chipAspect?: string; listType?: string; tiers?: Tier[] };
 
 export interface CdnConfig { projectId: string; dataset: string }
 
@@ -54,6 +54,18 @@ export function TierListPreview({
   onMove?: (entryKey: string, toTierKey: string, beforeKey?: string) => void;
 }) {
   const tiers = value?.tiers ?? [];
+  /* Numbered lists: a row is a tie bucket wearing the position it starts at,
+     so the preview shows what the page will — 1, 1, 3 rather than S, A, B. */
+  const numbered = value?.listType === "numbered";
+  const startRanks = useMemo(() => {
+    const m = new Map<string, number>();
+    let above = 0;
+    for (const t of tiers) {
+      m.set(t._key ?? "", above + 1);
+      above += t.entries?.length ?? 0;
+    }
+    return m;
+  }, [tiers]);
   // Selection is the keyboard/click path, mirroring the reader Maker's
   // tap-to-hold: pick a chip, then pick a row. Drag is the mouse path.
   const [held, setHeld] = useState<string | null>(null);
@@ -91,7 +103,7 @@ export function TierListPreview({
         <Flex align="center" gap={2}>
           <Text size={1} weight="semibold">{value?.title || "Tier List"}</Text>
           <Text size={1} muted>
-            · {tiers.length} tier{tiers.length === 1 ? "" : "s"} · {total} entr{total === 1 ? "y" : "ies"} · {value?.mode ?? "capsule"} · {value?.chipAspect ?? "poster"}
+            · {tiers.length} {numbered ? "bucket" : "tier"}{tiers.length === 1 ? "" : "s"} · {total} entr{total === 1 ? "y" : "ies"} · {numbered ? "numbered" : "tiers"} · {value?.mode ?? "capsule"} · {value?.chipAspect ?? "poster"}
           </Text>
           {total > MAX_ENTRIES && (
             <Text size={1} style={{ color: "#c94f4f" }} weight="semibold">· over the {MAX_ENTRIES}-entry share cap</Text>
@@ -117,11 +129,14 @@ export function TierListPreview({
                 <Flex
                   align="center" justify="center"
                   style={{
-                    minWidth: 40, maxWidth: 112, padding: "0 6px", minHeight: aspect.h + 8, background: bg, borderRadius: 3,
-                    color: "#141414", fontWeight: 800, fontSize: (t.label ?? "").length > 3 ? 10 : 12, flex: "none",
+                    minWidth: 40, maxWidth: 112, padding: "0 6px", minHeight: aspect.h + 8, borderRadius: 3,
+                    background: numbered ? "transparent" : bg,
+                    boxShadow: numbered ? "inset 0 0 0 2px currentColor" : undefined,
+                    color: numbered ? undefined : "#141414",
+                    fontWeight: 800, fontSize: (t.label ?? "").length > 3 && !numbered ? 10 : 12, flex: "none",
                     lineHeight: 1.1, textAlign: "center",
                   }}
-                  title={live && held ? `Move here` : `${t.label ?? ""} · ${bg}`}
+                  title={live && held ? `Move here` : numbered ? `Rank ${startRanks.get(t._key ?? "")} · ${t.label ?? ""}` : `${t.label ?? ""} · ${bg}`}
                   onClick={live && held && t._key ? () => commit(held, t._key!) : undefined}
                   role={live && held ? "button" : undefined}
                   tabIndex={live && held ? 0 : undefined}
@@ -129,7 +144,7 @@ export function TierListPreview({
                 >
                   {/* text-overflow only applies to a block box, not the flex container */}
                   <span style={{ display: "block", maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {t.label || "?"}
+                    {numbered ? startRanks.get(t._key ?? "") : t.label || "?"}
                   </span>
                 </Flex>
                 <Flex

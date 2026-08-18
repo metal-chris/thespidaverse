@@ -150,6 +150,10 @@ export function TierMaker({ value }: { value: TierListBlock }) {
   const tiers = useMemo(() => value.tiers ?? [], [value.tiers]);
   const items = useMemo(() => flatten(tiers), [tiers]);
   const aspect = value.chipAspect ?? "poster";
+  /* Numbered lists: rows are tie buckets. The board still moves entries the
+     same way — a bucket is a bucket — but a row wears the position it starts
+     at, and the grade-letter shortcuts have nothing to key on. */
+  const numbered = value.listType === "numbered";
   const panelId = useId();
 
   const byKey = useMemo(() => {
@@ -220,7 +224,7 @@ export function TierMaker({ value }: { value: TierListBlock }) {
       new URLSearchParams(window.location.search).get("tl") ??
       // `/r/<code>~<name>` — the signature is for the card, not the board.
       (pathCode ? decodeURIComponent(pathCode).split("~")[0] : null);
-    const decoded = code ? decodeArrangement(code, tiers, items) : null;
+    const decoded = code ? decodeArrangement(code, tiers, items, value.listType ?? "tiers") : null;
 
     /* Leave the path form behind either way. A code that decoded belongs in
        the address bar as `?tl=`; one that did not is a dead link the reader
@@ -398,7 +402,7 @@ export function TierMaker({ value }: { value: TierListBlock }) {
         return;
       }
 
-      if (shortcuts.has(ch)) {
+      if (!numbered && shortcuts.has(ch)) {
         e.preventDefault();
         const to = targetForLetter(ch, key);
         if (!to) return;
@@ -428,7 +432,7 @@ export function TierMaker({ value }: { value: TierListBlock }) {
          single placement. */
       refocusKey.current = key;
     },
-    [held, move, shortcuts, targetForLetter, tiers, t]
+    [held, move, shortcuts, targetForLetter, tiers, t, numbered]
   );
 
   /* Runs after React commits the new arrangement, so the chip queried here is
@@ -577,11 +581,18 @@ export function TierMaker({ value }: { value: TierListBlock }) {
               <button
                 type="button"
                 onClick={() => held && move(held, tier._key)}
-                aria-label={t("maker.placeIn", { tier: tier.label })}
-                style={{ backgroundColor: tierColor(tier), color: "#141414" }}
-                className="grid w-12 flex-none place-items-center font-mono text-xl font-black focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white sm:w-16"
+                aria-label={t("maker.placeIn", { tier: numbered ? String(rank + 1) : tier.label })}
+                style={
+                  numbered
+                    ? { boxShadow: "inset 0 0 0 2px var(--color-accent)" }
+                    : { backgroundColor: tierColor(tier), color: "#141414" }
+                }
+                className={cn(
+                  "grid w-12 flex-none place-items-center font-mono text-xl font-black focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white sm:w-16",
+                  numbered && "bg-card text-foreground"
+                )}
               >
-                {tier.label}
+                {numbered ? rank + 1 : tier.label}
               </button>
               <div className="flex flex-1 flex-wrap content-start gap-2 bg-card p-2">
                 {/* An empty row otherwise reads as broken rather than as a

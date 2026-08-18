@@ -242,7 +242,14 @@ function CapsuleBody({
  * there is no room below and clamping to the viewport so it never hangs off a
  * narrow screen.
  */
-function TierBadge({ tier }: { tier: TierRow }) {
+/**
+ * The row's left rail. In `tiers` mode it is the grade, wearing the grade's
+ * colour. In `numbered` mode it is the position the row starts at — a tie
+ * bucket of two beginning at 1 makes the next row 3 — drawn as a numeral on
+ * the card surface, because colouring a position would imply a grade the
+ * list does not claim.
+ */
+function TierBadge({ tier, rankLabel }: { tier: TierRow; rankLabel?: number }) {
   const t = useTranslations("tierList");
   const note = tier.description;
   const hasNote = Array.isArray(note) && note.length > 0;
@@ -294,10 +301,13 @@ function TierBadge({ tier }: { tier: TierRow }) {
     };
   }, [open, place]);
 
-  const swatch = {
-    backgroundColor: tierColor(tier),
-    color: "#141414",
-  } as React.CSSProperties;
+  const numbered = rankLabel !== undefined;
+  const swatch = (
+    numbered
+      ? { backgroundColor: "var(--color-card)", color: "var(--color-foreground)", boxShadow: "inset 0 0 0 2px var(--color-accent)" }
+      : { backgroundColor: tierColor(tier), color: "#141414" }
+  ) as React.CSSProperties;
+  const face = numbered ? rankLabel : tier.label;
 
   if (!hasNote) {
     return (
@@ -305,7 +315,7 @@ function TierBadge({ tier }: { tier: TierRow }) {
         className="grid w-12 flex-none place-items-center text-xl font-black sm:w-16"
         style={swatch}
       >
-        {tier.label}
+        {face}
       </div>
     );
   }
@@ -330,7 +340,7 @@ function TierBadge({ tier }: { tier: TierRow }) {
         className="grid w-12 flex-none cursor-help place-items-center text-xl font-black underline decoration-black/35 decoration-dotted underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-black sm:w-16"
         style={swatch}
       >
-        {tier.label}
+        {face}
       </button>
       {open &&
         pos &&
@@ -508,6 +518,21 @@ export function TierListChart({ value }: { value: TierListBlock }) {
   const t = useTranslations("tierList");
   const mode = value.mode ?? "index";
   const aspect = value.chipAspect ?? "poster";
+  /* Numbered lists: rows are tie buckets, so a row wears the position it
+     starts at rather than a grade. Empty buckets take no number and no
+     space in the count. */
+  const numbered = value.listType === "numbered";
+  const startRank = useCallback(
+    (tierKey: string) => {
+      let above = 0;
+      for (const t of value.tiers ?? []) {
+        if (t._key === tierKey) return above + 1;
+        above += t.entries?.length ?? 0;
+      }
+      return above + 1;
+    },
+    [value.tiers]
+  );
   const items = useMemo(() => flatten(value.tiers ?? []), [value.tiers]);
   const hasCapsuleContent = items.some((i) => i.entry.content?.length);
 
@@ -632,7 +657,7 @@ export function TierListChart({ value }: { value: TierListBlock }) {
         <div className="flex flex-col gap-px bg-border">
           {value.tiers.map((tier) => (
             <div key={tier._key} className="flex items-stretch gap-px">
-              <TierBadge tier={tier} />
+              <TierBadge tier={tier} rankLabel={numbered ? startRank(tier._key) : undefined} />
               <div className="flex flex-1 flex-wrap gap-2 bg-card p-2">
                 {tier.entries?.map((entry) => {
                   rank += 1;
