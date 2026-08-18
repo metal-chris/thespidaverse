@@ -13,15 +13,16 @@
  * `TierListPreview` takes the CDN config as a prop rather than reading it
  * from a hook, so it can be rendered outside Studio (e.g. to eyeball it).
  */
-import { useMemo } from "react";
-import { useClient, type ObjectInputProps } from "sanity";
-import { Box, Card, Flex, Stack, Text } from "@sanity/ui";
+import { useCallback, useMemo, useState } from "react";
+import { set, useClient, useFormValue, type ObjectInputProps } from "sanity";
+import { Box, Button, Card, Flex, Inline, Select, Stack, Text } from "@sanity/ui";
 import { tierColor } from "@/lib/tierlist/arrangement";
 import { MAX_ENTRIES } from "../lib/tierValidation";
+import { existingAnchors, parseHeadings } from "../lib/tierHeadings";
 
 /* ── value shape (loose: Studio hands us partial objects while editing) ── */
 type Img = { asset?: { _ref?: string } };
-type Entry = { _key?: string; title?: string; year?: string; subtitle?: string; image?: Img };
+type Entry = { _key?: string; title?: string; year?: string; subtitle?: string; anchor?: string; image?: Img };
 type Tier = { _key?: string; label?: string; color?: string; entries?: Entry[] };
 export type TierListValue = { title?: string; mode?: string; chipAspect?: string; tiers?: Tier[] };
 
@@ -136,12 +137,92 @@ export function TierListPreview({ value, cdn }: { value: TierListValue | undefin
   );
 }
 
+/**
+ * A6 — build entries from the body's numbered headings.
+ *
+ * New entries land in one tier of the author's choosing, in rank order,
+ * because the headings carry an ordering but not tier cut lines; deciding
+ * those is the author's judgement, not something to infer. Entries whose
+ * anchor already exists are skipped, so the button is safe to press twice.
+ */
+function PopulateFromHeadings({ value, onChange }: { value: TierListValue | undefined; onChange: ObjectInputProps["onChange"] }) {
+  const body = useFormValue(["body"]);
+  const tiers = useMemo(() => value?.tiers ?? [], [value?.tiers]);
+  const [target, setTarget] = useState<string>("");
+  const [done, setDone] = useState<string | null>(null);
+
+  const parsed = useMemo(() => parseHeadings(body), [body]);
+  const fresh = useMemo(() => {
+    const seen = existingAnchors(tiers);
+    return parsed.filter((h) => !seen.has(h.anchor));
+  }, [parsed, tiers]);
+
+  const targetKey = target || tiers[0]?._key || "";
+
+  const run = useCallback(() => {
+    if (!fresh.length || !targetKey) return;
+    const stamp = Date.now().toString(36);
+    const next = tiers.map((t) =>
+      t._key !== targetKey
+        ? t
+        : {
+            ...t,
+            entries: [
+              ...(t.entries ?? []),
+              ...fresh.map((h, i) => ({
+                _key: `tl-e-${stamp}-${i.toString(36)}`,
+                _type: "tierEntry",
+                title: h.title,
+                ...(h.year ? { year: h.year } : {}),
+                ...(h.subtitle ? { subtitle: h.subtitle } : {}),
+                anchor: h.anchor,
+              })),
+            ],
+          }
+    );
+    onChange(set(next, ["tiers"]));
+    setDone(`Added ${fresh.length} entr${fresh.length === 1 ? "y" : "ies"} to ${tiers.find((t) => t._key === targetKey)?.label ?? "the tier"}.`);
+  }, [fresh, targetKey, tiers, onChange]);
+
+  if (!parsed.length) return null;
+
+  return (
+    <Card padding={2} radius={2} tone="transparent" border>
+      <Stack space={2}>
+        <Text size={1} muted>
+          {parsed.length} numbered heading{parsed.length === 1 ? "" : "s"} in the body
+          {fresh.length !== parsed.length && ` · ${parsed.length - fresh.length} already added`}
+        </Text>
+        {fresh.length === 0 ? (
+          <Text size={1} muted>{done ?? "Every heading already has an entry."}</Text>
+        ) : (
+          <Flex align="center" gap={2} wrap="wrap">
+            <Button text={`Add ${fresh.length} entr${fresh.length === 1 ? "y" : "ies"}`} mode="ghost" fontSize={1} padding={2} disabled={!targetKey} onClick={run} />
+            <Inline space={2}>
+              <Text size={1} muted>to</Text>
+              <Select fontSize={1} padding={2} value={targetKey} onChange={(e) => setTarget(e.currentTarget.value)}>
+                {tiers.map((t, i) => (
+                  <option key={t._key ?? i} value={t._key ?? ""}>{t.label || "(unlabelled)"}</option>
+                ))}
+              </Select>
+            </Inline>
+            <Text size={1} muted>in rank order — move them from there.</Text>
+          </Flex>
+        )}
+        {done && fresh.length > 0 && <Text size={1} muted>{done}</Text>}
+      </Stack>
+    </Card>
+  );
+}
+
 export function TierListInput(props: ObjectInputProps) {
   const client = useClient({ apiVersion: "2024-01-01" });
   const { projectId = "", dataset = "production" } = client.config();
+  const value = props.value as TierListValue | undefined;
   return (
     <Stack space={4}>
-      <TierListPreview value={props.value as TierListValue | undefined} cdn={{ projectId, dataset }} />
+      <TierListPreview value={value} cdn={{ projectId, dataset }} />
+      <PopulateFromHeadings value={value} onChange={props.onChange} />
       {props.renderDefault(props)}
     </Stack>
   );
