@@ -94,7 +94,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!article) return { title: "Not Found" };
 
-  const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent(article.title)}${article.category ? `&category=${encodeURIComponent(article.category.title)}` : ""}`;
+  /* Prefer the article's own hero — its actual key art — over the generic
+     branded title card. The title card is a fallback for articles that have
+     no hero yet, not the default for articles that do. This mirrors the
+     heroUrl/ogImageUrl fallback chain below in the page body exactly; that
+     one only ever fed JSON-LD, so every article with a hero was still
+     unfurling the generic card on every platform that reads <meta
+     property="og:image"> — which is all of them. */
+  const genericOgImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent(article.title)}${article.category ? `&category=${encodeURIComponent(article.category.title)}` : ""}`;
+  const heroOgImageUrl = article.heroImage
+    ? urlFor(article.heroImage).width(1200).height(630).url()
+    : null;
+  const ogImageUrl = article.heroImageUrl || heroOgImageUrl || genericOgImageUrl;
 
   return {
     title: article.title,
