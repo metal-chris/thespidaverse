@@ -477,7 +477,17 @@
       "signPlaceholder": "你的名字",
       "previewHeading": "分享後的樣子",
       "previewAlt": "此排行分享卡片的預覽",
-      "movedTo": "已移動到 {tier}"
+      "movedTo": "已移動到 {tier}",
+      "pollSubmit": "提交到投票",
+      "pollSubmitting": "傳送中…",
+      "pollThanks": "你是 {n} 位中的一位",
+      "pollFailed": "傳送失敗，請再試一次。",
+      "pollViewAuthor": "作者",
+      "pollViewReaders": "讀者",
+      "pollViewBoth": "兩者",
+      "pollReadersTitle": "讀者把它放在哪裡",
+      "pollCount": "{n} 份排行",
+      "pollSoon": "讀者排行會在收到若干份後顯示。"
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "由 The Spidaverse 製作"

@@ -247,7 +247,7 @@ valid 200 PNG.
 
 ---
 
-## Phase 5 — Poll: "Where readers put it" (medium)
+## Phase 5 — Poll: "Where readers put it" — data + API + submit shipped
 
 The private remix becomes an aggregate. A reader submits their arrangement;
 the article shows the crowd's board against the author's.
@@ -292,11 +292,16 @@ plus noise.
 - **Maker control bar:** "Submit to the poll" beside Share. After: "You're one
   of *N*" and a link to the Readers view. Submitting the author's ranking
   unchanged is allowed — agreement is a data point.
-- **Chart** (above the Maker), once count ≥ 5: segmented control
-  **Author \| Readers \| Both**. *Readers* renders the crowd's board with the
-  same `TierListChart`. *Both* is the author's board with a small badge on any
-  chip the crowd placed differently ("↑A", "↓C").
-- **Compare panel:** "vs readers" beside the existing "vs the author".
+- **Maker `Readers` panel** ✅ — shipped here instead of on the chart. The
+  Maker already renders from an `Arrangement`; the chart renders from
+  `value.tiers`, so putting the first version on the chart would have meant
+  refactoring an 837-line component to render someone else's board, with no
+  way to look at the result until the table exists. The panel lists every
+  entry as *author tier → crowd tier* with ↑/↓ and the vote count, which is
+  the same information the "Both" badge would carry.
+- **Still to build:** the chart's `Author | Readers | Both` segmented control,
+  and "vs readers" in the Compare panel. Both want real responses to design
+  against — deferred deliberately rather than shipped blind.
 - **Studio:** `poll: boolean` on `tierList`; `undefined` reads as `true` so
   the four live lists collect without re-saving. Any list can opt out.
 - *Follow-on (4b):* "Readers' ranking" OG card variant, `/api/og/tierlist?…&crowd=1`.
@@ -310,10 +315,20 @@ becomes a problem. If the author *removes* an entry, older codes stop decoding
 and drop out of the aggregate — `undecodable` is returned so that is visible
 rather than silent.
 
-**Done when:** migration in `supabase/migrations/`; both routes; Maker submit,
-chart control, Compare tab; strings ×8; verified on production past the
-threshold (a `MIN_RESPONSES` env override for staging so it can be exercised
-without five real people).
+**Shipped:** migration `20260818120000_tier_list_responses.sql`; POST + GET at
+`/api/engagement/tierlist/[slug]`; `src/lib/tierlist/poll.ts` (pure
+aggregation, 22 cases); Maker submit and Readers panel; `poll` boolean on the
+block, defaulting on; 10 strings × 8 locales; `TIER_POLL_MIN_RESPONSES` for
+staging.
+
+**Everything degrades to silence.** The table is applied by hand through the
+Supabase SQL editor (docs/APPLY_MIGRATION.md), so until it exists GET answers
+`{count: 0, belowThreshold: true}` and the article renders exactly as before —
+verified against the real, table-less database.
+
+**Not yet verified, and cannot be until the table exists:** a real submit
+round-trip, the upsert-on-resubmit behaviour, and the aggregate past the
+threshold. The aggregation rules themselves are tested in isolation.
 
 ---
 

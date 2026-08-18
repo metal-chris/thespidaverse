@@ -137,6 +137,14 @@ function Chip({
 
 /* ── Maker ──────────────────────────────────────────────────────── */
 
+interface PollResult {
+  count: number;
+  belowThreshold?: boolean;
+  crowd?: Record<string, string>;
+  perEntry?: Record<string, Record<string, number>>;
+  undecodable?: number;
+}
+
 export function TierMaker({ value }: { value: TierListBlock }) {
   const t = useTranslations("tierList");
   const tiers = useMemo(() => value.tiers ?? [], [value.tiers]);
@@ -181,6 +189,13 @@ export function TierMaker({ value }: { value: TierListBlock }) {
      otherwise a ± cycle (B+ → B → B-) is invisible to anyone not watching
      the chip. */
   const [announce, setAnnounce] = useState<string | null>(null);
+  /* Phase 5 — the poll. Everything here is additive: if the endpoint says
+     "nothing yet" (which it also says when the table has not been applied),
+     the board is exactly what it was before. */
+  const [showPoll, setShowPoll] = useState(false);
+  const [poll, setPoll] = useState<PollResult | null>(null);
+  const [pollState, setPollState] = useState<"idle" | "sending" | "sent" | "failed">("idle");
+  const [pollMine, setPollMine] = useState<number | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
   /* The chip a keyboard action just moved. Read by the effect below, which
      restores focus once React has actually committed the move. */
@@ -271,6 +286,51 @@ export function TierMaker({ value }: { value: TierListBlock }) {
     const seg = signature ? `${code}~${signature}` : code;
     return `${window.location.origin}${base}/r/${encodeURIComponent(seg)}`;
   }, [arr, tiers, keyToIndex, signature]);
+
+  const pollTarget = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    const base = window.location.pathname.split("/r/")[0].replace(/\/$/, "");
+    const slug = base.split("/").pop() ?? "";
+    const blockKey = value._key ?? "";
+    return slug && blockKey ? { slug, blockKey } : null;
+  }, [value._key]);
+
+  const pollEnabled = value.poll !== false && !!pollTarget;
+
+  const loadPoll = useCallback(async () => {
+    if (!pollTarget) return;
+    try {
+      const res = await fetch(
+        `/api/engagement/tierlist/${encodeURIComponent(pollTarget.slug)}?block=${encodeURIComponent(pollTarget.blockKey)}`
+      );
+      setPoll(res.ok ? await res.json() : { count: 0, belowThreshold: true });
+    } catch {
+      setPoll({ count: 0, belowThreshold: true });
+    }
+  }, [pollTarget]);
+
+  const submitPoll = useCallback(async () => {
+    if (!pollTarget) return;
+    setPollState("sending");
+    try {
+      const res = await fetch(`/api/engagement/tierlist/${encodeURIComponent(pollTarget.slug)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          blockKey: pollTarget.blockKey,
+          code: encodeArrangement(arr, tiers, keyToIndex),
+          honeypot: "",
+        }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      const data = await res.json();
+      setPollMine(data.count ?? null);
+      setPollState("sent");
+      void loadPoll();
+    } catch {
+      setPollState("failed");
+    }
+  }, [pollTarget, arr, tiers, keyToIndex, loadPoll]);
 
   /* The card the reader is about to post, drawn by the same route the
      crawler will hit. Same-origin, so no key and nothing to configure. */
@@ -389,6 +449,26 @@ export function TierMaker({ value }: { value: TierListBlock }) {
   const diffRows = items
     .map((it) => ({ it, now: tierOf(it.entry._key) }))
     .filter((r) => r.now !== r.it.tier._key);
+
+  /* Where the crowd put each entry, against where the author did. */
+  const crowdRows = useMemo(() => {
+    const crowd = poll?.crowd;
+    if (!crowd) return [];
+    const order = tiers.map((x) => x._key);
+    return items
+      .map((it) => {
+        const to = crowd[it.entry._key];
+        if (!to) return null;
+        const target = tiers.find((x) => x._key === to);
+        if (!target) return null;
+        const moved = to !== it.tier._key;
+        const dir = order.indexOf(to) - order.indexOf(it.tier._key);
+        const votes = poll?.perEntry?.[it.entry._key]?.[to] ?? 0;
+        return { it, target, moved, up: dir < 0, votes };
+      })
+      .filter((r): r is NonNullable<typeof r> => !!r)
+      .sort((a, b) => Number(b.moved) - Number(a.moved) || a.it.index - b.it.index);
+  }, [poll, tiers, items]);
 
   /* ── Collapsed: the CTA ── */
   if (!open) {
@@ -599,6 +679,7 @@ export function TierMaker({ value }: { value: TierListBlock }) {
             onClick={() => {
               setShowShare((s) => !s);
               setShowDiff(false);
+              setShowPoll(false);
             }}
             className={cn(
               CONTROL,
@@ -617,6 +698,7 @@ export function TierMaker({ value }: { value: TierListBlock }) {
             onClick={() => {
               setShowDiff((s) => !s);
               setShowShare(false);
+              setShowPoll(false);
             }}
             className={cn(
               CONTROL,
@@ -628,6 +710,29 @@ export function TierMaker({ value }: { value: TierListBlock }) {
           >
             {t("maker.compare")}
           </button>
+          {pollEnabled && (
+            <>
+              <span aria-hidden="true" className="w-px flex-none bg-border" />
+              <button
+                type="button"
+                aria-pressed={showPoll}
+                onClick={() => {
+                  const next = !showPoll;
+                  setShowPoll(next);
+                  setShowShare(false);
+                  setShowDiff(false);
+                  if (next && !poll) void loadPoll();
+                }}
+                className={cn(
+                  CONTROL,
+                  "font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent",
+                  showPoll ? "bg-accent text-background" : "text-foreground hover:bg-card"
+                )}
+              >
+                {t("maker.pollViewReaders")}
+              </button>
+            </>
+          )}
         </div>
 
         {/* The divider is the whole point of the grouping: everything left of
@@ -696,6 +801,70 @@ export function TierMaker({ value }: { value: TierListBlock }) {
           {announce ?? (moves === 0 ? t("maker.matches") : t("maker.moveCount", { n: moves }))}
         </output>
       </div>
+
+      {showPoll && (
+        <div className="flex flex-col gap-2 border-t border-border bg-background px-3 py-2.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="m-0 text-[0.76rem] font-semibold text-foreground">{t("maker.pollReadersTitle")}</p>
+            {!!poll?.count && <span className={READOUT}>{t("maker.pollCount", { n: poll.count })}</span>}
+            <button
+              type="button"
+              disabled={pollState === "sending"}
+              onClick={() => void submitPoll()}
+              className={cn(
+                CONTROL,
+                "ml-auto rounded-md border border-border font-semibold text-accent hover:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-50"
+              )}
+            >
+              {pollState === "sending"
+                ? t("maker.pollSubmitting")
+                : pollState === "sent" && pollMine !== null
+                  ? t("maker.pollThanks", { n: pollMine })
+                  : t("maker.pollSubmit")}
+            </button>
+          </div>
+
+          {pollState === "failed" && (
+            <p className="m-0 text-[0.74rem] text-accent">{t("maker.pollFailed")}</p>
+          )}
+
+          {/* Below the threshold there is no aggregate to show — five people is
+              where a "consensus" stops being one opinion plus noise. The same
+              message covers a poll that simply has not been set up yet. */}
+          {(!poll || poll.belowThreshold) && (
+            <p className="m-0 text-[0.76rem] text-muted-foreground">{t("maker.pollSoon")}</p>
+          )}
+
+          {!!crowdRows.length && (
+            <div>
+              {crowdRows.map(({ it, target, moved, up, votes }) => (
+                <div
+                  key={it.entry._key}
+                  className="flex items-center gap-2 border-b border-border py-1 text-[0.78rem] last:border-b-0"
+                >
+                  <span
+                    className="rounded-sm px-1.5 font-mono text-[0.62rem] font-bold text-black"
+                    style={{ backgroundColor: tierColor(it.tier) }}
+                  >
+                    {it.tier.label}
+                  </span>
+                  <span aria-hidden="true" className="text-muted-foreground">
+                    {moved ? (up ? "↑" : "↓") : "="}
+                  </span>
+                  <span
+                    className="rounded-sm px-1.5 font-mono text-[0.62rem] font-bold text-black"
+                    style={{ backgroundColor: tierColor(target) }}
+                  >
+                    {target.label}
+                  </span>
+                  <span className="min-w-0 flex-1 truncate">{it.entry.title}</span>
+                  <span className={cn("flex-none", READOUT)}>{votes}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {showShare && (
         <div className="flex flex-col gap-2 border-t border-border bg-background px-3 py-2.5">

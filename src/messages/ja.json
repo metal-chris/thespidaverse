@@ -477,7 +477,17 @@
       "signPlaceholder": "お名前",
       "previewHeading": "共有時の表示",
       "previewAlt": "このランキングの共有カードのプレビュー",
-      "movedTo": "{tier} に移動しました"
+      "movedTo": "{tier} に移動しました",
+      "pollSubmit": "投票に送信",
+      "pollSubmitting": "送信中…",
+      "pollThanks": "{n} 人のうちの 1 人です",
+      "pollFailed": "送信できませんでした。もう一度お試しください。",
+      "pollViewAuthor": "著者",
+      "pollViewReaders": "読者",
+      "pollViewBoth": "両方",
+      "pollReadersTitle": "読者はどこに置いたか",
+      "pollCount": "{n} 件のランキング",
+      "pollSoon": "読者のランキングは、何件か集まると表示されます。"
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "The Spidaverse で作成"
