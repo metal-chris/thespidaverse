@@ -490,7 +490,9 @@
       "pollSoon": "Les classements des lecteurs apparaîtront après quelques envois."
     },
     "brandCredit": "The Spidaverse",
-    "brandMadeWith": "Créé avec The Spidaverse"
+    "brandMadeWith": "Créé avec The Spidaverse",
+    "numberedTied": "Ex æquo au {n}",
+    "numberedRank": "n°{n}"
   },
   "splash": {
     "earlyAccess": "Accès Anticipé",

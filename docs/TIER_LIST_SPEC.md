@@ -332,7 +332,7 @@ threshold. The aggregation rules themselves are tested in isolation.
 
 ---
 
-## Phase 6 — Numbered format (large)
+## Phase 6 — Numbered format — model, encoding and rendering shipped
 
 TierlistFills' "Numbered — ordered 1, 2, 3…, ties grouped into buckets", as a
 per-list author choice. The smallest model that works:
@@ -374,13 +374,35 @@ per-list author choice. The smallest model that works:
 - **Poll:** per-entry mean/median rank → crowd ordering. The Phase 5 table
   needs no change.
 
-**Done when:** schema + Studio radio; `arrangement.ts` numbered decode with a
-round-trip check (encode → decode → encode identity over random arrangements,
-as `scripts/verify-arrangement.ts` — there is no test runner in the repo, and
-this pure module is shared by four surfaces, so it is the one place a script
-earns its keep); chart, Maker, OG, Compare; strings ×8; verified on production
-with a real numbered list — Ghibli is the natural first, its 1–24 order is
-already in the prose.
+**Shipped:** `listType` on the block with a Studio radio; numbered decode in
+`arrangement.ts` plus `numberedRanks()` and `bucketOrder()`; the chart, the
+Maker board, the Studio preview and the OG card all wearing positions instead
+of grades; 2 strings × 8 locales; `scripts/verify-arrangement.ts`.
+
+**The script earned its keep on the first run**, which is the reason it
+exists: the numbered bucket-count guard was `items.length + tiers.length`,
+which rejected a one-entry list with several buckets — a perfectly ordinary
+thing for a reader to build. 22 failures out of 3011 checks. The guard is now
+an absolute `MAX_BUCKETS`, well past the 36 entries the index space allows.
+
+**Numbering is competition-style:** a bucket's rank is one more than the
+entries above it, so two entries tied at 1 make the next bucket 3. Verified
+against Rivals' real shape → 1, 1, 3, 3, 3, 6, 7.
+
+**Still to build:** the Maker's numbered-specific interactions — a drop zone
+*between* rows to split a tie, `↑`/`↓` to move a chip one bucket, `=` to tie
+with the bucket above. Dragging onto a bucket, tap-to-place, `0` and the
+arrow-walk all work today, so a numbered board is usable; splitting a tie
+needs the array field. Deferred because that interaction wants a real
+numbered list in front of it. Compare still reports tier → tier rather than a
+rank delta, which reads correctly but under-uses the format.
+
+**Not verified:** the chart, Maker and OG card have not been seen against a
+*published* numbered list, because only published documents are served. The
+Studio preview is the exception and was verified — tiers and numbered
+rendered side by side from identical data. Flipping one list to Numbered in
+Studio is enough to check the rest; Ghibli is the natural first, its 1–24
+order is already in the prose.
 
 ---
 

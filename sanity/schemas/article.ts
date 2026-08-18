@@ -339,6 +339,21 @@ export default defineType({
               initialValue: "capsule",
             }),
             defineField({
+              name: "listType",
+              title: "List type",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Tiers — S / A / B grades", value: "tiers" },
+                  { title: "Numbered — ordered 1, 2, 3… with ties", value: "numbered" },
+                ],
+                layout: "radio",
+              },
+              initialValue: "tiers",
+              description:
+                "Numbered turns the rows into tie buckets: everything in a row shares a number, and the next row picks up after it (1, 1, 3…). Changing this on a published list re-reads any links already shared against it.",
+            }),
+            defineField({
               name: "chipAspect",
               title: "Chip aspect",
               type: "string",

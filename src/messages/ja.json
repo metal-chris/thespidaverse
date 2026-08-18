@@ -490,7 +490,9 @@
       "pollSoon": "読者のランキングは、何件か集まると表示されます。"
     },
     "brandCredit": "The Spidaverse",
-    "brandMadeWith": "The Spidaverse で作成"
+    "brandMadeWith": "The Spidaverse で作成",
+    "numberedTied": "{n} 位タイ",
+    "numberedRank": "{n} 位"
   },
   "splash": {
     "earlyAccess": "アーリーアクセス",

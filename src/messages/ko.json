@@ -490,7 +490,9 @@
       "pollSoon": "독자 랭킹은 몇 건이 모이면 표시됩니다."
     },
     "brandCredit": "The Spidaverse",
-    "brandMadeWith": "The Spidaverse로 제작"
+    "brandMadeWith": "The Spidaverse로 제작",
+    "numberedTied": "공동 {n}위",
+    "numberedRank": "{n}위"
   },
   "splash": {
     "earlyAccess": "얼리 액세스",

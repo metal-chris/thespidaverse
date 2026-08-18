@@ -490,7 +490,9 @@
       "pollSoon": "讀者排行會在收到若干份後顯示。"
     },
     "brandCredit": "The Spidaverse",
-    "brandMadeWith": "由 The Spidaverse 製作"
+    "brandMadeWith": "由 The Spidaverse 製作",
+    "numberedTied": "並列第 {n}",
+    "numberedRank": "第 {n}"
   },
   "splash": {
     "earlyAccess": "搶先體驗",

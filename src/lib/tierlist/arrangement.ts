@@ -19,6 +19,39 @@ import type { TierEntry, TierListBlock, TierRow } from "@/types";
 
 export const UNRANKED = "_";
 
+/**
+ * Two shapes share this format.
+ *
+ * `tiers` — the classic S/A/B chart. Groups map one-to-one onto the block's
+ * tiers, so the count must match exactly.
+ *
+ * `numbered` — an ordered 1, 2, 3… list where the block's `tiers` are
+ * BUCKETS: everything in a bucket ties, and a bucket's rank is one more than
+ * the number of entries above it. Bucket count is free, because a reader
+ * splitting a tie creates one, so the count guard is dropped and groups past
+ * the block's own buckets get positional keys.
+ *
+ * The block's `listType` says which rules apply; nothing is encoded in the
+ * string. Documented consequence: flipping a published list from tiers to
+ * numbered reinterprets codes already shared against it — S/A/B become 1st,
+ * 4th, 9th. That is a re-authoring decision, not an accident waiting to
+ * happen, and it is the reason the switch lives in Studio rather than the UI.
+ */
+export type { TierListType } from "@/types";
+import type { TierListType } from "@/types";
+
+/**
+ * Upper bound on buckets in a numbered code. Entries cap at 36 (one base-36
+ * character each), so no meaningful list needs more; this only stops a
+ * hand-edited URL from asking for millions of empty groups.
+ */
+export const MAX_BUCKETS = 64;
+
+/** Bucket key for a group with no matching tier. Positional and stable. */
+export function syntheticBucketKey(index: number): string {
+  return `b${index}`;
+}
+
 export type Arrangement = Record<string, string[]>;
 
 export interface FlatItem {
@@ -49,11 +82,17 @@ export function canonicalArrangement(tiers: TierRow[]): Arrangement {
 export function encodeArrangement(
   arr: Arrangement,
   tiers: TierRow[],
-  keyToIndex: Map<string, number>
+  keyToIndex: Map<string, number>,
+  /**
+   * Bucket keys in display order. Defaults to the block's own tiers, which is
+   * every `tiers`-mode list; numbered lists pass their live bucket order so a
+   * reader-created bucket survives the round trip.
+   */
+  order?: string[]
 ): string {
-  return tiers
-    .map((t) =>
-      (arr[t._key] ?? [])
+  return (order ?? tiers.map((t) => t._key))
+    .map((key) =>
+      (arr[key] ?? [])
         .map((k) => keyToIndex.get(k))
         .filter((i): i is number => i !== undefined)
         .map((i) => i.toString(36))
@@ -70,10 +109,19 @@ export function encodeArrangement(
 export function decodeArrangement(
   param: string,
   tiers: TierRow[],
-  items: FlatItem[]
+  items: FlatItem[],
+  listType: TierListType = "tiers"
 ): Arrangement | null {
   const groups = param.split("|");
-  if (groups.length !== tiers.length) return null;
+  const numbered = listType === "numbered";
+  // A tiers list has exactly as many groups as the chart has rows. A numbered
+  // list may have any number, because splitting a tie adds a bucket and empty
+  // buckets are legal — a one-entry list with four buckets is a perfectly
+  // ordinary thing for a reader to build. Only an absolute cap applies, well
+  // past the 36 entries the single-character index space allows, so the input
+  // is still bounded without second-guessing the shape.
+  if (!numbered && groups.length !== tiers.length) return null;
+  if (numbered && groups.length > MAX_BUCKETS) return null;
 
   const arr: Arrangement = { [UNRANKED]: [] };
   const seen = new Set<number>();
@@ -86,7 +134,7 @@ export function decodeArrangement(
       seen.add(idx);
       keys.push(items[idx].entry._key);
     }
-    arr[tiers[g]._key] = keys;
+    arr[tiers[g]?._key ?? syntheticBucketKey(g)] = keys;
   }
   // Entries added to the block after the link was made.
   arr[UNRANKED] = items.filter((it) => !seen.has(it.index)).map((it) => it.entry._key);
@@ -161,11 +209,42 @@ export function arrangedRows(
   const tiers = block.tiers ?? [];
   const items = flatten(tiers);
   const byKey = new Map(items.map((it) => [it.entry._key, it.entry]));
-  const arr = tl ? decodeArrangement(tl, tiers, items) : null;
+  const arr = tl ? decodeArrangement(tl, tiers, items, block.listType ?? "tiers") : null;
   return tiers.map((tier) => ({
     tier,
     entries: (arr ? (arr[tier._key] ?? []) : (tier.entries ?? []).map((e) => e._key))
       .map((k) => byKey.get(k))
       .filter((e): e is TierEntry => !!e),
   }));
+}
+
+/**
+ * Numbered mode: what number each entry wears.
+ *
+ * A bucket's rank is one more than the number of entries above it, so a
+ * two-entry first bucket is a tie for 1st and the bucket after it is 3rd —
+ * the convention every sports table and leaderboard already uses. Entries in
+ * the same bucket share a number.
+ */
+export function numberedRanks(arr: Arrangement, order: string[]): Map<string, number> {
+  const ranks = new Map<string, number>();
+  let above = 0;
+  for (const key of order) {
+    const bucket = arr[key] ?? [];
+    if (!bucket.length) continue;
+    const rank = above + 1;
+    for (const entryKey of bucket) ranks.set(entryKey, rank);
+    above += bucket.length;
+  }
+  return ranks;
+}
+
+/** Bucket keys in display order for an arrangement, block buckets first. */
+export function bucketOrder(arr: Arrangement, tiers: TierRow[]): string[] {
+  const fromBlock = tiers.map((t) => t._key);
+  const extra = Object.keys(arr).filter(
+    (k) => k !== UNRANKED && !fromBlock.includes(k)
+  );
+  extra.sort();
+  return [...fromBlock, ...extra];
 }
