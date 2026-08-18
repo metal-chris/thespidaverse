@@ -487,7 +487,12 @@
       "pollViewBoth": "両方",
       "pollReadersTitle": "読者はどこに置いたか",
       "pollCount": "{n} 件のランキング",
-      "pollSoon": "読者のランキングは、何件か集まると表示されます。"
+      "pollSoon": "読者のランキングは、何件か集まると表示されます。",
+      "placeAtRank": "{rank}位に配置",
+      "placeAtNewRank": "{above}位と{below}位の間に単独で配置",
+      "placeAtNewRankTop": "{below}位の上に単独で配置",
+      "placeAtNewRankEnd": "{above}位の後に単独で配置",
+      "keyboardHintNumbered": "キーボード: ポスターを選び、↑/↓ で順位を移動、= で上の順位と同着、0 でランク解除。"
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "The Spidaverse で作成",

@@ -487,7 +487,12 @@
       "pollViewBoth": "兩者",
       "pollReadersTitle": "讀者把它放在哪裡",
       "pollCount": "{n} 份排行",
-      "pollSoon": "讀者排行會在收到若干份後顯示。"
+      "pollSoon": "讀者排行會在收到若干份後顯示。",
+      "placeAtRank": "放在第 {rank} 名",
+      "placeAtNewRank": "單獨排名，位於第 {above} 名與第 {below} 名之間",
+      "placeAtNewRankTop": "單獨排名，位於第 {below} 名之上",
+      "placeAtNewRankEnd": "單獨排名，位於第 {above} 名之後",
+      "keyboardHintNumbered": "鍵盤：選中海報後用 ↑/↓ 移動一個名次，= 與上一名並列，0 取消排名。"
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "由 The Spidaverse 製作",

@@ -69,9 +69,13 @@ export async function POST(request: Request, { params }: Ctx) {
       return NextResponse.json({ error: "This list is not collecting responses." }, { status: 403 });
     }
 
+    // Decode under the block's own rules. A numbered list's buckets are free
+    // in number — splitting a tie adds one — so validating it as `tiers` would
+    // reject exactly the arrangements the poll exists to collect.
+    const listType = block.listType ?? "tiers";
     const tiers = block.tiers ?? [];
     const items = flatten(tiers);
-    if (!decodeArrangement(code, tiers, items)) {
+    if (!decodeArrangement(code, tiers, items, listType)) {
       return NextResponse.json({ error: "That arrangement does not fit this list." }, { status: 400 });
     }
 
@@ -80,7 +84,7 @@ export async function POST(request: Request, { params }: Ctx) {
       p_slug: slug,
       p_block_key: blockKey,
       p_code: code,
-      p_list_type: "tiers",
+      p_list_type: listType,
       p_ip: ipHash,
     });
 
@@ -119,12 +123,13 @@ export async function GET(request: Request, { params }: Ctx) {
       return NextResponse.json({ count: codes.length, belowThreshold: true, minResponses });
     }
 
+    const listType = block.listType ?? "tiers";
     const tiers = block.tiers ?? [];
     const items = flatten(tiers);
     const decoded: Arrangement[] = [];
     let undecodable = 0;
     for (const c of codes) {
-      const a = decodeArrangement(c, tiers, items);
+      const a = decodeArrangement(c, tiers, items, listType);
       if (a) decoded.push(a);
       else undecodable++;
     }

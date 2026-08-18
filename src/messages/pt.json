@@ -487,7 +487,12 @@
       "pollViewBoth": "Ambos",
       "pollReadersTitle": "Onde os leitores colocaram",
       "pollCount": "{n} rankings",
-      "pollSoon": "Os rankings dos leitores aparecem depois de alguns envios."
+      "pollSoon": "Os rankings dos leitores aparecem depois de alguns envios.",
+      "placeAtRank": "Colocar na posição {rank}",
+      "placeAtNewRank": "Colocar em posição própria, entre {above} e {below}",
+      "placeAtNewRankTop": "Colocar em posição própria, acima de {below}",
+      "placeAtNewRankEnd": "Colocar em posição própria, depois de {above}",
+      "keyboardHintNumbered": "Teclado: selecione um pôster e use ↑/↓ para mover uma posição, = para empatar com a de cima, ou 0 para remover."
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "Feito com The Spidaverse",
