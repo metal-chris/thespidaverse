@@ -287,6 +287,27 @@ export default defineType({
           name: "tierList",
           title: "Tier List",
           icon: () => "🏆",
+          // Inserting a Tier List scaffolds the classic ramp instead of an empty
+          // block. Every list on the site is capsule-mode S-through-F (or a
+          // subset of it), and typing six tier objects by hand was the single
+          // most repetitive step in authoring one. Tier _keys are the same
+          // stable ids the live lists already use, so scripts and share codes
+          // that address tiers by key see one convention. Presets beyond this
+          // one (S–D, three tiers, numbered) are Phase 3 / A2 in
+          // docs/TIER_LIST_SPEC.md and live in the custom `tiers` input.
+          initialValue: {
+            title: "The Full Ranking",
+            mode: "capsule",
+            chipAspect: "poster",
+            tiers: [
+              { _key: "tl-s", _type: "tier", label: "S", entries: [] },
+              { _key: "tl-a", _type: "tier", label: "A", entries: [] },
+              { _key: "tl-b", _type: "tier", label: "B", entries: [] },
+              { _key: "tl-c", _type: "tier", label: "C", entries: [] },
+              { _key: "tl-d", _type: "tier", label: "D", entries: [] },
+              { _key: "tl-f", _type: "tier", label: "F", entries: [] },
+            ],
+          },
           fields: [
             defineField({
               name: "title",
@@ -305,7 +326,10 @@ export default defineType({
                 ],
                 layout: "radio",
               },
-              initialValue: "index",
+              // Was "index" while Part 3 was the only list. All four live lists
+              // are capsule; new ones should start there. Existing blocks keep
+              // whatever they stored.
+              initialValue: "capsule",
             }),
             defineField({
               name: "chipAspect",
