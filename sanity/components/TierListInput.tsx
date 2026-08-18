@@ -19,6 +19,7 @@ import { Box, Button, Card, Flex, Inline, Select, Stack, Text } from "@sanity/ui
 import { tierColor } from "@/lib/tierlist/arrangement";
 import { MAX_ENTRIES } from "../lib/tierValidation";
 import { existingAnchors, parseHeadings } from "../lib/tierHeadings";
+import { moveEntry, type BoardTier } from "../lib/tierBoard";
 
 /* ── value shape (loose: Studio hands us partial objects while editing) ── */
 type Img = { asset?: { _ref?: string } };
@@ -42,8 +43,28 @@ function thumbUrl(cdn: CdnConfig, img: Img | undefined, w: number, h: number): s
   return `https://cdn.sanity.io/images/${cdn.projectId}/${cdn.dataset}/${m[1]}-${m[2]}.${m[3]}?w=${w * 2}&h=${h * 2}&fit=crop&auto=format`;
 }
 
-export function TierListPreview({ value, cdn }: { value: TierListValue | undefined; cdn: CdnConfig }) {
+export function TierListPreview({
+  value,
+  cdn,
+  onMove,
+}: {
+  value: TierListValue | undefined;
+  cdn: CdnConfig;
+  /** Supply to make the board interactive (A8); omit for a read-only preview. */
+  onMove?: (entryKey: string, toTierKey: string, beforeKey?: string) => void;
+}) {
   const tiers = value?.tiers ?? [];
+  // Selection is the keyboard/click path, mirroring the reader Maker's
+  // tap-to-hold: pick a chip, then pick a row. Drag is the mouse path.
+  const [held, setHeld] = useState<string | null>(null);
+  const [dragKey, setDragKey] = useState<string | null>(null);
+  const [overTier, setOverTier] = useState<string | null>(null);
+  const live = !!onMove;
+
+  const commit = (entryKey: string, toTierKey: string, beforeKey?: string) => {
+    onMove?.(entryKey, toTierKey, beforeKey);
+    setHeld(null); setDragKey(null); setOverTier(null);
+  };
   const aspect = CHIP[value?.chipAspect ?? "poster"] ?? CHIP.poster;
   const total = tiers.reduce((n, t) => n + (t.entries?.length ?? 0), 0);
 
@@ -82,7 +103,14 @@ export function TierListPreview({ value, cdn }: { value: TierListValue | undefin
             const bg = tierColor({ _key: t._key ?? String(ti), _type: "tier", label: t.label ?? "", color: t.color } as never);
             const entries = t.entries ?? [];
             return (
-              <Flex key={t._key ?? ti} align="stretch" gap={1}>
+              <Flex
+                key={t._key ?? ti}
+                align="stretch"
+                gap={1}
+                onDragOver={live ? (e) => { if (dragKey) { e.preventDefault(); setOverTier(t._key ?? null); } } : undefined}
+                onDragLeave={live ? () => setOverTier((k) => (k === (t._key ?? null) ? null : k)) : undefined}
+                onDrop={live ? (e) => { e.preventDefault(); if (dragKey && t._key) commit(dragKey, t._key); } : undefined}
+              >
                 {/* Rail: exactly the colour tierColor() gives the site. */}
                 {/* Rail grows to fit free-form labels (the grey-warning case)
                     instead of clipping them; caps at ~7rem with an ellipsis. */}
@@ -93,15 +121,30 @@ export function TierListPreview({ value, cdn }: { value: TierListValue | undefin
                     color: "#141414", fontWeight: 800, fontSize: (t.label ?? "").length > 3 ? 10 : 12, flex: "none",
                     lineHeight: 1.1, textAlign: "center",
                   }}
-                  title={`${t.label ?? ""} · ${bg}`}
+                  title={live && held ? `Move here` : `${t.label ?? ""} · ${bg}`}
+                  onClick={live && held && t._key ? () => commit(held, t._key!) : undefined}
+                  role={live && held ? "button" : undefined}
+                  tabIndex={live && held ? 0 : undefined}
+                  onKeyDown={live && held && t._key ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); commit(held, t._key!); } } : undefined}
                 >
                   {/* text-overflow only applies to a block box, not the flex container */}
                   <span style={{ display: "block", maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {t.label || "?"}
                   </span>
                 </Flex>
-                <Flex wrap="wrap" gap={1} style={{ flex: 1, minHeight: aspect.h + 8, padding: 4, background: "rgba(127,127,127,.08)", borderRadius: 3 }}>
-                  {entries.length === 0 && <Text size={0} muted style={{ alignSelf: "center" }}>empty</Text>}
+                <Flex
+                  wrap="wrap" gap={1}
+                  style={{
+                    flex: 1, minHeight: aspect.h + 8, padding: 4, borderRadius: 3,
+                    background: overTier === t._key ? "rgba(43,127,255,.18)" : "rgba(127,127,127,.08)",
+                    outline: live && held ? "1px dashed rgba(127,127,127,.4)" : "none",
+                    cursor: live && held ? "pointer" : undefined,
+                  }}
+                  onClick={live && held && t._key ? () => commit(held, t._key!) : undefined}
+                >
+                  {entries.length === 0 && (
+                    <Text size={0} muted style={{ alignSelf: "center" }}>{live && held ? "move here" : "empty"}</Text>
+                  )}
                   {entries.map((e, ei) => {
                     const src = thumbUrl(cdn, e.image, aspect.w, aspect.h);
                     const label = e.subtitle ?? e.year;
@@ -109,11 +152,25 @@ export function TierListPreview({ value, cdn }: { value: TierListValue | undefin
                     return (
                       <Box
                         key={e._key ?? ei}
-                        title={full}
+                        title={live ? `${full} — drag to a row, or click to pick up` : full}
+                        draggable={live}
+                        onDragStart={live && e._key ? () => setDragKey(e._key!) : undefined}
+                        onDragEnd={live ? () => { setDragKey(null); setOverTier(null); } : undefined}
+                        onDragOver={live ? (ev) => { if (dragKey && dragKey !== e._key) { ev.preventDefault(); ev.stopPropagation(); } } : undefined}
+                        onDrop={live && e._key ? (ev) => { ev.preventDefault(); ev.stopPropagation(); if (dragKey && t._key) commit(dragKey, t._key, e._key); } : undefined}
+                        onClick={live && e._key ? (ev) => {
+                          ev.stopPropagation();
+                          if (held && held !== e._key && t._key) commit(held, t._key, e._key);
+                          else setHeld((h) => (h === e._key ? null : e._key!));
+                        } : undefined}
                         style={{
                           position: "relative", width: aspect.w, height: aspect.h, borderRadius: 3, overflow: "hidden",
                           background: src ? `center/cover url(${src})` : "rgba(127,127,127,.25)",
-                          boxShadow: "inset 0 0 0 1px rgba(0,0,0,.25)", flex: "none",
+                          boxShadow: held === e._key
+                            ? "inset 0 0 0 2px #2b7fff, 0 0 0 2px rgba(43,127,255,.35)"
+                            : "inset 0 0 0 1px rgba(0,0,0,.25)",
+                          opacity: dragKey === e._key ? .4 : 1,
+                          flex: "none", cursor: live ? "grab" : undefined,
                         }}
                       >
                         {!src && (
@@ -219,10 +276,35 @@ export function TierListInput(props: ObjectInputProps) {
   const client = useClient({ apiVersion: "2024-01-01" });
   const { projectId = "", dataset = "production" } = client.config();
   const value = props.value as TierListValue | undefined;
+  const { onChange } = props;
+
+  /* A8 — the board writes the move straight to the document. The whole
+     entry object moves, so its _key, anchor, capsule content and image
+     travel with it; the array field below stays the place to add, delete
+     or edit an entry. */
+  const handleMove = useCallback(
+    (entryKey: string, toTierKey: string, beforeKey?: string) => {
+      const tiers = (value?.tiers ?? []) as BoardTier[];
+      const next = moveEntry(tiers, entryKey, toTierKey, beforeKey);
+      if (next !== tiers) onChange(set(next, ["tiers"]));
+    },
+    [value?.tiers, onChange]
+  );
+
+  const hasEntries = (value?.tiers ?? []).some((t) => (t.entries?.length ?? 0) > 0);
+
   return (
     <Stack space={4}>
-      <TierListPreview value={value} cdn={{ projectId, dataset }} />
-      <PopulateFromHeadings value={value} onChange={props.onChange} />
+      <Stack space={2}>
+        <TierListPreview value={value} cdn={{ projectId, dataset }} onMove={handleMove} />
+        {hasEntries && (
+          <Text size={1} muted>
+            Drag a chip to another row to re-tier it, or drop it on a chip to place it before that one.
+            Click a chip to pick it up, then click a row.
+          </Text>
+        )}
+      </Stack>
+      <PopulateFromHeadings value={value} onChange={onChange} />
       {props.renderDefault(props)}
     </Stack>
   );

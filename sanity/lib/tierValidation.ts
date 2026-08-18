@@ -54,6 +54,16 @@ export function validateTiers(tiers: TierLike[] | undefined): true | string {
   const dupes = [...seen].filter(([, n]) => n > 1).map(([k]) => k);
   if (dupes.length) problems.push(`Duplicate tier label${dupes.length > 1 ? "s" : ""}: ${dupes.join(", ")}. The Maker's letter shortcut will only ever reach the first.`);
 
+  // The one that actually breaks things. Entries are bucketed by tier _key
+  // in canonicalArrangement(), so two tiers sharing a key collapse into one:
+  // the first tier's entries drop out of the arrangement entirely, the
+  // author's ranking encodes a duplicate index, and that code fails to
+  // decode. Marvel Rivals shipped this way ("B+" and "B" both keyed tl-b).
+  const keyCount = new Map<string, number>();
+  for (const t of tiers) if (t._key) keyCount.set(t._key, (keyCount.get(t._key) ?? 0) + 1);
+  const dupKeys = [...keyCount].filter(([, n]) => n > 1).map(([k]) => k);
+  if (dupKeys.length) problems.push(`Two tiers share the internal key ${dupKeys.join(", ")}. Entries in the first will disappear from the Maker and share links will not decode. Delete one of the rows and add it again to get a fresh key.`);
+
   const total = tiers.reduce((n, t) => n + (t.entries?.length ?? 0), 0);
   if (total > MAX_ENTRIES) problems.push(`${total} entries across all tiers; the share-link format holds ${MAX_ENTRIES}. Readers can still remix, but "Share" and "Compare" links will not encode entries past #${MAX_ENTRIES}.`);
 
