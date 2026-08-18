@@ -98,19 +98,54 @@ export function decodeArrangement(
  * recognizable tier-list iconography, and it must render identically in the
  * site's three themes AND in contexts that have no theme at all (OG images,
  * embeds). Schema `color` overrides per tier.
+ *
+ * Grade modifiers are first-class. The ramp used to know exactly seven labels
+ * and drop everything else to grey with no warning; the first list that used
+ * a "B+" row shipped grey between orange and yellow until someone noticed on
+ * the page and hand-set a hex. A ± grade is not a custom label, it is the
+ * ramp's own vocabulary, so it must never need an override.
+ *
+ * Every entry is an explicit literal rather than computed at runtime: an
+ * author reading this file sees exactly what "A-" is. The ± values were
+ * derived once (sRGB lerp, one third of the way toward the neighbouring
+ * grade; S+ and F- extrapolate outward the same distance) and pasted.
+ * Free-form labels ("Untouchable", "Skip") still fall to grey and are the
+ * case a Studio warning should catch.
  */
 export const TIER_COLORS: Record<string, string> = {
+  "S+": "#E8474F",
   S: "#E85A4F",
+  "S-": "#E86D4F",
+  "A+": "#E8814F",
   A: "#E8944F",
+  "A-": "#E8A64F",
+  "B+": "#E8B74F",
   B: "#E8C94F",
+  "B-": "#C0C75A",
+  "C+": "#97C664",
   C: "#6FC46F",
+  "C-": "#6ABB93",
+  "D+": "#64B1B8",
   D: "#5FA8DC",
+  "D-": "#5AB1CD",
+  "E+": "#54BBBF",
   E: "#4FC4B0",
+  "E-": "#6CA8B7",
+  "F+": "#898BBD",
   F: "#A66FC4",
+  "F-": "#C353CB",
 };
 
+export const TIER_FALLBACK_COLOR = "#8A8A8A";
+
+/** Labels are matched case-insensitively and ignoring surrounding whitespace, so
+ *  "b+" and " B+ " both resolve; the ramp is a vocabulary, not a spelling test. */
+export function rampColor(label: string | undefined): string | undefined {
+  return label ? TIER_COLORS[label.trim().toUpperCase()] : undefined;
+}
+
 export function tierColor(tier: TierRow): string {
-  return tier.color || TIER_COLORS[tier.label] || "#8A8A8A";
+  return tier.color || rampColor(tier.label) || TIER_FALLBACK_COLOR;
 }
 
 /**
