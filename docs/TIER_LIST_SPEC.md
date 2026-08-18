@@ -223,22 +223,27 @@ chart matches. No stored document changes shape at any point.
 
 ---
 
-## Phase 4 — Remix polish (small)
+## Phase 4 — Remix polish ✅ (shipped Aug 2026)
 
 What TierlistFills' board offers that a remix can use without authoring
 power. No schema change, no backend, share codes untouched. One PR.
 
 | Item | Contract |
 |---|---|
-| **Undo / redo** | History stack of arrangements, capped at 50. Buttons in the control bar beside Clear/Reset; ⌘Z / ⇧⌘Z (Ctrl on Windows) while focus is inside the board. Clear and Reset are undoable. History is not encoded in the URL |
-| **Sign your ranking** | Optional display name on the Share panel (plain text, ≤ 24 chars, control chars stripped) carried as `?by=` on the `/r/` URL only. The OG card headline becomes "*Name*'s ranking" instead of "A reader's ranking". The OG route clips and never renders it as markup. Absent → today's copy |
+| **Undo / redo** ✅ | `src/lib/tierlist/history.ts` — a pure past/present/future stack, capped at 50, kept out of `arrangement.ts` because history never leaves the tab. Buttons beside Clear/Reset, ⌘Z / ⇧⌘Z inside the board. Clear and Reset are ordinary steps and undo like any other. A move that changes nothing costs no undo press (`sameArrangement`). The address bar follows every step, and undoing back to the author's ranking clears `?tl=` |
+| **Sign your ranking** ✅ | Optional name on the Share panel (≤ 24 chars, control chars stripped). **Shipped in the path, not as `?by=`**: the share link is `/r/<code>~<name>`. A query param would have made `generateMetadata` read `searchParams`, which opts the route into dynamic rendering — and because the read happens before you know whether a signature exists, *every unsigned link* would have paid for a feature it does not use. `~` is unreserved in a path and cannot occur in a base-36-plus-`\|` code, so the split is unambiguous and every link shared before this parses identically. The OG route still takes `&by=` (it is an API route and can read query params freely) and clips again; Satori renders strings as text nodes, never markup. Card headline becomes "*NAME*'S RANKING" |
 | **Share preview** | The Share panel shows the OG card inline (an `<img>` of `/api/og/tierlist?…`), so a reader sees exactly what they are posting before they copy |
-| **Empty-row hint** | Rows with no chips show muted "Drag here or tap to place" text — verify against the current board first; may already exist |
-| **± label shortcuts** | Keyboard shortcuts key on a label's first character, so with `B+` and `B` on one board, pressing **B** always lands in whichever comes first and the other is unreachable by keyboard (found on Marvel Rivals after A1). Pressing the letter again should cycle through the tiers that share it — B+ → B → B- → B+ — with the target announced to the readout |
-| *Optional:* `/tier-lists` index | "Browse" from the TierlistFills landing: every article carrying a `tierList`, its OG card as thumbnail, link. Cheap; not yet decided |
+| **Empty-row hint** ✅ | Did not exist; added. An empty row otherwise reads as broken rather than as somewhere to put something |
+| **± label shortcuts** ✅ | A letter now maps to *every* tier starting with it, not the first found; pressing it again steps to the next and wraps. Verified on Rivals: S → B+ → B → B+. The target is announced in the readout (`aria-live="polite"`, clearing after 2s) so a cycle is not invisible to anyone who is not watching the chip |
+| *Optional:* `/tier-lists` index | Still not decided; not built |
 
-**Done when:** strings in all 8 locales; keyboard shortcuts verified on
-production; `arrangement.ts` untouched; existing `/r/` links unaffected.
+**Done:** 8 new strings × 8 locales (key sets verified identical); undo/redo,
+the ± cycle, signing and the preview all driven in a browser against real
+Rivals data; `arrangement.ts` untouched; unsigned `/r/` links byte-identical
+to before. **Share preview** ✅ renders the real `/api/og/tierlist` card inline
+in the Share panel, so a reader sees the artefact rather than an impression of
+it. Signature abuse cases (markup, 200 chars, padding, non-Latin) all return a
+valid 200 PNG.
 
 ---
 

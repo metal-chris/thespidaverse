@@ -8,6 +8,18 @@ import { ASPECT_CHIP, entryImageUrl, tierColor } from "./TierListChart";
 import type { TierChipAspect, TierEntry, TierListBlock, TierRow } from "@/types";
 import { SpidaverseMark } from "@/components/ui/SpidaverseMark";
 import {
+  HISTORY_LIMIT,
+  canRedo,
+  canUndo,
+  initHistory,
+  push as pushHistory,
+  redo as redoHistory,
+  reset as resetHistory,
+  sameArrangement,
+  undo as undoHistory,
+  type History,
+} from "@/lib/tierlist/history";
+import {
   UNRANKED,
   flatten,
   canonicalArrangement,
@@ -145,13 +157,30 @@ export function TierMaker({ value }: { value: TierListBlock }) {
   const canonical = useMemo(() => canonicalArrangement(tiers), [tiers]);
 
   const [open, setOpen] = useState(false);
-  const [arr, setArr] = useState<Arrangement>(canonical);
+  /* Phase 4: the arrangement lives inside an undo stack. `arr` stays the
+     read path everywhere below, so nothing else had to learn about history. */
+  const [hist, setHist] = useState<History<Arrangement>>(() => initHistory(canonical));
+  const arr = hist.present;
+  /** Record a step. A move that changes nothing costs no undo press. */
+  const setArr = useCallback(
+    (next: Arrangement | ((prev: Arrangement) => Arrangement)) =>
+      setHist((h) => pushHistory(h, typeof next === "function" ? next(h.present) : next, sameArrangement)),
+    []
+  );
+  /** Replace the baseline outright — used when a shared code arrives. */
+  const seedArr = useCallback((next: Arrangement) => setHist(resetHistory(next)), []);
   const [held, setHeld] = useState<string | null>(null);
   const [dragKey, setDragKey] = useState<string | null>(null);
   const [dropTier, setDropTier] = useState<string | null>(null);
   const [showShare, setShowShare] = useState(false);
   const [showDiff, setShowDiff] = useState(false);
   const [copied, setCopied] = useState(false);
+  /* Named after the reader, on the share card only. */
+  const [signature, setSignature] = useState("");
+  /* Transient line for the readout, so a keyboard move says where it went —
+     otherwise a ± cycle (B+ → B → B-) is invisible to anyone not watching
+     the chip. */
+  const [announce, setAnnounce] = useState<string | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
   /* The chip a keyboard action just moved. Read by the effect below, which
      restores focus once React has actually committed the move. */
@@ -174,7 +203,8 @@ export function TierMaker({ value }: { value: TierListBlock }) {
     const [base, pathCode] = window.location.pathname.split("/r/");
     const code =
       new URLSearchParams(window.location.search).get("tl") ??
-      (pathCode ? decodeURIComponent(pathCode) : null);
+      // `/r/<code>~<name>` — the signature is for the card, not the board.
+      (pathCode ? decodeURIComponent(pathCode).split("~")[0] : null);
     const decoded = code ? decodeArrangement(code, tiers, items) : null;
 
     /* Leave the path form behind either way. A code that decoded belongs in
@@ -189,10 +219,10 @@ export function TierMaker({ value }: { value: TierListBlock }) {
     }
 
     if (decoded) {
-      setArr(decoded);
+      seedArr(decoded);
       setOpen(true);
     }
-  }, [tiers, items]);
+  }, [tiers, items, seedArr]);
 
   const canonicalTierOf = useCallback(
     (key: string) => byKey.get(key)?.tier ?? null,
@@ -235,8 +265,28 @@ export function TierMaker({ value }: { value: TierListBlock }) {
     // The /r/ page bounces humans straight back to the ?tl= form on load.
     const code = encodeArrangement(arr, tiers, keyToIndex);
     const base = window.location.pathname.split("/r/")[0].replace(/\/$/, "");
-    return `${window.location.origin}${base}/r/${encodeURIComponent(code)}`;
-  }, [arr, tiers, keyToIndex]);
+    /* Signed links carry the name in the path segment, after a `~`. A query
+       param would have forced /r/ to render dynamically for every link,
+       signed or not. */
+    const seg = signature ? `${code}~${signature}` : code;
+    return `${window.location.origin}${base}/r/${encodeURIComponent(seg)}`;
+  }, [arr, tiers, keyToIndex, signature]);
+
+  /* The card the reader is about to post, drawn by the same route the
+     crawler will hit. Same-origin, so no key and nothing to configure. */
+  const previewUrl = useMemo(() => {
+    if (typeof window === "undefined") return "";
+    const slug = window.location.pathname.split("/r/")[0].replace(/\/$/, "").split("/").pop() ?? "";
+    const params = new URLSearchParams({ slug, tl: encodeArrangement(arr, tiers, keyToIndex) });
+    if (signature) params.set("by", signature);
+    return `/api/og/tierlist?${params}`;
+  }, [arr, tiers, keyToIndex, signature]);
+
+  useEffect(() => {
+    if (!announce) return;
+    const id = window.setTimeout(() => setAnnounce(null), 2000);
+    return () => window.clearTimeout(id);
+  }, [announce]);
 
   /* Keep the address bar in step without pushing history entries or scrolling. */
   useEffect(() => {
@@ -247,15 +297,33 @@ export function TierMaker({ value }: { value: TierListBlock }) {
     window.history.replaceState(null, "", u.toString());
   }, [arr, open, moves, tiers, keyToIndex]);
 
-  /* Keyboard: a tier's first letter assigns, 0 unranks, arrows walk chips. */
+  /* Keyboard: a tier's first letter assigns, 0 unranks, arrows walk chips.
+     A letter maps to EVERY tier that starts with it, not the first one found.
+     With B+ and B on the same board the old map made B+ win and left B
+     permanently unreachable from the keyboard; now pressing the letter again
+     steps to the next tier sharing it and wraps around. */
   const shortcuts = useMemo(() => {
-    const m = new Map<string, string>();
+    const m = new Map<string, string[]>();
     for (const tier of tiers) {
       const ch = (tier.label ?? "").trim().charAt(0).toUpperCase();
-      if (ch && !m.has(ch)) m.set(ch, tier._key);
+      if (!ch) continue;
+      m.set(ch, [...(m.get(ch) ?? []), tier._key]);
     }
     return m;
   }, [tiers]);
+
+  /* Which tier a letter should send this chip to: the next one sharing that
+     letter if it is already in one of them, otherwise the first. */
+  const targetForLetter = useCallback(
+    (ch: string, entryKey: string): string | null => {
+      const group = shortcuts.get(ch);
+      if (!group?.length) return null;
+      const current = tierOf(entryKey);
+      const at = group.indexOf(current);
+      return at === -1 ? group[0] : group[(at + 1) % group.length];
+    },
+    [shortcuts, tierOf]
+  );
 
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -264,9 +332,19 @@ export function TierMaker({ value }: { value: TierListBlock }) {
       const key = el.dataset.chip!;
       const ch = e.key.toUpperCase();
 
+      if ((e.metaKey || e.ctrlKey) && ch === "Z") {
+        e.preventDefault();
+        setHist((h) => (e.shiftKey ? redoHistory(h) : undoHistory(h)));
+        return;
+      }
+
       if (shortcuts.has(ch)) {
         e.preventDefault();
-        move(key, shortcuts.get(ch)!);
+        const to = targetForLetter(ch, key);
+        if (!to) return;
+        move(key, to);
+        const label = tiers.find((x) => x._key === to)?.label;
+        if (label) setAnnounce(t("maker.movedTo", { tier: label }));
       } else if (e.key === "0") {
         e.preventDefault();
         move(key, UNRANKED);
@@ -290,7 +368,7 @@ export function TierMaker({ value }: { value: TierListBlock }) {
          single placement. */
       refocusKey.current = key;
     },
-    [held, move, shortcuts]
+    [held, move, shortcuts, targetForLetter, tiers, t]
   );
 
   /* Runs after React commits the new arrangement, so the chip queried here is
@@ -426,6 +504,13 @@ export function TierMaker({ value }: { value: TierListBlock }) {
                 {tier.label}
               </button>
               <div className="flex flex-1 flex-wrap content-start gap-2 bg-card p-2">
+                {/* An empty row otherwise reads as broken rather than as a
+                    place to put something. */}
+                {(arr[tier._key] ?? []).length === 0 && (
+                  <span className="self-center text-[0.72rem] text-muted-foreground">
+                    {t("maker.emptyRow")}
+                  </span>
+                )}
                 {(arr[tier._key] ?? []).map((key) => {
                   const item = byKey.get(key);
                   if (!item) return null;
@@ -550,6 +635,34 @@ export function TierMaker({ value }: { value: TierListBlock }) {
         <span aria-hidden="true" className="hidden h-6 w-px flex-none bg-border sm:block" />
 
         <div className="flex flex-none items-center gap-1.5">
+          {/* Undo/redo sit with the other board-changing actions. Clear and
+              Reset are ordinary steps, so both are undoable. */}
+          <button
+            type="button"
+            disabled={!canUndo(hist)}
+            aria-label={t("maker.undo")}
+            title={`${t("maker.undo")} (⌘Z)`}
+            onClick={() => { setHist(undoHistory); setHeld(null); }}
+            className={cn(
+              CONTROL,
+              "rounded-md border border-border bg-card font-semibold text-muted-foreground hover:border-muted-foreground hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:text-muted-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            )}
+          >
+            ↺
+          </button>
+          <button
+            type="button"
+            disabled={!canRedo(hist)}
+            aria-label={t("maker.redo")}
+            title={`${t("maker.redo")} (⇧⌘Z)`}
+            onClick={() => { setHist(redoHistory); setHeld(null); }}
+            className={cn(
+              CONTROL,
+              "rounded-md border border-border bg-card font-semibold text-muted-foreground hover:border-muted-foreground hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:text-muted-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            )}
+          >
+            ↻
+          </button>
           <button
             type="button"
             onClick={() => {
@@ -579,17 +692,50 @@ export function TierMaker({ value }: { value: TierListBlock }) {
           </button>
         </div>
 
-        <output className={cn("ml-auto flex-none", READOUT)}>
-          {moves === 0 ? t("maker.matches") : t("maker.moveCount", { n: moves })}
+        <output aria-live="polite" className={cn("ml-auto flex-none", READOUT)}>
+          {announce ?? (moves === 0 ? t("maker.matches") : t("maker.moveCount", { n: moves }))}
         </output>
       </div>
 
       {showShare && (
         <div className="flex flex-col gap-2 border-t border-border bg-background px-3 py-2.5">
           <p className="m-0 text-[0.76rem] text-muted-foreground">{t("maker.shareBlurb")}</p>
+
+          {/* Signing is optional and lives only on the share link: the address
+              bar's ?tl= form stays clean, and an unsigned link reads exactly as
+              it did before. Trimmed and capped here; the OG route clips again
+              and never renders it as markup. */}
+          <label className="flex items-center gap-2 text-[0.72rem] text-muted-foreground">
+            <span className="flex-none">{t("maker.signLabel")}</span>
+            <input
+              type="text"
+              value={signature}
+              maxLength={24}
+              placeholder={t("maker.signPlaceholder")}
+              onChange={(e) => setSignature(e.target.value.replace(/[\u0000-\u001f\u007f]/g, ""))}
+              className="min-w-0 flex-1 rounded-md border border-border bg-muted px-2 py-1 text-[0.76rem] text-foreground placeholder:text-muted-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            />
+          </label>
+
           <p className="select-all break-all rounded-md border border-border bg-muted px-2 py-1.5 font-mono text-[0.66rem] text-foreground">
             {shareUrl}
           </p>
+
+          {/* What the card will actually look like. Drawn by the same route
+              the crawler hits, so this is the artefact and not an impression
+              of it. */}
+          <figure className="m-0 flex flex-col gap-1">
+            <figcaption className="text-[0.72rem] text-muted-foreground">{t("maker.previewHeading")}</figcaption>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={previewUrl}
+              alt={t("maker.previewAlt")}
+              width={1200}
+              height={630}
+              loading="lazy"
+              className="w-full rounded-md border border-border bg-muted"
+            />
+          </figure>
           <div className="flex gap-1.5">
             <button
               type="button"

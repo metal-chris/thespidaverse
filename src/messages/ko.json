@@ -469,7 +469,15 @@
       "moveCount": "{n}개 이동",
       "diffNone": "원본 순위와 완전히 같습니다.",
       "diffCount": "{n}개가 다르게 배치됨.",
-      "keyboardHint": "키보드: 포스터에 포커스한 뒤 티어 첫 글자로 배치, 0으로 미배치."
+      "keyboardHint": "키보드: 포스터에 포커스한 뒤 티어 첫 글자로 배치, 0으로 미배치.",
+      "undo": "실행 취소",
+      "redo": "다시 실행",
+      "emptyRow": "여기로 끌거나 탭하여 배치",
+      "signLabel": "서명 (선택)",
+      "signPlaceholder": "이름",
+      "previewHeading": "공유했을 때의 모습",
+      "previewAlt": "이 랭킹의 공유 카드 미리보기",
+      "movedTo": "{tier}(으)로 이동했습니다"
     },
     "brandCredit": "The Spidaverse",
     "brandMadeWith": "The Spidaverse로 제작"
