@@ -1,5 +1,14 @@
 import { defineField, defineType } from "sanity";
 import { sourceLinkAnnotation } from "./objects/sourceLink";
+import { DEFAULT_TIER_ROWS } from "../lib/tierPresets";
+import { TierColorInput } from "../components/TierColorInput";
+import { TierRowsInput } from "../components/TierRowsInput";
+import {
+  validateEntryAnchor,
+  validateTierColor,
+  validateTierLabel,
+  validateTiers,
+} from "../lib/tierValidation";
 
 export default defineType({
   name: "article",
@@ -293,20 +302,13 @@ export default defineType({
           // most repetitive step in authoring one. Tier _keys are the same
           // stable ids the live lists already use, so scripts and share codes
           // that address tiers by key see one convention. Presets beyond this
-          // one (S–D, three tiers, numbered) are Phase 3 / A2 in
-          // docs/TIER_LIST_SPEC.md and live in the custom `tiers` input.
+          // one (S–D, S–C, S/A/B) are the "Start from" row in the custom
+          // `tiers` input; all of them come from ../lib/tierPresets.ts.
           initialValue: {
             title: "The Full Ranking",
             mode: "capsule",
             chipAspect: "poster",
-            tiers: [
-              { _key: "tl-s", _type: "tier", label: "S", entries: [] },
-              { _key: "tl-a", _type: "tier", label: "A", entries: [] },
-              { _key: "tl-b", _type: "tier", label: "B", entries: [] },
-              { _key: "tl-c", _type: "tier", label: "C", entries: [] },
-              { _key: "tl-d", _type: "tier", label: "D", entries: [] },
-              { _key: "tl-f", _type: "tier", label: "F", entries: [] },
-            ],
+            tiers: DEFAULT_TIER_ROWS,
           },
           fields: [
             defineField({
@@ -349,6 +351,10 @@ export default defineType({
               name: "tiers",
               title: "Tiers",
               type: "array",
+              components: { input: TierRowsInput },
+              // Warnings, never errors — see ../lib/tierValidation.ts for why
+              // each check exists.
+              validation: (rule) => rule.custom(validateTiers).warning(),
               of: [
                 {
                   type: "object",
@@ -358,15 +364,20 @@ export default defineType({
                       name: "label",
                       title: "Label",
                       type: "string",
-                      description: "S, A, B, C, D, F…",
-                      validation: (rule) => rule.required(),
+                      description: "S, A, B, C, D, F… Grade modifiers work: S+, A-, B+.",
+                      validation: (rule) => [
+                        rule.required(),
+                        rule.custom(validateTierLabel).warning(),
+                      ],
                     }),
                     defineField({
                       name: "color",
                       title: "Color override",
                       type: "string",
                       description:
-                        "Optional hex. Defaults to the classic ramp by label.",
+                        "Optional. Pick a ramp swatch or type a hex. Leave empty to follow the label (S+ … F-).",
+                      components: { input: TierColorInput },
+                      validation: (rule) => rule.custom(validateTierColor).warning(),
                     }),
                     defineField({
                       name: "description",
@@ -426,7 +437,8 @@ export default defineType({
                               title: "Anchor ID",
                               type: "string",
                               description:
-                                "Heading id the chip scrolls to, e.g. 4-spider-man-brand-new-day-2026",
+                                "Heading id the chip scrolls to, e.g. 4-spider-man-brand-new-day-2026. Only used in index mode.",
+                              validation: (rule) => rule.custom(validateEntryAnchor).warning(),
                             }),
                             defineField({
                               name: "content",

@@ -185,14 +185,21 @@ in Studio and previewable there.
 
 | | Item | Size | Contract |
 |---|---|---|---|
-| **A1** | **Grade-aware ramp** | XS | `TIER_COLORS` in `arrangement.ts` grows to the 21 explicit entries `S+ S S- A+ A A- … F+ F F-` (predictable; no interpolation guesswork). Free-form labels ("Untouchable", "Skip") still fall to grey and are what A3 warns about. All seven `tierColor()` call sites — chart, Maker, OG route — pick it up. Ships alone, first |
-| **A2** | **Color swatches** | S | Custom string input for `tier.color`: the ramp swatches plus a custom-hex field, writing the same string it does today. A live badge preview beside the label shows the resolved color (override, or ramp, or grey) |
-| **A3** | **Validation warnings** | S–M | Studio *warnings*, never errors: label resolves to grey and has no override; more than 36 entries (the wire-format cap); duplicate labels; index mode and an `anchor` matching no `slugify(h2)` in the body (validation has document context, so this is a real check); numbered mode with grade labels (which are ignored) |
+| **A1** ✅ #77 | **Grade-aware ramp** | XS | `TIER_COLORS` in `arrangement.ts` grows to the 21 explicit entries `S+ S S- A+ A A- … F+ F F-` (predictable; no interpolation guesswork). Free-form labels ("Untouchable", "Skip") still fall to grey and are what A3 warns about. All seven `tierColor()` call sites — chart, Maker, OG route — pick it up. Ships alone, first |
+| **A2** ✅ | **Color swatches** | S | Custom string input for `tier.color`: the ramp swatches plus a custom-hex field, writing the same string it does today. A live badge preview beside the label shows the resolved color (override, or ramp, or grey) |
+| **A3** ✅ | **Validation warnings** | S–M | Studio *warnings*, never errors: label resolves to grey and has no override; more than 36 entries (the wire-format cap); duplicate labels; index mode and an `anchor` matching no `slugify(h2)` in the body (validation has document context, so this is a real check); numbered mode with grade labels (which are ignored) |
 | **A4** | **Chart preview** | M | A mini static render under the `tierList` fields: rows in resolved colors, labels, chip titles or poster thumbs, counts. Deliberately *not* the production `TierListChart` — that drags `next/image` and `next-intl` into Studio. A small preview component that reads the same schema |
-| **A5** | **Presets** | XS | Initial-value templates for the block: "S–F", "S–D", "Numbered" (Phase 6), "Three tiers". One click to scaffold; nothing else changes |
+| **A5** ✅ #78 + A2 | **Presets** | XS | Two halves, because Sanity 5.13's `insertMenu` has no per-type template menu: (1) the block's `initialValue` scaffolds S–F on insert (#78, also flips the `mode` default to `capsule`); (2) a "Start from" row in the custom `tiers` input offers S–F / S–D / S–C / S·A·B and asks before replacing non-empty rows. Every preset label is on the ramp. "Numbered" waits for Phase 6's `listType`; without it, rows labelled 1/2/3 render grey and mean nothing |
 | **A6** | **Populate from headings** | M | A button on the block: scan the body for `N. Title (Year)` `h2`s, create entries with `title`, `year`, `anchor` (`slugify` of the heading), in heading order. Idempotent — existing entries with a matching anchor are left alone. Replaces a script that ran three times in Aug 2026 |
 | **A7** | **Fetch poster** | M | Per-entry: search TMDB by `title` + `year`, show candidates with year and poster, pick one, upload at `w500` (500×750, the site's existing poster size), set `image`. Studio is client-side, so this needs one server route holding `TMDB_API_KEY`. Movie and TV both; anime/games later via AniList/Steam if wanted |
 | **A8** | **Maker as the Studio input** | L | Mount the reader board as the `tierList` object's input: dragging between tiers writes `tiers[].entries` patches. The author arranges exactly the way readers remix. Studio arrays make cross-tier moves painful today; this removes that. Last, and can slip behind Phase 4 |
+
+Studio code lives in `sanity/components/` (inputs) and `sanity/lib/` (pure
+presets + validators, both importable from `@/lib/tierlist/arrangement` and
+`@/lib/utils` because `next-sanity` bundles Studio through Next). Validation
+runs against the four live lists produced zero warnings before shipping, so
+the rules do not cry wolf on existing data. `@sanity/ui@3.1.13` is now a
+direct dependency (it was only nested under `sanity/`).
 
 **Done when:** A1 lands as its own PR with a before/after on the Rivals B+
 row (its manual `#E8AF4F` override becomes removable); A2–A5 verified in the
