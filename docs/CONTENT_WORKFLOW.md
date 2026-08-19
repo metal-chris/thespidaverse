@@ -84,6 +84,26 @@ Up to 3 questions per post. Keep it lightweight — 1 question is usually right.
 
 The content schema was seeded on **2026-03-30**. As of today (**2026-05-14**) the cadence has not been honored, leaving **20 open slots**. Each row below is a slot to fill — backdate `publishedAt` to the listed date so the archive populates correctly.
 
+**Do not read a slot's date off this table by hand, and do not hardcode one in
+a seed script.** Call `assignBackfillSlot(client, format)` from
+[`scripts/lib/backfillSlots.ts`](../scripts/lib/backfillSlots.ts). It returns
+the newest slot for that format that nothing occupies yet, and throws — rather
+than falling back to a default — when the format is full or has no slots at
+all.
+
+The Status column below is **informational only**. Claim state is derived from
+Sanity: a slot counts as taken when an article (draft or published) carries a
+`publishedAt` on that date. Keeping the claim in a column meant nothing ever
+wrote to it, so every generator run picked the same slot and hardcoded it —
+which is how 9 `the-daily-bugle` backfills all ended up stamped 2026-03-30 and
+3 `the-full-web` ones all stamped 2026-05-13, across 14 open PRs. Deriving it
+from the data cannot drift and self-heals if a draft is deleted.
+
+Slot capacity per format: `the-daily-bugle` 7, `cartoons-and-cereal` 6,
+`the-full-web` 3, `the-sinister-six` 2, `versus` 2. Formats outside this list —
+`first-bite` among them — have **no** backfill slots; give them one here before
+backfilling, or run them in the live cadence instead.
+
 Wednesday long-form rotation is `the-full-web` → `the-sinister-six` → `versus`, repeating.
 
 | Date       | Day | Format             | Status    |
