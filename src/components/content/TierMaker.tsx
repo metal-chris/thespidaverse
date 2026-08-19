@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { ASPECT_CHIP, entryImageUrl, tierColor } from "./TierListChart";
-import type { TierChipAspect, TierEntry, TierListBlock, TierRow } from "@/types";
+import type { TierChipAspect, TierEntry, TierListBlock, TierListType, TierRow } from "@/types";
 import { SpidaverseMark } from "@/components/ui/SpidaverseMark";
 import {
   HISTORY_LIMIT,
@@ -141,9 +141,16 @@ function Chip({
 interface PollResult {
   count: number;
   belowThreshold?: boolean;
+  undecodable?: number;
+  listType?: TierListType;
+  /* Tiers mode: the crowd's grade per entry, and the per-grade tally. */
   crowd?: Record<string, string>;
   perEntry?: Record<string, Record<string, number>>;
-  undecodable?: number;
+  /* Numbered mode: the crowd's RANK per entry, and how many readers ranked
+     it. Bucket keys mean nothing across readers once ties exist, so the
+     numbered branch of the API answers in rank space instead. */
+  crowdRank?: Record<string, number>;
+  votes?: Record<string, number>;
 }
 
 export function TierMaker({ value }: { value: TierListBlock }) {
@@ -543,8 +550,40 @@ export function TierMaker({ value }: { value: TierListBlock }) {
     .filter((r) => r.now !== r.it.tier._key);
 
   /* Where the crowd put each entry, against where the author did. */
+  /* Author → crowd, per entry. Both modes produce the same row shape so the
+     panel renders one way; only the badge differs, because a grade carries a
+     colour and a rank does not. */
   const crowdRows = useMemo(() => {
-    const crowd = poll?.crowd;
+    if (!poll) return [];
+    const badge = (label: string, color?: string) => ({ label, color });
+
+    if (numbered) {
+      const crowdRank = poll.crowdRank;
+      if (!crowdRank) return [];
+      const mine = numberedRanks(
+        canonical,
+        tiers.map((x) => x._key)
+      );
+      return items
+        .map((it) => {
+          const to = crowdRank[it.entry._key];
+          const from = mine.get(it.entry._key);
+          if (to === undefined || from === undefined) return null;
+          return {
+            it,
+            from: badge(String(from)),
+            to: badge(String(to)),
+            moved: to !== from,
+            // A better rank is a smaller number.
+            up: to < from,
+            votes: poll.votes?.[it.entry._key] ?? 0,
+          };
+        })
+        .filter((r): r is NonNullable<typeof r> => !!r)
+        .sort((a, b) => Number(b.moved) - Number(a.moved) || a.it.index - b.it.index);
+    }
+
+    const crowd = poll.crowd;
     if (!crowd) return [];
     const order = tiers.map((x) => x._key);
     return items
@@ -555,12 +594,18 @@ export function TierMaker({ value }: { value: TierListBlock }) {
         if (!target) return null;
         const moved = to !== it.tier._key;
         const dir = order.indexOf(to) - order.indexOf(it.tier._key);
-        const votes = poll?.perEntry?.[it.entry._key]?.[to] ?? 0;
-        return { it, target, moved, up: dir < 0, votes };
+        return {
+          it,
+          from: badge(it.tier.label ?? "", tierColor(it.tier)),
+          to: badge(target.label ?? "", tierColor(target)),
+          moved,
+          up: dir < 0,
+          votes: poll.perEntry?.[it.entry._key]?.[to] ?? 0,
+        };
       })
       .filter((r): r is NonNullable<typeof r> => !!r)
       .sort((a, b) => Number(b.moved) - Number(a.moved) || a.it.index - b.it.index);
-  }, [poll, tiers, items]);
+  }, [poll, numbered, canonical, tiers, items]);
 
   /* ── Collapsed: the CTA ── */
   if (!open) {
@@ -1025,25 +1070,34 @@ export function TierMaker({ value }: { value: TierListBlock }) {
 
           {!!crowdRows.length && (
             <div>
-              {crowdRows.map(({ it, target, moved, up, votes }) => (
+              {crowdRows.map(({ it, from, to, moved, up, votes }) => (
                 <div
                   key={it.entry._key}
                   className="flex items-center gap-2 border-b border-border py-1 text-[0.78rem] last:border-b-0"
                 >
+                  {/* A grade wears its tier colour; a rank wears a numeral,
+                      because colouring positions would invent a meaning the
+                      list does not have. */}
                   <span
-                    className="rounded-sm px-1.5 font-mono text-[0.62rem] font-bold text-black"
-                    style={{ backgroundColor: tierColor(it.tier) }}
+                    className={cn(
+                      "rounded-sm px-1.5 font-mono text-[0.62rem] font-bold",
+                      from.color ? "text-black" : "border border-border text-foreground"
+                    )}
+                    style={from.color ? { backgroundColor: from.color } : undefined}
                   >
-                    {it.tier.label}
+                    {from.label}
                   </span>
                   <span aria-hidden="true" className="text-muted-foreground">
                     {moved ? (up ? "↑" : "↓") : "="}
                   </span>
                   <span
-                    className="rounded-sm px-1.5 font-mono text-[0.62rem] font-bold text-black"
-                    style={{ backgroundColor: tierColor(target) }}
+                    className={cn(
+                      "rounded-sm px-1.5 font-mono text-[0.62rem] font-bold",
+                      to.color ? "text-black" : "border border-border text-foreground"
+                    )}
+                    style={to.color ? { backgroundColor: to.color } : undefined}
                   >
-                    {target.label}
+                    {to.label}
                   </span>
                   <span className="min-w-0 flex-1 truncate">{it.entry.title}</span>
                   <span className={cn("flex-none", READOUT)}>{votes}</span>
