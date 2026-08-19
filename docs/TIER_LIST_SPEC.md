@@ -318,6 +318,9 @@ plus noise.
   way to look at the result until the table exists. The panel lists every
   entry as *author tier → crowd tier* with ↑/↓ and the vote count, which is
   the same information the "Both" badge would carry.
+- **Maker `Readers` panel** now renders whichever space the list uses: grade →
+  grade with tier colours for tiers, rank → rank as outlined numerals for
+  numbered, both with ↑/↓ and the vote count.
 - **Still to build:** the chart's `Author | Readers | Both` segmented control,
   and "vs readers" in the Compare panel. Both want real responses to design
   against — deferred deliberately rather than shipped blind.
@@ -357,10 +360,20 @@ arrangement whose bucket count differs from the author's — which is every tie
 split or merge, the entire point of the format. POST answered 400 and GET
 counted the code as `undecodable`. `TierMaker` and the `/r/` resolver had
 always passed it; the poll route was simply missed. `p_list_type` was also
-hardcoded `"tiers"`, mislabelling every numbered row. Aggregation of
-reader-created buckets is still keyed off the block's tiers, so a synthetic
-bucket sorts to the end of the crowd board — the mean/median-rank ordering
-below is what replaces that.
+hardcoded `"tiers"`, mislabelling every numbered row. **Numbered aggregation now works in rank space (Aug 2026).** Counting
+placements per bucket key is right for tiers, where a key is a grade and
+everyone's `tl-a` means A. In numbered mode a key is a position in one
+reader's own board, and position stops equalling rank the moment ties exist:
+a reader who ties the top two makes the third bucket 4th, a reader who does
+not makes it 3rd. Five stored responses that all put Grave of the Fireflies
+third were read as `{tl-n3: 3, tl-n2: 2}` — a 3–2 split manufactured out of
+complete agreement. `aggregateNumbered()` converts each arrangement to
+per-entry ranks first and takes the **median** (mean only breaks ties), so
+the same five rows read `[3,3,3,3,3]`. Entries sharing a median rank share a
+number, competition-style. This also retires the reader-created-bucket
+problem: a synthetic key used to sort to the end of the crowd board, and a
+rank is a rank whoever made the bucket. `scripts/verify-poll.ts` covers it,
+including the tiers path as a regression.
 
 ---
 

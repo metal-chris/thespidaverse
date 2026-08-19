@@ -2,8 +2,14 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/server";
 import { hashIP, getClientIP, isBot } from "@/lib/engagement/fingerprint";
 import { getProvider } from "@/lib/providers";
-import { decodeArrangement, flatten, type Arrangement } from "@/lib/tierlist/arrangement";
-import { MIN_RESPONSES, aggregate } from "@/lib/tierlist/poll";
+import {
+  bucketOrder,
+  decodeArrangement,
+  flatten,
+  numberedRanks,
+  type Arrangement,
+} from "@/lib/tierlist/arrangement";
+import { MIN_RESPONSES, aggregate, aggregateNumbered } from "@/lib/tierlist/poll";
 import type { TierListBlock } from "@/types";
 
 /**
@@ -134,15 +140,25 @@ export async function GET(request: Request, { params }: Ctx) {
       else undecodable++;
     }
 
-    const agg = aggregate(
-      decoded,
-      tiers.map((t) => t._key),
-      items.map((it) => it.entry._key),
-      undecodable
-    );
+    /* A numbered list aggregates in RANK space, not by bucket key: a bucket
+       key is a position in one reader's board, and position stops equalling
+       rank as soon as anyone ties. See lib/tierlist/poll.ts. */
+    const agg =
+      listType === "numbered"
+        ? aggregateNumbered(
+            decoded.map((a) => numberedRanks(a, bucketOrder(a, tiers))),
+            items.map((it) => it.entry._key),
+            undecodable
+          )
+        : aggregate(
+            decoded,
+            tiers.map((t) => t._key),
+            items.map((it) => it.entry._key),
+            undecodable
+          );
 
     return NextResponse.json(
-      { ...agg, belowThreshold: false, minResponses },
+      { ...agg, listType, belowThreshold: false, minResponses },
       { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" } }
     );
   } catch (e) {

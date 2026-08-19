@@ -131,3 +131,93 @@ export function crowdDelta(
   if (di === 0) return null;
   return { from, to, direction: di < 0 ? "up" : "down" };
 }
+
+/* ── Numbered lists ───────────────────────────────────────────────
+ *
+ * A numbered list cannot be aggregated the way a tiers list is. The tiers
+ * path counts placements per BUCKET KEY, which works there because a bucket
+ * key is a grade: everyone's `tl-a` means A. In numbered mode a bucket key is
+ * a position in someone's own board, and position stops equalling rank the
+ * moment ties exist — a reader who ties the top two makes the third bucket
+ * 4th, while a reader who does not makes it 3rd. Counting both under the same
+ * key records agreement that was never there.
+ *
+ * So numbered aggregates in RANK space. Each arrangement is converted to
+ * per-entry ranks first (competition numbering, the same rule the chart and
+ * the OG card use), and the crowd's answer is the median of those ranks.
+ * Median rather than mean because one reader dumping a film at 24th should
+ * not drag the consensus; the mean is kept only to order entries that tie.
+ *
+ * This also removes the reader-created-bucket problem for free. Those buckets
+ * get synthetic keys that are absent from the block, so the tiers path sorted
+ * them to the end of the crowd board; a rank is a rank whoever made the
+ * bucket.
+ */
+
+export interface NumberedAggregate {
+  count: number;
+  undecodable: number;
+  /** entryKey → every rank readers gave it, ascending. */
+  perEntryRanks: Record<string, number[]>;
+  /** entryKey → the crowd's rank. Entries nobody placed are absent. */
+  crowdRank: Record<string, number>;
+  /** entryKey → how many readers ranked it at all. */
+  votes: Record<string, number>;
+}
+
+/** The middle vote. Matches `consensusTier`'s upper-median convention. */
+function median(sorted: number[]): number {
+  return sorted[Math.floor(sorted.length / 2)];
+}
+
+function mean(xs: number[]): number {
+  return xs.reduce((a, b) => a + b, 0) / xs.length;
+}
+
+/**
+ * Rank every entry by the crowd, then renumber competition-style.
+ *
+ * Entries sharing a median rank are genuinely tied in the crowd's opinion, so
+ * they share a number and the next group picks up after them — two tied at 1
+ * makes the next 3, exactly as the format renders everywhere else.
+ */
+export function aggregateNumbered(
+  rankings: Array<Map<string, number>>,
+  canonicalOrder: string[],
+  undecodable = 0
+): NumberedAggregate {
+  const perEntryRanks: Record<string, number[]> = {};
+  for (const ranks of rankings) {
+    for (const [entryKey, rank] of ranks) (perEntryRanks[entryKey] ??= []).push(rank);
+  }
+  for (const key of Object.keys(perEntryRanks)) perEntryRanks[key].sort((a, b) => a - b);
+
+  const votes: Record<string, number> = {};
+  for (const [key, rs] of Object.entries(perEntryRanks)) votes[key] = rs.length;
+
+  const canonIndex = new Map(canonicalOrder.map((k, i) => [k, i]));
+  const placed = Object.keys(perEntryRanks).sort((a, b) => {
+    const ma = median(perEntryRanks[a]);
+    const mb = median(perEntryRanks[b]);
+    if (ma !== mb) return ma - mb;
+    const aa = mean(perEntryRanks[a]);
+    const ab = mean(perEntryRanks[b]);
+    if (aa !== ab) return aa - ab;
+    return (canonIndex.get(a) ?? 0) - (canonIndex.get(b) ?? 0);
+  });
+
+  // Group by median, then number the groups by how many entries sit above.
+  const crowdRank: Record<string, number> = {};
+  let above = 0;
+  for (let i = 0; i < placed.length; ) {
+    const m = median(perEntryRanks[placed[i]]);
+    let j = i;
+    while (j < placed.length && median(perEntryRanks[placed[j]]) === m) j++;
+    const rank = above + 1;
+    for (let k = i; k < j; k++) crowdRank[placed[k]] = rank;
+    above += j - i;
+    i = j;
+  }
+
+  return { count: rankings.length, undecodable, perEntryRanks, crowdRank, votes };
+}
