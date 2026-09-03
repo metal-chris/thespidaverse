@@ -46,6 +46,7 @@ const CEILINGS: Record<string, number> = {
   "Here's paragraph openers": 0.7,
   "paragraph antithesis": 0,
   "instructional imperatives": 0,
+  "bold % of prose words": 100, // floor-checked separately; no upper tic ceiling
 };
 
 /** From the external AI-tell checklist, not from the corpus. */
@@ -95,7 +96,17 @@ export function paragraphsFromSeed(src: string): string[] {
 
 const sentences = (p: string) => p.split(/(?<=[.!?])\s+/).filter((s) => s.trim().length > 1);
 
-export function audit(name: string, paras: string[]): VoiceReport {
+/**
+ * Bold is a FORWARD standard, not a corpus norm.
+ *
+ * 34 of 55 published articles carry zero bold. The 15-19% band exists only in
+ * the three Brand New Day pieces (Aug 2026), the newest hand-made work, where
+ * emphasis marks the payload clause of each paragraph. Chris asked for that
+ * convention to be carried back into pending content and forward into new
+ * content — so the floor is opt-in rather than applied to the archive, which
+ * would fail 34 articles for not following a rule that postdates them.
+ */
+export function audit(name: string, paras: string[], boldFloor = false): VoiceReport {
   const text = paras.join("\n\n");
   const words = text.split(/\s+/).filter(Boolean).length;
   const per1k = (n: number) => (words ? (n * 1000) / words : 0);
@@ -124,6 +135,14 @@ export function audit(name: string, paras: string[]): VoiceReport {
     "instructional imperatives": per1k(imperatives),
   };
 
+  /* Emphasis share. The house convention puts bold on the payload clause, so a
+     reader skimming only the bold still gets the argument. Published work runs
+     roughly 15-19%; flat prose loses the layer entirely. Counted from **markers**,
+     the same syntax the markdown archive uses. */
+  const boldWords = (text.match(/\*\*(.+?)\*\*/g) || [])
+    .reduce((n, h) => n + h.replace(/\*\*/g, "").split(/\s+/).filter(Boolean).length, 0);
+  const boldPct = words ? (boldWords * 100) / words : 0;
+
   const absolute: Record<string, number> = {
     "em dashes in body": (text.match(/—/g) || []).length,
     "AI vocabulary": (text.match(AI_VOCAB) || []).length,
@@ -133,7 +152,10 @@ export function audit(name: string, paras: string[]): VoiceReport {
     "vague attribution": (text.match(VAGUE_ATTRIB) || []).length,
   };
 
+  rates["bold % of prose words"] = boldPct;
+
   const failures: string[] = [];
+  if (boldFloor && boldPct < 12) failures.push(`bold ${boldPct.toFixed(1)}% < 12% (Brand New Day standard)`);
   for (const [k, ceiling] of Object.entries(CEILINGS)) {
     if (rates[k] > ceiling) failures.push(`${k} ${rates[k].toFixed(2)}/1k > ${ceiling}`);
   }
@@ -152,6 +174,10 @@ export function render(r: VoiceReport): string {
   const head = `${r.name}  (${r.words}w)`;
   const rateLines = Object.entries(r.rates)
     .map(([k, v]) => {
+      if (k === "bold % of prose words") {
+        // A share, not a rate. Labelling it "/1k" was simply wrong.
+        return `    ${k.padEnd(28)} ${v.toFixed(1).padStart(5)}%   (Brand New Day 15-19%)`;
+      }
       const c = CEILINGS[k];
       const flag = v > c ? "  ✗" : "";
       return `    ${k.padEnd(28)} ${v.toFixed(2).padStart(5)}/1k  (ceiling ${c})${flag}`;
@@ -177,6 +203,7 @@ if (require.main === module) {
   for (const f of files) {
     const src = readFileSync(f, "utf8");
     const paras = seedMode ? paragraphsFromSeed(src) : paragraphsFromMarkdown(src);
-    process.stdout.write(render(audit(f.split("/").pop() ?? f, paras)));
+    const boldFloor = args.includes("--bold");
+    process.stdout.write(render(audit(f.split("/").pop() ?? f, paras, boldFloor)));
   }
 }
