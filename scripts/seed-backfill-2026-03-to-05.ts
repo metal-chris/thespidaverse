@@ -17,8 +17,18 @@
  * zero, and 0% bold against the 15–19% the Brand New Day pieces set. All nine
  * pass the audit with emphasis between 16.6% and 19.4%.
  *
- * Articles land as drafts (`drafts.backfill-<slug>`). They do not appear on the
- * site until published by hand in Studio.
+ * DO NOT PUBLISH. Held, not scheduled.
+ *
+ * These nine were published on 2026-08-19 and unpublished on 2026-09-04 under
+ * the editorial rule that nothing is posted Chris did not actually watch or
+ * review. None went through the workflow's Step 2 interview gate; the two
+ * full-web reviews assert first-person viewing and carry web ratings he never
+ * gave. The prose is kept because the voice pass is real work, and because any
+ * one of these could be claimed later if he watches the thing. Until then this
+ * script is a record, not a pipeline step.
+ *
+ * If run, articles land as drafts (`drafts.backfill-<slug>`) and stay hidden
+ * until published by hand in Studio.
  *
  * Usage: npx tsx scripts/seed-backfill-2026-03-to-05.ts [--dry-run]
  */
