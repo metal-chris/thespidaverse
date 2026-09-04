@@ -123,8 +123,19 @@ export function audit(name: string, paras: string[], boldFloor = false): VoiceRe
      is the contamination the baseline warning describes, not a licence. */
   const antithesisHits = (text.match(/\b(?:That'?s|It'?s|This is)\s+not\b[^.!?]*[.!?]\s+(?:That'?s|It'?s|This is)\b[^.!?]*[.!?]/gi) || [])
     .map((h) => h.replace(/\s+/g, " ").trim());
-  const antithesis = antithesisHits.length;
-  const imperatives = (text.match(/\b(?:Sit with that|Look at what|Notice how)\b/gi) || []).length;
+  /* The doc's table measures one literal form — "That's not X. That's Y." — at
+     0.00 and says he never does it. That gets the zero ceiling. The wider
+     It's/This is family is reported for the concreteness test instead of failed
+     outright, because an anaphoric triple with a concrete substitute ("This is
+     not what the algorithm predicted... This is what happens when one person
+     tells five people") passes the doc's own test and should not be rewritten
+     to satisfy a regex. */
+  const antithesis = (text.match(/\bThat'?s\s+not\b[^.!?]*[.!?]\s+That'?s\b/gi) || []).length;
+  /* Anchored to sentence start. The tell is the rhetorical reader-instruction
+     ("Look at what this means."), not the same words used as ordinary English
+     mid-sentence — "the correct response is to look at what Amazon MGM did
+     right" is not the tic, and flagging it trains people to ignore the linter. */
+  const imperatives = (text.match(/(?:^|[.!?]\s+|\n)(?:Sit with that|Look at what|Notice how)\b/gi) || []).length;
 
   const rates: Record<string, number> = {
     "single-sentence paragraphs": per1k(singles),
@@ -155,7 +166,11 @@ export function audit(name: string, paras: string[], boldFloor = false): VoiceRe
   rates["bold % of prose words"] = boldPct;
 
   const failures: string[] = [];
-  if (boldFloor && boldPct < 12) failures.push(`bold ${boldPct.toFixed(1)}% < 12% (Brand New Day standard)`);
+  /* Band, not a floor. Over-emphasis is its own failure: if most of a paragraph
+     is bold then nothing is, and the skim layer the convention exists to create
+     collapses. Brand New Day runs 15.2-18.6%, so 12-21% is the working band. */
+  if (boldFloor && boldPct < 12) failures.push(`bold ${boldPct.toFixed(1)}% < 12% (Brand New Day 15-19%)`);
+  if (boldFloor && boldPct > 21) failures.push(`bold ${boldPct.toFixed(1)}% > 21% (over-emphasis)`);
   for (const [k, ceiling] of Object.entries(CEILINGS)) {
     if (rates[k] > ceiling) failures.push(`${k} ${rates[k].toFixed(2)}/1k > ${ceiling}`);
   }
@@ -188,7 +203,7 @@ export function render(r: VoiceReport): string {
     .map(([k, v]) => `    ${k.padEnd(28)} ${String(v).padStart(5)}`)
     .join("\n");
   const anti = r.antithesis.length
-    ? "\n" + r.antithesis.map((a) => `    antithesis? ${a.slice(0, 96)}`).join("\n")
+    ? "\n" + r.antithesis.map((a) => `    antithesis? (judge concreteness) ${a.slice(0, 80)}`).join("\n")
     : "";
   return `${head}\n${rateLines}${absLines ? "\n" + absLines : ""}${anti}\n    ${
     r.failures.length ? `FAIL: ${r.failures.join("; ")}` : "PASS"
