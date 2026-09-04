@@ -66,7 +66,12 @@ export function paragraphsFromMarkdown(md: string): string[] {
   return s
     .split(/\n\s*\n/)
     .map((p) => p.replace(/\s+/g, " ").trim())
-    .filter((p) => p.length > 0 && !/^[-*|]/.test(p)); // drop lists and tables
+    // Drop list items and table rows, but only when the marker is followed by a
+    // space or is a pipe. A paragraph that OPENS with a bold run ("**90/100.**
+    // The audio is crisp...") begins with "*" too, and the emphasis convention
+    // produces exactly that shape - dropping it silently under-counted both
+    // words and bold on every rated piece.
+    .filter((p) => p.length > 0 && !/^(?:[-*+]\s|\|)/.test(p));
 }
 
 /**
@@ -94,7 +99,13 @@ export function paragraphsFromSeed(src: string): string[] {
     .filter(Boolean);
 }
 
-const sentences = (p: string) => p.split(/(?<=[.!?])\s+/).filter((s) => s.trim().length > 1);
+/* Emphasis markers are stripped before splitting. With them in place,
+   "**They repeated the Cold Snap mistake.** Full stop." reads as one sentence,
+   because the period is followed by "**" rather than a space. That made a
+   two-sentence paragraph count as a one-line one and failed a piece for a
+   tic it does not have. */
+const sentences = (p: string) =>
+  p.replace(/\*\*|(?<!\w)_|_(?!\w)/g, "").split(/(?<=[.!?])\s+/).filter((s) => s.trim().length > 1);
 
 /**
  * Bold is a FORWARD standard, not a corpus norm.
