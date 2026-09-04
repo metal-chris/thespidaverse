@@ -121,8 +121,13 @@ export function audit(name: string, paras: string[], boldFloor = false): VoiceRe
      train, it's the swing" survives, abstract-versus-abstract does not. Note the
      reference corpus itself scores 0.46/1k here against a documented 0.00, which
      is the contamination the baseline warning describes, not a licence. */
-  const antithesisHits = (text.match(/\b(?:That'?s|It'?s|This is)\s+not\b[^.!?]*[.!?]\s+(?:That'?s|It'?s|This is)\b[^.!?]*[.!?]/gi) || [])
-    .map((h) => h.replace(/\s+/g, " ").trim());
+  /* Matched within a paragraph only. Joining paragraphs with "\n\n" and then
+     allowing \s+ let the pattern bridge a blank line, which flagged "…nothing
+     to lose." followed by a new paragraph opening "It's Christmas though" as a
+     construction. It is two thoughts, not one. */
+  const antithesisHits = paras.flatMap((para) =>
+    (para.match(/\b(?:That'?s|It'?s|This is)\s+not\b[^.!?]*[.!?]\s+(?:That'?s|It'?s|This is)\b[^.!?]*[.!?]/gi) || [])
+      .map((h) => h.replace(/\s+/g, " ").trim()));
   /* The doc's table measures one literal form — "That's not X. That's Y." — at
      0.00 and says he never does it. That gets the zero ceiling. The wider
      It's/This is family is reported for the concreteness test instead of failed
@@ -130,7 +135,8 @@ export function audit(name: string, paras: string[], boldFloor = false): VoiceRe
      not what the algorithm predicted... This is what happens when one person
      tells five people") passes the doc's own test and should not be rewritten
      to satisfy a regex. */
-  const antithesis = (text.match(/\bThat'?s\s+not\b[^.!?]*[.!?]\s+That'?s\b/gi) || []).length;
+  const antithesis = paras.reduce(
+    (n, para) => n + (para.match(/\bThat'?s\s+not\b[^.!?]*[.!?]\s+That'?s\b/gi) || []).length, 0);
   /* Anchored to sentence start. The tell is the rhetorical reader-instruction
      ("Look at what this means."), not the same words used as ordinary English
      mid-sentence — "the correct response is to look at what Amazon MGM did
